@@ -2,7 +2,7 @@ import 'package:chick_stell_view/controllers/warehouse_controller.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/alert_view.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/metric_card.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/ventilador.dart';
-import 'package:chick_stell_view/views/main_views/monitoreo/widgets/ware_house_header';
+import 'package:chick_stell_view/views/main_views/monitoreo/widgets/ware_house_header.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/ware_house_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
