@@ -26,7 +26,7 @@ class AppRoutes{
     ),
     GetPage(
       name: '/monitoreo',
-      page: () => const MonitoreoView(),
+      page: () => MonitoreoView(),
     ),
     GetPage(
       name: '/clima',
