@@ -1,5 +1,6 @@
 import 'package:chick_stell_view/models/galpon_model.dart';
 import 'package:chick_stell_view/services/galpon_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 
 class GalponController extends GetxController {
@@ -15,7 +16,7 @@ class GalponController extends GetxController {
   void cargarGalpones() async {
     try {
       var resultado = await _galponService.getGalpones();
-      galpones.assignAll(resultado.map((e) => Galpon.fromJson(e)).toList());
+      galpones.assignAll(resultado);
     } catch (e) {
       Get.snackbar('Error', 'No se pudieron cargar los galpones');
     }
@@ -23,7 +24,10 @@ class GalponController extends GetxController {
 
   Future<void> agregarGalpon(Galpon galpon) async {
     try {
-      await _galponService.addGalpon(galpon); // le mandas el modelo completo
+      await FirebaseFirestore.instance
+          .collection('galpones')
+          .doc(galpon.id)
+          .set(galpon.toJson()); // le mandas el modelo completo
       cargarGalpones(); // Refresca la lista
       Get.snackbar('Éxito', 'Galpón agregado correctamente');
     } catch (e) {
