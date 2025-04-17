@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "303250406776",
+    "project_id": "chickstell-fe495",
+    "storage_bucket": "chickstell-fe495.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:303250406776:android:f939a7268ef3138cb25c8d",
+        "android_client_info": {
+          "package_name": "com.example.chick_stell_view"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "303250406776-0l522tcb2rdjmg6g9c2paog69us167mm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEM1e_6xvtJW4pgieIRDqO14yEo13DBf4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "303250406776-0l522tcb2rdjmg6g9c2paog69us167mm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,5 @@
 import 'package:chick_stell_view/controllers/warehouse_controller.dart';
-import 'package:chick_stell_view/views/main_views/monitoreo/create_galpon/crete_galpon.dart';
+import 'package:chick_stell_view/views/main_views/monitoreo/create_galpon/create_galpon.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -13,49 +13,50 @@ class WarehouseSelector extends StatelessWidget {
     return Container(
       height: 40,
       child: Obx(() => ListView(
-        scrollDirection: Axis.horizontal,
-        children: [
-          for (int i = 1; i <= controller.warehouseCount.value; i++)
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: ElevatedButton(
+            scrollDirection: Axis.horizontal,
+            children: [
+              for (int i = 1; i <= controller.warehouseCount.value; i++)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: controller.selectedWarehouse.value == i
+                          ? const Color(0xFF26A69A)
+                          : const Color(0xFFE0F2F1),
+                      foregroundColor: controller.selectedWarehouse.value == i
+                          ? Colors.white
+                          : const Color(0xFF26A69A),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    // onPressed: () => controller.selectWarehouse(i),
+                    onPressed: () {},
+                    child: Text('Galpón $i'),
+                  ),
+                ),
+              ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: controller.selectedWarehouse.value == i
-                      ? const Color(0xFF26A69A)
-                      : const Color(0xFFE0F2F1),
-                  foregroundColor: controller.selectedWarehouse.value == i
-                      ? Colors.white
-                      : const Color(0xFF26A69A),
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.green,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                // onPressed: () => controller.selectWarehouse(i),
-                onPressed: (){},
-                child: Text('Galpón $i'),
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) => const CreateGalpon());
+                },
+                child: Row(
+                  children: const [
+                    Icon(Icons.add),
+                    SizedBox(width: 0.2),
+                  ],
+                ),
               ),
-            ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.green,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-            onPressed: (){
-              showDialog(context: context, builder: (BuildContext context) => const CreteGalpon());
-            },
-            child: Row(
-              children: const [
-                Icon(Icons.add),
-                SizedBox(width: 0.2),
-              ],
-            ),
-          ),
-        ],
-      )),
+            ],
+          )),
     );
   }
 }
-
