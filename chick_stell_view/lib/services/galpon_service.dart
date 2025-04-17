@@ -6,26 +6,22 @@ class GalponService {
   final CollectionReference galponesRef =
       FirebaseFirestore.instance.collection('galpones');
 
-  Future<List<Map<String, dynamic>>> getGalpones() async {
-    List<Map<String, dynamic>> galpones = [];
+  Future<List<Galpon>> getGalpones() async {
+    final snapshot = await firestore.collection('galpones').get();
 
-    QuerySnapshot queryGalpones = await galponesRef.get();
-
-    queryGalpones.docs.forEach((doc) {
-      galpones.add(doc.data() as Map<String, dynamic>);
-    });
+    final galpones = snapshot.docs.map((e) {
+      final data = e.data();
+      data['id'] = e.id; // Esto asegura que el modelo tenga el ID del documento
+      return Galpon.fromJson(data);
+    }).toList();
 
     return galpones;
   }
 
   Future<void> addGalpon(Galpon galpon) async {
     final docRef =
-        firestore.collection('galpones').doc(); // genera doc con ID único
-    final id = docRef.id;
-
-    final galponConId = galpon.copyWith(id: id); // copia el galpon con ese id
-
-    await docRef.set(galponConId.toJson()); // guarda el galpon con id propio
+        firestore.collection('galpones').doc(galpon.id); // usa tu ID generado
+    await docRef.set(galpon.toJson());
   }
 
   Future<void> updateGalpon(
@@ -47,5 +43,9 @@ class GalponService {
       print('Error al eliminar el galpón: $e');
       throw Exception('No se pudo eliminar el galpón.');
     }
+  }
+
+  Future<void> addGalponConId(Galpon galpon) async {
+    await galponesRef.doc(galpon.id).set(galpon.toJson());
   }
 }
