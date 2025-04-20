@@ -1,3 +1,4 @@
+import 'package:chick_stell_view/views/main_views/monitoreo/editing_galpon/view_editing_galpon.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:chick_stell_view/controllers/warehouse_controller.dart';
@@ -30,7 +31,17 @@ class WarehouseHeader extends StatelessWidget {
               const Spacer(),
               IconButton(
                 onPressed: () {
-                  // print('Abrir ajustes');
+                  if (controller.galpones.isNotEmpty) {
+                    final galponSeleccionado = controller.galpones[controller.selectedWarehouse.value];
+                    showDialog(
+                      context: context,
+                      builder: (_) => EditGalpon(galpon: galponSeleccionado),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('No hay galpones para editar')),
+                    );
+                  }
                 },
                 icon: const Icon(Icons.settings, color: Colors.white),
                 tooltip: 'Ajustes',
