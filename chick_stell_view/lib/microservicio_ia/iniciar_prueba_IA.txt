@@ -1,0 +1,5 @@
+uvicorn main:app --reload <-------  En una terminal ejecutar esta linea 
+                                    Lo que hace es ejecutar el microservicio localmente
+                                    para que les funcione, las pruebas de simulacion y prediccion.
+
+ejemplo terminal \Chick_Stell-Repository\chick_stell_view\lib\microservicio_ia> --Ejecutar aqui--
