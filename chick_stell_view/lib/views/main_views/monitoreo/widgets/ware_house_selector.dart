@@ -44,9 +44,10 @@ class WarehouseSelector extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) => const CreateGalpon());
+                  // showDialog(
+                  //     context: context,
+                  //     builder: (BuildContext context) => const CreateGalpon());
+                  Get.dialog(const CreateGalpon());
                 },
                 child: Row(
                   children: const [

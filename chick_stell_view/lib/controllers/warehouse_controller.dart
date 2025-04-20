@@ -25,7 +25,8 @@ class WarehouseController extends GetxController {
 
   void cargarGalpones() async {
     galpones.value = (await _galponService.getGalpones()).cast<Galpon>();
-    galpones.sort();
+    // galpones.sort();
+    galpones.sort((a, b) => a.id.compareTo(b.id));
     galpones.refresh(); // Actualizar la lista
   }
 

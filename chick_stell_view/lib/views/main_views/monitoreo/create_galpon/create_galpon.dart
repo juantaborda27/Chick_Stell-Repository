@@ -8,10 +8,10 @@ class CreateGalpon extends StatefulWidget {
   const CreateGalpon({super.key});
 
   @override
-  _CreateGalponState createState() => _CreateGalponState();
+  CreateGalponState createState() => CreateGalponState();
 }
 
-class _CreateGalponState extends State<CreateGalpon> {
+class CreateGalponState extends State<CreateGalpon> {
   // Controladores para los campos de texto
   final TextEditingController nombreController = TextEditingController();
   final TextEditingController largoController = TextEditingController();
@@ -184,8 +184,12 @@ class _CreateGalponState extends State<CreateGalpon> {
 
             await galponController.agregarGalpon(galpon);
 
-            print('Galpón creado con ID: $id');
+            // print('Galpón creado con ID: $id');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Galpón creado')),
+            );
 
+            //CORREGIR ESTO
             Navigator.of(context).pop();
           },
           style: ElevatedButton.styleFrom(
