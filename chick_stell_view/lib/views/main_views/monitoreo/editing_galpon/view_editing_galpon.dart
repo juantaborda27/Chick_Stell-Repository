@@ -212,7 +212,7 @@ class EditGalponState extends State<EditGalpon> {
       TextButton(
         onPressed: () async {
           await galponService.deleteGalpon(widget.galpon.id);
-          ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar( 
             SnackBar(content: Text('Galpón eliminado')),
           );
           Navigator.of(context).pop();
