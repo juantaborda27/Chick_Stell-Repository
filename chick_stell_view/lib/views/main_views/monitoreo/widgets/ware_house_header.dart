@@ -31,21 +31,28 @@ class WarehouseHeader extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: Text(
-                  controller.ventilationActive.value
-                      ? 'Ventilación activa'
-                      : 'Ventilación inactiva',
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
-                ),
+                // child: Text(
+                //   controller.ventilationActive.value
+                //       ? 'Ventilación activa'
+                //       : 'Ventilación inactiva',
+                //   style: const TextStyle(color: Colors.white, fontSize: 12),
+                // ),
               ),
               const Spacer(),
-              const Icon(Icons.thermostat_outlined, color: Colors.amber),
-              const SizedBox(width: 4),
-              const Text('27.2°C', style: TextStyle(color: Colors.white)),
-              const SizedBox(width: 10),
-              Icon(Icons.water_drop_outlined, color: Colors.blue.shade200),
-              const SizedBox(width: 4),
-              const Text('66%', style: TextStyle(color: Colors.white)),
+              IconButton(
+                onPressed: () {
+                  // print('Abrir ajustes');
+                },
+                icon: const Icon(Icons.settings, color: Colors.white),
+                tooltip: 'Ajustes',
+              ),
+              // const Icon(Icons.thermostat_outlined, color: Colors.amber),
+              // const SizedBox(width: 4),
+              // const Text('27.2°C', style: TextStyle(color: Colors.white)),
+              // const SizedBox(width: 10),
+              // Icon(Icons.water_drop_outlined, color: Colors.blue.shade200),
+              // const SizedBox(width: 4),
+              // const Text('66%', style: TextStyle(color: Colors.white)),
             ],
           ),
         ));
