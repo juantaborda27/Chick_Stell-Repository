@@ -1,5 +1,6 @@
 import 'package:chick_stell_view/controllers/warehouse_controller.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/alert_view.dart';
+import 'package:chick_stell_view/views/main_views/monitoreo/widgets/information_galpon.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/metric_card.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/ventilador.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/ware_house_header.dart';
@@ -27,12 +28,13 @@ class MonitoreoView extends StatelessWidget {
               SizedBox(height: 16),
               WarehouseHeader(controller: controller),
               SizedBox(height: 20),
-              Ventilator(controller: controller),
-              SizedBox(height: 20),
-              // Obx(() => controller.hasWarning.value ? _buildWarningAlert() : SizedBox()),
-              const WarningAlert(),
-              SizedBox(height: 20),
-              _buildMetricsGrid(),
+              InformationGalpon(controller: controller)
+              // Ventilator(controller: controller),
+              // SizedBox(height: 20),
+              // // Obx(() => controller.hasWarning.value ? _buildWarningAlert() : SizedBox()),
+              // const WarningAlert(),
+              // SizedBox(height: 20),
+              // _buildMetricsGrid(),
             ],
           ),
         ),
