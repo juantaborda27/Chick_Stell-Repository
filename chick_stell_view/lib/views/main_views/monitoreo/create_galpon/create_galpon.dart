@@ -2,6 +2,7 @@ import 'package:chick_stell_view/controllers/galpon_controller.dart';
 import 'package:chick_stell_view/models/galpon_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:uuid/uuid.dart';
 
 class CreateGalpon extends StatefulWidget {
   const CreateGalpon({super.key});
@@ -163,10 +164,16 @@ class _CreateGalponState extends State<CreateGalpon> {
     return Column(
       children: [
         ElevatedButton(
-          onPressed: () {
-            // Capturar los datos ingresados y crear una instancia de Galpon
+          onPressed: () async {
+            final galponController = Get.find<GalponController>();
+            final Uuid uuid = const Uuid();
+
+            // Generar ID único
+            final String id = uuid.v4();
+
+            // Crear el objeto Galpon
             final galpon = Galpon(
-              id: '',
+              id: id,
               nombre: nombreController.text,
               largo: double.tryParse(largoController.text) ?? 0,
               ancho: double.tryParse(anchoController.text) ?? 0,
@@ -175,14 +182,10 @@ class _CreateGalponState extends State<CreateGalpon> {
               sensores: int.tryParse(sensoresController.text) ?? 0,
             );
 
-            // Llamar al controlador para agregar el galpón
-            final galponController = Get.find<GalponController>();
-            galponController.agregarGalpon(galpon);
+            await galponController.agregarGalpon(galpon);
 
-            print(
-                'Datos del galpón enviados al controlador: ${galpon.toJson()}');
+            print('Galpón creado con ID: $id');
 
-            // Cerrar el diálogo
             Navigator.of(context).pop();
           },
           style: ElevatedButton.styleFrom(

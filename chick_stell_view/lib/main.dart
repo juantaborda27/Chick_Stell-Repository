@@ -12,6 +12,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  //Get.find<GalponController>();
   Get.put(GalponController()); // <- Inyectas el controlador
   runApp(MyApp());
 }
