@@ -1,6 +1,6 @@
 
 
-//import 'package:chick_stell_view/controllers/prediccion_controller.dart';
+import 'package:chick_stell_view/controllers/prediccion_controller.dart';
 import 'package:chick_stell_view/controllers/simulacion_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,7 +10,7 @@ class PrediccionView extends StatelessWidget {
   PrediccionView({super.key});
 
   final SimulacionController simController = Get.put(SimulacionController());
-  //final PrediccionController predController = Get.put(PrediccionController());
+  final PrediccionController predController = Get.put(PrediccionController());
 
   @override
   Widget build(BuildContext context) {
@@ -49,10 +49,10 @@ class PrediccionView extends StatelessWidget {
                 '🔍 Última predicción',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              // const SizedBox(height: 10),
-              // Text('Nivel de Estrés: ${predController.nivelEstres}', style: TextStyle(fontSize: 16)),
-              // Text('Confianza: ${(predController.confianza.value * 100).toStringAsFixed(1)}%', style: TextStyle(fontSize: 16)),
-              // Text('Mensaje: ${predController.mensaje}', style: TextStyle(fontSize: 14)),
+              const SizedBox(height: 10),
+              Text('Nivel de Estrés: ${predController.nivelEstres}', style: TextStyle(fontSize: 16)),
+              Text('Confianza: ${(predController.confianza.value * 100).toStringAsFixed(1)}%', style: TextStyle(fontSize: 16)),
+              Text('Mensaje: ${predController.mensaje}', style: TextStyle(fontSize: 14)),
             ],
           )),
         ),
