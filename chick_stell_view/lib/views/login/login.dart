@@ -1,4 +1,5 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:chick_stell_view/controllers/auth_controller.dart';
 import 'package:chick_stell_view/views/widgets/make_input.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,6 +10,11 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    TextEditingController emailController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
+
+
     final Size screenSize = MediaQuery.of(context).size;
     
     return Scaffold(
@@ -119,7 +125,18 @@ class LoginPage extends StatelessWidget {
                   minWidth: double.infinity,
                   height: 55,
                   //llamar a la vista del nav_bar
-                  onPressed: () {Get.offNamed('home_nav');},
+                  onPressed: () async{
+                    final email = emailController.text.trim();
+                    final password = passwordController.text.trim();
+                    final success = await Get.find<AuthController>().login(email, password);
+                    if (success) {
+                      Get.snackbar('Éxito', 'Has iniciado sesión');
+                      Get.offNamed('home_nav');
+                    } else {
+                      Get.snackbar('Error', 'Correo o contraseña incorrectos');
+                    }
+                    // Get.offNamed('home_nav');
+                  },
                   color: Colors.greenAccent,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
@@ -164,7 +181,7 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {Get.offNamed('signup');},
                     child: const Text(
                       'Sign Up',
                       style: TextStyle(
