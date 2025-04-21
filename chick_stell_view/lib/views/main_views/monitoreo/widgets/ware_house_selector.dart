@@ -1,5 +1,4 @@
 import 'package:chick_stell_view/controllers/warehouse_controller.dart';
-import 'package:chick_stell_view/views/main_views/monitoreo/create_galpon/create_galpon.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -41,27 +40,27 @@ class WarehouseSelector extends StatelessWidget {
                     child: Text(controller.galponesFiltrados[i].nombre),
                   ),
                 ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.green,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                onPressed: () {
-                  // showDialog(
-                  //     context: context,
-                  //     builder: (BuildContext context) => const CreateGalpon());
-                  Get.dialog(const CreateGalpon());
-                },
-                child: Row(
-                  children: const [
-                    Icon(Icons.add),
-                    SizedBox(width: 0.2),
-                  ],
-                ),
-              ),
+              // ElevatedButton(
+              //   style: ElevatedButton.styleFrom(
+              //     backgroundColor: Colors.white,
+              //     foregroundColor: Colors.green,
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(20),
+              //     ),
+              //   ),
+              //   onPressed: () {
+              //     // showDialog(
+              //     //     context: context,
+              //     //     builder: (BuildContext context) => const CreateGalpon());
+              //     Get.dialog(const CreateGalpon());
+              //   },
+              //   child: Row(
+              //     children: const [
+              //       Icon(Icons.add),
+              //       SizedBox(width: 0.2),
+              //     ],
+              //   ),
+              // ),
             ],
           )),
     );
