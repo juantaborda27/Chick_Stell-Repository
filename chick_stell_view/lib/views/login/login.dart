@@ -134,6 +134,8 @@ class LoginPage extends StatelessWidget {
                       Get.offNamed('home_nav');
                     } else {
                       Get.snackbar('Error', 'Correo o contraseña incorrectos');
+                      //MIENTRAS SE ARREGLA EL LOGIN
+                      Get.offNamed('home_nav');
                     }
                     // Get.offNamed('home_nav');
                   },

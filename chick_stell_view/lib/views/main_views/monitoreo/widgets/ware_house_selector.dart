@@ -15,7 +15,8 @@ class WarehouseSelector extends StatelessWidget {
       child: Obx(() => ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              for (int i = 0; i < controller.galpones.length; i++)
+              // for (int i = 0; i < controller.galpones.length; i++)
+              for (int i = 0; i < controller.galponesFiltrados.length; i++)
                 Padding(
                   padding: const EdgeInsets.only(right: 8.0),
                   child: ElevatedButton(
@@ -30,9 +31,14 @@ class WarehouseSelector extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    onPressed: () => controller.selectWarehouse(i),
+                    onPressed: () {
+                      final selectedIndex = controller.galpones.indexWhere(
+                          (g) => g.id == controller.galponesFiltrados[i].id);
+                      controller.selectWarehouse(selectedIndex);
+                    },
                     //onPressed: () {},
-                    child: Text(controller.galpones[i].nombre),
+                    // child: Text(controller.galpones[i].nombre),
+                    child: Text(controller.galponesFiltrados[i].nombre),
                   ),
                 ),
               ElevatedButton(
