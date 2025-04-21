@@ -30,7 +30,7 @@ class AppRoutes{
     ),
     GetPage(
       name: '/clima',
-      page: () => const ClimaView(),
+      page: () => ClimaView(),
     ),
     GetPage(
       name: '/prediccion',
