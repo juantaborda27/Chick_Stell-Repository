@@ -12,6 +12,11 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    TextEditingController emailController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
+
+
     final Size screenSize = MediaQuery.of(context).size;
     
     return Scaffold(
