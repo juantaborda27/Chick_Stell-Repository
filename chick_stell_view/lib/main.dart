@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       title: 'Chick Stell',
       theme:
           ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue)),
-      initialRoute: '/signup',
+      initialRoute: '/login',
       getPages: AppRoutes.routes,
       home: BottonNavVar(),
       // home: HomePage(),

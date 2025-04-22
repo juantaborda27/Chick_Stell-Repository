@@ -18,11 +18,11 @@ class AppRoutes{
     ),
     GetPage(
       name: '/login',
-      page: () => const LoginPage(),
+      page: () => LoginPage(),
     ),
     GetPage(
       name: '/signup',
-      page: () => const SingUp(),
+      page: () => SingUp(),
     ),
     GetPage(
       name: '/monitoreo',

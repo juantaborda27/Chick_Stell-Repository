@@ -27,8 +27,7 @@ class AuthService {
             'email': email,
             'ws': '',
             'phone': '',
-            'password': password,
-            'fnac': null,
+            'fnac': '',
             'createdAt': FieldValue.serverTimestamp(),
 
           });
@@ -38,6 +37,7 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       Get.snackbar('error', 'Error al registrarse {$e message}' );
     }
+    return null;
   }
   
   Future<User?> loginEmail(String email, String password) async {
@@ -51,18 +51,9 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       Get.snackbar('error', 'Error al iniciar sesion {$e message}' );
     }
+    return null;
   }
 
-  Future<void> saveUsers(String uid, String email) async{
-    await _firestore.collection('usuaios-nuevos').doc(uid).set({
-      'imageUrl': '',
-            'name': '',
-            'email': email,
-            'ws': '',
-            'phone': '',
-            'fnac': null,
-            'createdAt': FieldValue.serverTimestamp(),
-    });
-  }
-  
+ 
 }
+  

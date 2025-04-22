@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
-class AuthContorller {
+class AuthController {
 
   final AuthService _authService = AuthService();
   var isloading = false.obs;
@@ -17,9 +17,11 @@ final storage = GetStorage();
   Future<void> register(String email, String password, String confirmPassword) async {
     isloading.value = true;
     try {
+      isloading.value = true;
       User? newUser = await _authService.registerEmail(
-      email, password,
-       confirmPassword
+      email,
+      password,
+      confirmPassword
       );
 
        if(newUser != null){
@@ -50,7 +52,7 @@ final storage = GetStorage();
             Get.snackbar('Error', 'Error al iniciar sesion');
           }
         } catch (e) {
-            Get.snackbar('Error', 'Error durante el inicio de sesion: $e');
+            Get.snackbar('Error', 'Error durante el inicio de sesion');
         } finally {
             isloading.value = false;
     }
