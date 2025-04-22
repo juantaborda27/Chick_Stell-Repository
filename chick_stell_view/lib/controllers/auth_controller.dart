@@ -25,7 +25,7 @@ final storage = GetStorage();
        if(newUser != null){
         user.value = newUser;
         await saveUserStorage(email, password);
-        Get.offAll(() => HomePage());
+        
        } else {
         Get.snackbar('Error', 'Error al registrarse');
        } 
@@ -45,7 +45,7 @@ final storage = GetStorage();
           if (newUser != null) {
             user.value = newUser;
             await saveUserStorage(email, password);
-            Get.offAll(() => HomePage());
+          
           } else {
             Get.snackbar('Error', 'Error al iniciar sesion');
           }
