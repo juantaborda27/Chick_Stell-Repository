@@ -1,28 +1,44 @@
 import 'package:chick_stell_view/controllers/galpon_controller.dart';
 import 'package:chick_stell_view/models/galpon_model.dart';
+import 'package:chick_stell_view/services/galpon_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:uuid/uuid.dart';
 
-class CreateGalpon extends StatefulWidget {
-  const CreateGalpon({super.key});
+class EditGalpon extends StatefulWidget {
+  final Galpon galpon;
+
+  const EditGalpon({super.key, required this.galpon});
 
   @override
-  CreateGalponState createState() => CreateGalponState();
+  EditGalponState createState() => EditGalponState();
 }
 
-class CreateGalponState extends State<CreateGalpon> {
-  // Controladores para los campos de texto
-  final TextEditingController nombreController = TextEditingController();
-  final TextEditingController largoController = TextEditingController();
-  final TextEditingController anchoController = TextEditingController();
-  final TextEditingController ventiladoresController = TextEditingController();
-  final TextEditingController nebulizadoresController = TextEditingController();
-  final TextEditingController sensoresController = TextEditingController();
+class EditGalponState extends State<EditGalpon> {
+  final GalponService galponService = Get.find<GalponService>();
+  final GalponController galponController = Get.find<GalponController>();
+
+
+  late TextEditingController nombreController;
+  late TextEditingController largoController;
+  late TextEditingController anchoController;
+  late TextEditingController ventiladoresController;
+  late TextEditingController nebulizadoresController;
+  late TextEditingController sensoresController;
+
+  @override
+  void initState() {
+    super.initState();
+    final g = widget.galpon;
+    nombreController = TextEditingController(text: g.nombre);
+    largoController = TextEditingController(text: g.largo.toString());
+    anchoController = TextEditingController(text: g.ancho.toString());
+    ventiladoresController = TextEditingController(text: g.ventiladores.toString());
+    nebulizadoresController = TextEditingController(text: g.nebulizadores.toString());
+    sensoresController = TextEditingController(text: g.sensores.toString());
+  }
 
   @override
   void dispose() {
-    // Liberar los controladores para evitar fugas de memoria
     nombreController.dispose();
     largoController.dispose();
     anchoController.dispose();
@@ -116,7 +132,7 @@ class CreateGalponState extends State<CreateGalpon> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Agregar Nuevo Galpón',
+            'Editar Galpón',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
@@ -161,60 +177,62 @@ class CreateGalponState extends State<CreateGalpon> {
   }
 
   Widget _buildActionButtons(BuildContext context) {
-    return Column(
-      children: [
-        ElevatedButton(
-          onPressed: () async {
-            final galponController = Get.find<GalponController>();
-            final Uuid uuid = const Uuid();
+  return Column(
+    children: [
+      ElevatedButton(
+        onPressed: () async {
+          final galponEditado = widget.galpon.copyWith(
+            nombre: nombreController.text,
+            largo: double.tryParse(largoController.text) ?? 0,
+            ancho: double.tryParse(anchoController.text) ?? 0,
+            ventiladores: int.tryParse(ventiladoresController.text) ?? 0,
+            nebulizadores: int.tryParse(nebulizadoresController.text) ?? 0,
+            sensores: int.tryParse(sensoresController.text) ?? 0,
+          );
 
-            // Generar ID único
-            final String id = uuid.v4();
+          await galponService.updateGalpon(galponEditado.id, galponEditado.toJson());
+          // await galponController.cargarGalpones;
 
-            // Crear el objeto Galpon
-            final galpon = Galpon(
-              id: id,
-              nombre: nombreController.text,
-              largo: double.tryParse(largoController.text) ?? 0,
-              ancho: double.tryParse(anchoController.text) ?? 0,
-              ventiladores: int.tryParse(ventiladoresController.text) ?? 0,
-              nebulizadores: int.tryParse(nebulizadoresController.text) ?? 0,
-              sensores: int.tryParse(sensoresController.text) ?? 0,
-            );
+          // setState(() {}); 
 
-            await galponController.agregarGalpon(galpon);
-
-            // print('Galpón creado con ID: $id');
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Galpón creado')),
-            );
-
-            //CORREGIR ESTO
-            Navigator.of(context).pop();
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFF26A69A),
-            foregroundColor: Colors.white,
-            minimumSize: Size(double.infinity, 48),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Galpón actualizado')),
+          );
+          Navigator.of(context).pop();
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Color(0xFF26A69A),
+          foregroundColor: Colors.white,
+          minimumSize: Size(double.infinity, 48),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(6),
           ),
-          child: Text('Agregar Galpón'),
         ),
-        SizedBox(height: 8),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.brown,
-            minimumSize: Size(double.infinity, 48),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
+        child: Text('Guardar Cambios'),
+      ),
+      SizedBox(height: 8),
+      TextButton(
+        onPressed: () async {
+          await galponService.deleteGalpon(widget.galpon.id);
+          // await galponController.cargarGalpones;
+
+          // setState(() {}); 
+          ScaffoldMessenger.of(context).showSnackBar( 
+            SnackBar(content: Text('Galpón eliminado')),
+          );
+          Navigator.of(context).pop();
+        },
+        style: TextButton.styleFrom(
+          foregroundColor: Colors.red,
+          minimumSize: Size(double.infinity, 48),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(6),
           ),
-          child: Text('Cancelar'),
         ),
-      ],
-    );
-  }
+        child: Text('Eliminar Galpón'),
+      ),
+    ],
+  );
+}
+
 }

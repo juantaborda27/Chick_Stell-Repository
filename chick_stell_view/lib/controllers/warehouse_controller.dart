@@ -25,7 +25,8 @@ class WarehouseController extends GetxController {
 
   void cargarGalpones() async {
     galpones.value = (await _galponService.getGalpones()).cast<Galpon>();
-    galpones.sort();
+    // galpones.sort();
+    galpones.sort((a, b) => a.id.compareTo(b.id));
     galpones.refresh(); // Actualizar la lista
   }
 
@@ -43,6 +44,30 @@ class WarehouseController extends GetxController {
     cargarGalpones(); // Recarga la lista
     selectedWarehouse.value = galpones.length - 1; // Selecciona el nuevo
   }
+
+
+
+  //METODOS PARA BUSCAR EL GALPON SELECCIONADO
+  var searchQuery = ''.obs;
+
+  // Computed list para los galpones filtrados
+  List<Galpon> get galponesFiltrados {
+    if (searchQuery.value.isEmpty) {
+      return galpones;
+    } else {
+      return galpones
+          .where((g) => g.nombre.toLowerCase().contains(searchQuery.value.toLowerCase()))
+          .toList();
+    }
+  }
+
+  void updateSearch(String query) {
+    searchQuery.value = query;
+    if (galponesFiltrados.isNotEmpty) {
+      selectedWarehouse.value = galpones.indexOf(galponesFiltrados[0]);
+    }
+  }
+
 
   int get warehouseCount => galpones.length;
 }
