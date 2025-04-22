@@ -54,4 +54,4 @@ class AuthService {
  
 }
   
->>>>>>>>> Temporary merge branch 2
+
