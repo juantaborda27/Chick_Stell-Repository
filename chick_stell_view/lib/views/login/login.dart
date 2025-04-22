@@ -1,5 +1,5 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:chick_stell_view/controllers/auth_contorller.dart';
+import 'package:chick_stell_view/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

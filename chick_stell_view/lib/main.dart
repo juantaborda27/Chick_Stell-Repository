@@ -1,5 +1,3 @@
-// import 'package:chick_stell_view/views/login/home_page.dart';
-import 'package:chick_stell_view/controllers/auth_controller.dart';
 import 'package:chick_stell_view/controllers/galpon_controller.dart';
 import 'package:chick_stell_view/services/galpon_service.dart';
 import 'package:chick_stell_view/utils/routes.dart';
@@ -17,7 +15,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   //Get.find<GalponController>();
-  Get.put(AuthController());
   Get.put(GalponService());
   Get.put(GalponController()); // <- Inyectas el controlador
   runApp(MyApp());
@@ -33,7 +30,7 @@ class MyApp extends StatelessWidget {
       title: 'Chick Stell',
       theme:
           ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue)),
-      initialRoute: '/login',
+      initialRoute: '/signup',
       getPages: AppRoutes.routes,
       home: BottonNavVar(),
       // home: HomePage(),
