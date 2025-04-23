@@ -1,5 +1,4 @@
 import 'package:chick_stell_view/services/auth_service.dart';
-import 'package:chick_stell_view/views/login/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
