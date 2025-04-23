@@ -1,6 +1,8 @@
 import 'package:chick_stell_view/controllers/warehouse_controller.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/alert_view.dart';
+import 'package:chick_stell_view/views/main_views/monitoreo/widgets/information_galpon.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/metric_card.dart';
+import 'package:chick_stell_view/views/main_views/monitoreo/widgets/search_galpon.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/ventilador.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/ware_house_header.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/ware_house_selector.dart';
@@ -23,16 +25,19 @@ class MonitoreoView extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
+              SearchGalpon(controller: controller),
+              SizedBox(height: 6),
               WarehouseSelector(controller: controller),
               SizedBox(height: 16),
               WarehouseHeader(controller: controller),
               SizedBox(height: 20),
-              Ventilator(controller: controller),
-              SizedBox(height: 20),
-              // Obx(() => controller.hasWarning.value ? _buildWarningAlert() : SizedBox()),
-              const WarningAlert(),
-              SizedBox(height: 20),
-              _buildMetricsGrid(),
+              InformationGalpon(controller: controller)
+              // Ventilator(controller: controller),
+              // SizedBox(height: 20),
+              // // Obx(() => controller.hasWarning.value ? _buildWarningAlert() : SizedBox()),
+              // const WarningAlert(),
+              // SizedBox(height: 20),
+              // _buildMetricsGrid(),
             ],
           ),
         ),

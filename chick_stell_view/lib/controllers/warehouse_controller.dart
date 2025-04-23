@@ -45,5 +45,29 @@ class WarehouseController extends GetxController {
     selectedWarehouse.value = galpones.length - 1; // Selecciona el nuevo
   }
 
+
+
+  //METODOS PARA BUSCAR EL GALPON SELECCIONADO
+  var searchQuery = ''.obs;
+
+  // Computed list para los galpones filtrados
+  List<Galpon> get galponesFiltrados {
+    if (searchQuery.value.isEmpty) {
+      return galpones;
+    } else {
+      return galpones
+          .where((g) => g.nombre.toLowerCase().contains(searchQuery.value.toLowerCase()))
+          .toList();
+    }
+  }
+
+  void updateSearch(String query) {
+    searchQuery.value = query;
+    if (galponesFiltrados.isNotEmpty) {
+      selectedWarehouse.value = galpones.indexOf(galponesFiltrados[0]);
+    }
+  }
+
+
   int get warehouseCount => galpones.length;
 }
