@@ -38,7 +38,7 @@ class AppRoutes{
     ),
     GetPage(
       name: '/ajustes',
-      page: () => const AjustesView(),
+      page: () => AjustesView(),
     ),
     GetPage(
       name: '/home_nav',

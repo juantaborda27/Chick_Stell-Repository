@@ -191,7 +191,7 @@ class EditGalponState extends State<EditGalpon> {
           );
 
           await galponService.updateGalpon(galponEditado.id, galponEditado.toJson());
-          // await galponController.cargarGalpones;
+          galponController.cargarGalpones;
 
           // setState(() {}); 
 
@@ -214,7 +214,7 @@ class EditGalponState extends State<EditGalpon> {
       TextButton(
         onPressed: () async {
           await galponService.deleteGalpon(widget.galpon.id);
-          // await galponController.cargarGalpones;
+          await galponController.cargarGalpones;
 
           // setState(() {}); 
           ScaffoldMessenger.of(context).showSnackBar( 
