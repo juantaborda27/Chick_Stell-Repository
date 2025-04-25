@@ -39,7 +39,7 @@ class PrediccionController extends GetxController {
   Future<void> hacerPrediccion(Map<String, dynamic> datos) async {
     try {
       final response = await http.post(
-        Uri.parse("http://127.0.0.1:8000/predecir"), // cambia por tu IP local o del servidor
+        Uri.parse("http://10.0.2.2:8000/predecir"), // cambia por tu IP local o del servidor
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(datos),
       );
