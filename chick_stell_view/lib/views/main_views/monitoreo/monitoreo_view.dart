@@ -21,24 +21,27 @@ class MonitoreoView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              SearchGalpon(controller: controller),
-              SizedBox(height: 6),
-              WarehouseSelector(controller: controller),
-              SizedBox(height: 16),
-              WarehouseHeader(controller: controller),
-              SizedBox(height: 20),
-              InformationGalpon(controller: controller)
-              // Ventilator(controller: controller),
-              // SizedBox(height: 20),
-              // // Obx(() => controller.hasWarning.value ? _buildWarningAlert() : SizedBox()),
-              // const WarningAlert(),
-              // SizedBox(height: 20),
-              // _buildMetricsGrid(),
-            ],
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                SearchGalpon(controller: controller),
+                SizedBox(height: 6),
+                WarehouseSelector(controller: controller),
+                SizedBox(height: 16),
+                WarehouseHeader(controller: controller),
+                SizedBox(height: 25),
+                InformationGalpon(controller: controller),
+                SizedBox(height: 20),
+                Ventilator(controller: controller),
+                SizedBox(height: 20),
+                // Obx(() => controller.hasWarning.value ? _buildWarningAlert() : SizedBox()),
+                const WarningAlert(),
+                SizedBox(height: 20),
+                _buildMetricsGrid(),
+              ],
+            ),
           ),
         ),
       ),

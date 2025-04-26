@@ -34,11 +34,11 @@ class AppRoutes{
     ),
     GetPage(
       name: '/prediccion',
-      page: () => const PrediccionView(),
+      page: () => PrediccionView(),
     ),
     GetPage(
       name: '/ajustes',
-      page: () => const AjustesView(),
+      page: () => AjustesView(),
     ),
     GetPage(
       name: '/home_nav',

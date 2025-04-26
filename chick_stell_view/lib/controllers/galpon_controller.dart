@@ -13,7 +13,7 @@ class GalponController extends GetxController {
     cargarGalpones();
   }
 
-  void cargarGalpones() async {
+  Future<void> cargarGalpones() async {
     try {
       var resultado = await _galponService.getGalpones();
       galpones.assignAll(resultado);
