@@ -31,7 +31,7 @@ class MonitoreoView extends StatelessWidget {
                 WarehouseSelector(controller: controller),
                 SizedBox(height: 16),
                 WarehouseHeader(controller: controller),
-                SizedBox(height: 25),
+                SizedBox(height: 10),
                 InformationGalpon(controller: controller),
                 SizedBox(height: 20),
                 Ventilator(controller: controller),
