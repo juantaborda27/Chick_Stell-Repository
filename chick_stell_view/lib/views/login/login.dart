@@ -17,14 +17,7 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
-        ),
-      ),
+   
       body: Container(
         height: screenSize.height,
         width: double.infinity,
@@ -38,7 +31,7 @@ class LoginPage extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    'Login',
+                    'Iniciar Sesión',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -128,7 +121,7 @@ class LoginPage extends StatelessWidget {
       controller: passwordController,
       obscureText: true,
       decoration: InputDecoration(
-        labelText: "Password",
+        labelText: "Contraseña",
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
@@ -185,7 +178,7 @@ class LoginPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Login',
+              'Iniciar Sesión',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 18,
@@ -208,7 +201,7 @@ class LoginPage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          "Don't have an account? ",
+          "No tienes cuenta? ",
           style: TextStyle(
             color: Colors.grey[700],
             fontSize: 15,
@@ -217,7 +210,7 @@ class LoginPage extends StatelessWidget {
         GestureDetector(
           onTap: () => Get.toNamed('signup'),
           child: const Text(
-            'Sign Up',
+            'Registrarse',
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 16,
