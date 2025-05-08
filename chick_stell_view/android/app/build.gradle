@@ -27,8 +27,8 @@ android {
         applicationId = "com.example.chick_stell_view"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        // minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+
+        fb80d8859190851fea34d2117ff6ce476454f74f
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         minSdkVersion 23
