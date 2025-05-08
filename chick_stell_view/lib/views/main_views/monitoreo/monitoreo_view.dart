@@ -64,6 +64,7 @@ class MonitoreoView extends StatelessWidget {
   }
   
   
+  // ignore: unused_element
   Widget _buildMetricsGrid() {
   return GridView.count(
     crossAxisCount: 2,

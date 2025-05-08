@@ -63,4 +63,25 @@ final storage = GetStorage();
   }
 
 
+
+  // Inicio con Google
+  Future<void> loginWithGoogle() async {
+    isloading.value = true;
+    try {
+      User? newUser = await _authService.signInWithGoogle();
+      if (newUser != null) {
+        user.value = newUser;
+        await saveUserStorage(newUser.email ?? '', '');
+        Get.offAllNamed('/');
+      } else {
+        Get.snackbar('Erorr', 'No se pudo iniciar sesion con Google');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Error al iniciar sesion con Google: $e');
+    } finally {
+      isloading.value = false;
+      
+    }
+  }
+
 }
