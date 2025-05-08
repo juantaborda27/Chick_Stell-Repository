@@ -1,9 +1,7 @@
 import 'package:chick_stell_view/controllers/warehouse_controller.dart';
-import 'package:chick_stell_view/views/main_views/monitoreo/widgets/alert_view.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/information_galpon.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/metric_card.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/search_galpon.dart';
-import 'package:chick_stell_view/views/main_views/monitoreo/widgets/ventilador.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/ware_house_header.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/ware_house_selector.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +44,7 @@ class MonitoreoView extends StatelessWidget {
   }
   
   
+  // ignore: unused_element
   Widget _buildMetricsGrid() {
   return GridView.count(
     crossAxisCount: 2,

@@ -1,8 +1,11 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:chick_stell_view/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
+
+// ignore: must_be_immutable
 class LoginPage extends StatelessWidget {
   AuthController authController = Get.put(AuthController());
   final TextEditingController emailController = TextEditingController();
@@ -82,6 +85,13 @@ class LoginPage extends StatelessWidget {
             FadeInUp(
               duration: const Duration(milliseconds: 1400),
               child: _buildLoginButton(screenSize),
+            ),
+
+            const SizedBox(height: 5),
+
+            FadeInUp(
+              duration: const Duration(milliseconds: 1400),
+              child: _buildGoogleLoginButton(screenSize),
             ),
             
             const SizedBox(height: 25),
@@ -195,6 +205,58 @@ class LoginPage extends StatelessWidget {
       ),
     );
   }
+
+  // Google
+  Widget _buildGoogleLoginButton(Size screenSize) {
+  final controller = Get.find<AuthController>();
+
+  return Container(
+    width: screenSize.width * 0.7,
+    padding: const EdgeInsets.only(top: 3, bottom: 3),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(50),
+      boxShadow: [
+        BoxShadow(
+          spreadRadius: 1,
+          blurRadius: 8,
+          offset: const Offset(0, 3),
+          color: Colors.grey.withOpacity(0.5),
+        ),
+      ],
+    ),
+    child: MaterialButton(
+      minWidth: double.infinity,
+      height: 55,
+      onPressed: controller.loginWithGoogle,
+      color: Colors.white,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(50),
+        side: const BorderSide(color: Colors.black26),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const FaIcon(FontAwesomeIcons.google, color: Colors.red, size: 20),
+          const SizedBox(width: 10),
+          const Text(
+            'Continuar con Google',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 18,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(width: 10),
+          FadeIn(
+            delay: const Duration(milliseconds: 1600),
+            child: const Icon(Icons.login, size: 20),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
   Widget _buildSignUpLink() {
     return Row(
