@@ -1,61 +1,121 @@
-// lib/controllers/prediccion_controller.dart
-
-import 'package:get/get.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart' as http;
+import 'dart:async';
 import 'dart:convert';
+import 'package:chick_stell_view/models/galpon_model.dart';
+import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:math';
 
-class PrediccionController extends GetxController {
-  RxString nivelEstres = "".obs;
-  RxDouble confianza = 0.0.obs;
-  RxString mensaje = "".obs;
+class SimulacionController extends GetxController {
+  final sensores = <Galpon>[].obs;
+  final simulando = false.obs;
+  final forzandoEstres = false.obs;
+  Timer? _timer;
+  int progresoEstres = 0;
 
-  final _firestore = FirebaseFirestore.instance;
-  late final Stream<QuerySnapshot> _stream;
-
-  @override
-  void onInit() {
-    super.onInit();
-    _stream = _firestore.collection('datos_sensores').orderBy('timestamp', descending: true).limit(1).snapshots();
-    _stream.listen((snapshot) {
-      if (snapshot.docs.isNotEmpty) {
-        final data = snapshot.docs.first.data() as Map<String, dynamic>;
-
-        final cuerpo = {
-          "timestamp": data["timestamp"],
-          "temperatura_ambiente": data["temperatura_ambiente"],
-          "humedad_relativa": data["humedad_relativa"],
-          "velocidad_viento": data["velocidad_viento"],
-          "temperatura_interior": data["temperatura_interior"],
-          "humedad_interior": data["humedad_interior"],
-          "cantidad_pollos": 5000
-        };
-
-        hacerPrediccion(cuerpo);
-      }
-    });
+  void iniciarSimulacion() {
+    simulando.value = true;
+    _timer = Timer.periodic(Duration(seconds: 10), (_) => _simular());
   }
 
-  Future<void> hacerPrediccion(Map<String, dynamic> datos) async {
+  void detenerSimulacion() {
+    simulando.value = false;
+    _timer?.cancel();
+  }
+
+  void forzarEstresTermico() {
+    forzandoEstres.value = true;
+    progresoEstres = 0;
+  }
+
+  Future<void> _simular() async {
+    _actualizarSensores();
+    final body = {
+      "galpones": sensores.map((s) => s.toJson()).toList(),
+      "forzar_estres": forzandoEstres.value,
+    };
     try {
       final response = await http.post(
-        Uri.parse("http://10.0.2.2:8000/predecir"), // cambia por tu IP local o del servidor
+        Uri.parse("https://microservicioprediccion.onrender.com/predecir"),
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode(datos),
+        body: jsonEncode(body),
       );
 
       if (response.statusCode == 200) {
-        final resultado = jsonDecode(response.body);
-        final niveles = ["Bajo", "Moderado", "Alto"];
+        final data = jsonDecode(response.body);
+        final box = await Hive.openBox("predicciones");
 
-        nivelEstres.value = niveles[resultado["prediccion"]];
-        confianza.value = resultado["confianza"];
-        mensaje.value = resultado["mensaje"];
+        for (var galpon in sensores) {
+          final List predicciones = data["predicciones"][galpon.id];
+          if (predicciones.isEmpty) continue;
+
+          final List? anterior = box.get(galpon.id);
+          final ultima = predicciones.last;
+
+          // Detectar si hubo cambio significativo para guardar y actualizar
+          final cambio =
+              anterior == null ||
+              (ultima["estres_termico"] != anterior.last["estres_termico"] ||
+                  (ultima["probabilidad"] - anterior.last["probabilidad"])
+                          .abs() >
+                      0.2 ||
+                  (ultima["confianza"] - anterior.last["confianza"]).abs() >
+                      0.2);
+
+          if (cambio) {
+            box.put(galpon.id, predicciones);
+
+            // Aqui se envia al firebase
+
+            if (ultima["estres_termico"] == 1 &&
+                ultima["probabilidad"] > 0.6 &&
+                ultima["confianza"] > 0.6) {
+              _activarVentilador(galpon.id);
+            }
+          }
+        }
       } else {
-        mensaje.value = "Error en la predicción";
+        print(
+          "❌ Error en respuesta: ${response.statusCode} - ${response.body}",
+        );
       }
     } catch (e) {
-      mensaje.value = "No se pudo conectar al microservicio";
+      print("❌ Error en la simulación: $e");
+    } finally {
+      if (forzandoEstres.value) {
+        progresoEstres++;
+        if (progresoEstres >= 10) {
+          forzandoEstres.value = false;
+          progresoEstres = 0;
+        }
+      }
     }
   }
+
+  void _activarVentilador(String idGalpon) {
+    print("🌀 Ventilador activado en $idGalpon");
+  }
+
+  /// Simula cambios leves en los sensores con lógica realista
+  void _actualizarSensores() {
+    final random = Random();
+
+    for (var sensor in sensores) {
+
+      // Simulación más lenta y realista
+      sensor.temperaturaInterna +=
+          (random.nextDouble() - 0.5) * 0.1; 
+      sensor.humedadInterna += (random.nextDouble() - 0.5) * 0.5; 
+      sensor.velocidadAire += (random.nextDouble() - 0.5) * 0.03;
+
+      // Limitar los valores a rangos razonables
+      sensor.temperaturaInterna = sensor.temperaturaInterna.clamp(24.0, 35.0);
+      sensor.humedadInterna = sensor.humedadInterna.clamp(40.0, 90.0);
+      sensor.velocidadAire = sensor.velocidadAire.clamp(0.5, 3.0);
+
+        sensores.refresh();
+      
+    }
+  }
+
 }

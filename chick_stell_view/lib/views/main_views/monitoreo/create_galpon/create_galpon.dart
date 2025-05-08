@@ -16,9 +16,14 @@ class CreateGalponState extends State<CreateGalpon> {
   final TextEditingController nombreController = TextEditingController();
   final TextEditingController largoController = TextEditingController();
   final TextEditingController anchoController = TextEditingController();
+  final TextEditingController edadDiasController = TextEditingController();
+  final TextEditingController densidadPollosController = TextEditingController();
   final TextEditingController ventiladoresController = TextEditingController();
   final TextEditingController nebulizadoresController = TextEditingController();
   final TextEditingController sensoresController = TextEditingController();
+  // final TextEditingController velocidadAireController = TextEditingController();
+  // final TextEditingController temperaturaController = TextEditingController();
+  // final TextEditingController humedadController = TextEditingController();
 
   @override
   void dispose() {
@@ -177,6 +182,8 @@ class CreateGalponState extends State<CreateGalpon> {
               nombre: nombreController.text,
               largo: double.tryParse(largoController.text) ?? 0,
               ancho: double.tryParse(anchoController.text) ?? 0,
+              edadDias: int.tryParse(edadDiasController.text) ?? 0,
+              densidadPollos: double.tryParse(densidadPollosController.text) ?? 0.0,
               ventiladores: int.tryParse(ventiladoresController.text) ?? 0,
               nebulizadores: int.tryParse(nebulizadoresController.text) ?? 0,
               sensores: int.tryParse(sensoresController.text) ?? 0,

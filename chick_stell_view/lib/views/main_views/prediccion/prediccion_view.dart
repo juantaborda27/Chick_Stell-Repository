@@ -1,309 +1,166 @@
-
-
+// simulacion_view.dart (Vista)
 import 'package:chick_stell_view/controllers/prediccion_controller.dart';
-import 'package:chick_stell_view/controllers/simulacion_controller.dart';
+import 'package:chick_stell_view/models/galpon_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-class PrediccionView extends StatelessWidget {
-  PrediccionView({super.key});
+class SimulacionView extends StatelessWidget {
+  final controller = Get.put(SimulacionController());
 
-  final SimulacionController simController = Get.put(SimulacionController());
-  final PrediccionController predController = Get.put(PrediccionController());
+ SimulacionView({super.key}) {
+  controller.sensores.addAll([
+    Galpon(
+      id: "G1",
+      nombre: "Galpón 1",
+      largo: 20.0,
+      ancho: 10.0,
+      ventiladores: 2,
+      nebulizadores: 1,
+      sensores: 5,
+      temperaturaInterna: 30.0,
+      humedadInterna: 55.0,
+      velocidadAire: 1.5,
+      edadDias: 30,
+      densidadPollos: 16.0,
+    ),Galpon(
+      id: "G2",
+      nombre: "Galpón 2",
+      largo: 40.0,
+      ancho: 15.0,
+      ventiladores: 1,
+      nebulizadores: 3,
+      sensores: 2,
+      temperaturaInterna: 33.0,
+      humedadInterna: 65.0,
+      velocidadAire: 0.5,
+      edadDias: 25,
+      densidadPollos: 18.0,
+    ),
+  ]);
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Simulación de Datos IoT'),
-      //   elevation: 2,
-      //   centerTitle: true,
-      // ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Obx(() => Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Sección de Simulación
-            Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          simController.simulando.value
-                              ? Icons.sensors
-                              : Icons.sensors_off,
-                          color: simController.simulando.value
-                              ? Colors.green
-                              : Colors.red,
-                          size: 28,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Estado de Simulación',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      decoration: BoxDecoration(
-                        color: simController.simulando.value
-                            ? Colors.green.withOpacity(0.1)
-                            : Colors.red.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: simController.simulando.value
-                              ? Colors.green
-                              : Colors.red,
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            simController.simulando.value
-                                ? Icons.circle
-                                : Icons.circle_outlined,
-                            color: simController.simulando.value
-                                ? Colors.green
-                                : Colors.red,
-                            size: 14,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            simController.simulando.value
-                                ? 'Simulación en curso'
-                                : 'Simulación detenida',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: simController.simulando.value
-                                  ? Colors.green
-                                  : Colors.red,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Datos enviados: ${simController.contadorEnvios}',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      height: 46,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          simController.simulando.value
-                              ? simController.detenerSimulacion()
-                              : simController.iniciarSimulacion();
-                        },
-                        icon: Icon(simController.simulando.value
-                            ? Icons.stop_circle
-                            : Icons.play_circle),
-                        label: Text(simController.simulando.value
-                            ? 'Detener simulación'
-                            : 'Iniciar simulación'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: simController.simulando.value
-                              ? Colors.red.shade700
-                              : Colors.green.shade700,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+      appBar: AppBar(title: const Text("Simulación de Galpones")),
+      body: Column(
+        children: [
+          Obx(
+            () => Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed:
+                      controller.simulando.value
+                          ? controller.detenerSimulacion
+                          : controller.iniciarSimulacion,
+                  child: Text(
+                    controller.simulando.value ? "Detener" : "Iniciar",
+                  ),
                 ),
+                ElevatedButton(
+                  onPressed: controller.forzarEstresTermico,
+                  child: const Text("Forzar Estrés Térmico"),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Obx(
+            () => Expanded(
+              child: ListView.builder(
+                itemCount: controller.sensores.length,
+                itemBuilder: (context, index) {
+                  final s = controller.sensores[index];
+                  return Card(
+                    child: ListTile(
+                      title: Text("Galpón ${s.id}"),
+                      subtitle: Text(
+                        "Temp: ${s.temperaturaInterna.toStringAsFixed(2)}°C\n"
+                        "Humedad: ${s.humedadInterna.toStringAsFixed(2)}%",
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
-            
-            const SizedBox(height: 20),
-            
-            // Sección de Predicción
-            Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.analytics,
-                          color: Theme.of(context).colorScheme.primary,
-                          size: 28,
+          ),
+          const Divider(),
+          ValueListenableBuilder(
+            valueListenable: Hive.box("predicciones").listenable(),
+            builder: (context, box, _) {
+              return Column(
+                children:
+                    controller.sensores.map((sensor) {
+                      final List? predList = box.get(sensor.id);
+                      if (predList == null || predList.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 12,
                         ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Análisis Predictivo',
-                          style: Theme.of(context).textTheme.titleLarge,
+                        child: ExpansionTile(
+                          title: Text("Predicciones Galpón ${sensor.id}"),
+                          children:
+                              predList.map<Widget>((pred) {
+                                final bool hayEstres =
+                                    pred["estres_termico"] == 1;
+                                final double prob = pred["probabilidad"];
+                                final double conf = pred["confianza"];
+                                final color =
+                                    hayEstres
+                                        ? (prob > 0.6 && conf > 0.6
+                                            ? Colors.red
+                                            : Colors.orange)
+                                        : Colors.green;
+
+                                final hora =
+                                    DateTime.tryParse(
+                                      pred["hora"] ?? "",
+                                    )?.toLocal();
+                                final horaTexto =
+                                    hora != null
+                                        ? "${hora.hour.toString().padLeft(2, '0')}:${hora.minute.toString().padLeft(2, '0')} - ${hora.day}/${hora.month}"
+                                        : "Hora desconocida";
+
+                                return ListTile(
+                                  leading: Icon(
+                                    hayEstres
+                                        ? Icons.warning
+                                        : Icons.check_circle,
+                                    color: color,
+                                  ),
+                                  title: Text(horaTexto),
+                                  subtitle: Text(
+                                    "Estrés Térmico: ${hayEstres ? "Sí" : "No"}\n"
+                                    "Probabilidad: ${(prob * 100).toStringAsFixed(1)}%\n"
+                                    "Confianza: ${(conf * 100).toStringAsFixed(1)}%",
+                                  ),
+                                );
+                              }).toList(),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    
-                    // Nivel de estrés con indicador visual
-                    _buildMetricaRow(
-                      context,
-                      'Nivel de Estrés',
-                      predController.nivelEstres.value,
-                      _getNivelEstresColor(predController.nivelEstres.value),
-                    ),
-                    
-                    const SizedBox(height: 12),
-                    
-                    // Confianza con barra de progreso
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Confianza:',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        const SizedBox(height: 8),
-                        Stack(
-                          children: [
-                            Container(
-                              height: 10,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            ),
-                            Container(
-                              height: 10,
-                              width: MediaQuery.of(context).size.width * 
-                                  (predController.confianza.value * 0.6), // Ajuste para que no ocupe todo el ancho
-                              decoration: BoxDecoration(
-                                color: _getConfianzaColor(predController.confianza.value),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            '${(predController.confianza.value * 100).toStringAsFixed(1)}%',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: _getConfianzaColor(predController.confianza.value),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    
-                    const SizedBox(height: 16),
-                    
-                    // Mensaje con fondo resaltado
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Mensaje:',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${predController.mensaje}',
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        )),
+                      );
+                    }).toList(),
+              );
+            },
+          ),
+
+          Obx(
+            () =>
+                controller.forzandoEstres.value
+                    ? LinearProgressIndicator(
+                      value: controller.progresoEstres / 100,
+                      backgroundColor: Colors.red[100],
+                      color: Colors.red,
+                    )
+                    : const SizedBox(),
+          ),
+        ],
       ),
     );
-  }
-  
-  Widget _buildMetricaRow(BuildContext context, String titulo, String valor, Color colorValor) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          '$titulo:',
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-          decoration: BoxDecoration(
-            color: colorValor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: colorValor, width: 1),
-          ),
-          child: Text(
-            valor,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: colorValor,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-  
-  Color _getNivelEstresColor(String nivel) {
-    switch (nivel.toLowerCase()) {
-      case 'alto':
-      case 'crítico':
-        return Colors.red;
-      case 'medio':
-      case 'moderado':
-        return Colors.orange;
-      case 'bajo':
-      case 'normal':
-        return Colors.green;
-      default:
-        return Colors.blue;
-    }
-  }
-  
-  Color _getConfianzaColor(double confianza) {
-    if (confianza >= 0.7) return Colors.green;
-    if (confianza >= 0.4) return Colors.orange;
-    return Colors.red;
   }
 }

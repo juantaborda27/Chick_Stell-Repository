@@ -28,7 +28,7 @@ class BottonNavVar extends StatelessWidget {
                 case '/clima':
                   return ClimaView();
                 case '/prediccion':
-                  return PrediccionView();
+                  return SimulacionView();
                 case '/ajustes':
                   return AjustesView();
                 case '/monitoreo':
