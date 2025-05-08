@@ -11,53 +11,18 @@ class ClimaView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Llama a fetchWeather solo una vez después de que el widget se construya
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.getWeather('Manaure');
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        final pos = await controller.weatherService.detectarUbicacion();
+        await controller.getWeatherByCoordinates(pos.latitude, pos.longitude);
+      } catch (e) {
+        controller.error.value = e.toString();
+      }
     });
 
     return Scaffold(
       body: Column(
         children: [
-          // Buscador de ciudades
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Buscar ciudad...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      prefixIcon: const Icon(Icons.search),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    if (searchController.text.isNotEmpty) {
-                      controller.getWeather(searchController.text);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.green,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  child: const Icon(Icons.search),
-                ),
-              ],
-            ),
-          ),
-          
-          // Contenido principal
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
@@ -92,13 +57,12 @@ class ClimaView extends StatelessWidget {
 
   Widget _buildWeatherContent(CityWeather data, BuildContext context) {
     String iconUrl = "https://openweathermap.org/img/wn/${data.icon}@2x.png";
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Header con ciudad y país
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -109,15 +73,11 @@ class ClimaView extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          
-          // Coordenadas
           Text(
             'Coordenadas: ${data.lat.toStringAsFixed(2)}°, ${data.lon.toStringAsFixed(2)}°',
             style: TextStyle(fontSize: 14, color: Colors.grey[600]),
           ),
           const SizedBox(height: 20),
-          
-          // Icono y temperatura actual
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -134,16 +94,12 @@ class ClimaView extends StatelessWidget {
               ),
             ],
           ),
-          
-          // Descripción
           Text(
             data.description,
             style: const TextStyle(fontSize: 20),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 30),
-          
-          // Tarjetas con información detallada
           Card(
             elevation: 4,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -157,20 +113,18 @@ class ClimaView extends StatelessWidget {
                   ),
                   const Divider(),
                   const SizedBox(height: 10),
-                  
-                  // Filas con información detallada
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       _buildDetailItem(
-                        Icons.thermostat, 
-                        'Máxima', 
-                        '${data.temMax.toStringAsFixed(1)}°C'
+                        Icons.thermostat,
+                        'Máxima',
+                        '${data.temMax.toStringAsFixed(1)}°C',
                       ),
                       _buildDetailItem(
-                        Icons.ac_unit, 
-                        'Mínima', 
-                        '${data.temMin.toStringAsFixed(1)}°C'
+                        Icons.ac_unit,
+                        'Mínima',
+                        '${data.temMin.toStringAsFixed(1)}°C',
                       ),
                     ],
                   ),
@@ -179,14 +133,14 @@ class ClimaView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       _buildDetailItem(
-                        Icons.compress, 
-                        'Presión', 
-                        '${data.pressure.toStringAsFixed(0)} hPa'
+                        Icons.compress,
+                        'Presión',
+                        '${data.pressure.toStringAsFixed(0)} hPa',
                       ),
                       _buildDetailItem(
-                        Icons.water_drop, 
-                        'Humedad', 
-                        '${data.humidity.toStringAsFixed(0)}%'
+                        Icons.water_drop,
+                        'Humedad',
+                        '${data.humidity.toStringAsFixed(0)}%',
                       ),
                     ],
                   ),
@@ -195,8 +149,6 @@ class ClimaView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          
-          // Botón para actualizar
           ElevatedButton.icon(
             onPressed: () {
               controller.getWeather(data.cityName);
@@ -210,6 +162,31 @@ class ClimaView extends StatelessWidget {
             ),
             icon: const Icon(Icons.refresh),
             label: const Text('Actualizar'),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton.icon(
+            onPressed: () async {
+              try {
+                final pos = await controller.weatherService.detectarUbicacion();
+                await controller.getWeatherByCoordinates(pos.latitude, pos.longitude);
+              } catch (e) {
+                controller.error.value = e.toString();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(e.toString())),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: const Color(0xFF26A69A),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              side: const BorderSide(color: Color(0xFF26A69A), width: 1.5),
+            ),
+            icon: const Icon(Icons.my_location),
+            label: const Text('Usar mi ubicación'),
           ),
         ],
       ),
