@@ -21,7 +21,7 @@ class ClimaView extends StatelessWidget {
         children: [
           // Buscador de ciudades
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(20.0),
             child: Row(
               children: [
                 Expanded(

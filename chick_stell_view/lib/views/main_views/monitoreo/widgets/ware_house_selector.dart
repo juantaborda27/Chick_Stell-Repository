@@ -9,12 +9,11 @@ class WarehouseSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 40,
       child: Obx(() => ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              // for (int i = 0; i < controller.galpones.length; i++)
               for (int i = 0; i < controller.galponesFiltrados.length; i++)
                 Padding(
                   padding: const EdgeInsets.only(right: 8.0),
@@ -35,32 +34,9 @@ class WarehouseSelector extends StatelessWidget {
                           (g) => g.id == controller.galponesFiltrados[i].id);
                       controller.selectWarehouse(selectedIndex);
                     },
-                    //onPressed: () {},
-                    // child: Text(controller.galpones[i].nombre),
                     child: Text(controller.galponesFiltrados[i].nombre),
                   ),
                 ),
-              // ElevatedButton(
-              //   style: ElevatedButton.styleFrom(
-              //     backgroundColor: Colors.white,
-              //     foregroundColor: Colors.green,
-              //     shape: RoundedRectangleBorder(
-              //       borderRadius: BorderRadius.circular(20),
-              //     ),
-              //   ),
-              //   onPressed: () {
-              //     // showDialog(
-              //     //     context: context,
-              //     //     builder: (BuildContext context) => const CreateGalpon());
-              //     Get.dialog(const CreateGalpon());
-              //   },
-              //   child: Row(
-              //     children: const [
-              //       Icon(Icons.add),
-              //       SizedBox(width: 0.2),
-              //     ],
-              //   ),
-              // ),
             ],
           )),
     );

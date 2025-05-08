@@ -183,6 +183,7 @@ class CreateGalponState extends State<CreateGalpon> {
             );
 
             await galponController.agregarGalpon(galpon);
+            await galponController.cargarGalpones();
 
             // print('Galpón creado con ID: $id');
             ScaffoldMessenger.of(context).showSnackBar(
