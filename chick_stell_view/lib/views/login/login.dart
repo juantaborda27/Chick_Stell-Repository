@@ -1,8 +1,11 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:chick_stell_view/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
+
+// ignore: must_be_immutable
 class LoginPage extends StatelessWidget {
   AuthController authController = Get.put(AuthController());
   final TextEditingController emailController = TextEditingController();
@@ -17,14 +20,7 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
-        ),
-      ),
+   
       body: Container(
         height: screenSize.height,
         width: double.infinity,
@@ -38,7 +34,7 @@ class LoginPage extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    'Login',
+                    'Iniciar Sesión',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -90,6 +86,13 @@ class LoginPage extends StatelessWidget {
               duration: const Duration(milliseconds: 1400),
               child: _buildLoginButton(screenSize),
             ),
+
+            const SizedBox(height: 5),
+
+            FadeInUp(
+              duration: const Duration(milliseconds: 1400),
+              child: _buildGoogleLoginButton(screenSize),
+            ),
             
             const SizedBox(height: 25),
             
@@ -128,7 +131,7 @@ class LoginPage extends StatelessWidget {
       controller: passwordController,
       obscureText: true,
       decoration: InputDecoration(
-        labelText: "Password",
+        labelText: "Contraseña",
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
@@ -185,7 +188,7 @@ class LoginPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Login',
+              'Iniciar Sesión',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 18,
@@ -203,12 +206,64 @@ class LoginPage extends StatelessWidget {
     );
   }
 
+  // Google
+  Widget _buildGoogleLoginButton(Size screenSize) {
+  final controller = Get.find<AuthController>();
+
+  return Container(
+    width: screenSize.width * 0.7,
+    padding: const EdgeInsets.only(top: 3, bottom: 3),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(50),
+      boxShadow: [
+        BoxShadow(
+          spreadRadius: 1,
+          blurRadius: 8,
+          offset: const Offset(0, 3),
+          color: Colors.grey.withOpacity(0.5),
+        ),
+      ],
+    ),
+    child: MaterialButton(
+      minWidth: double.infinity,
+      height: 55,
+      onPressed: controller.loginWithGoogle,
+      color: Colors.white,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(50),
+        side: const BorderSide(color: Colors.black26),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const FaIcon(FontAwesomeIcons.google, color: Colors.red, size: 20),
+          const SizedBox(width: 10),
+          const Text(
+            'Continuar con Google',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 18,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(width: 10),
+          FadeIn(
+            delay: const Duration(milliseconds: 1600),
+            child: const Icon(Icons.login, size: 20),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
   Widget _buildSignUpLink() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          "Don't have an account? ",
+          "No tienes cuenta? ",
           style: TextStyle(
             color: Colors.grey[700],
             fontSize: 15,
@@ -217,7 +272,7 @@ class LoginPage extends StatelessWidget {
         GestureDetector(
           onTap: () => Get.toNamed('signup'),
           child: const Text(
-            'Sign Up',
+            'Registrarse',
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 16,

@@ -19,14 +19,7 @@ class SingUp extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
-        ),
-      ),
+   
       body: Obx(() => Container(
         height: screenSize.height,
         width: double.infinity,
@@ -42,7 +35,7 @@ class SingUp extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          'Sign Up',
+                          'Registrarse',
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -129,7 +122,7 @@ class SingUp extends StatelessWidget {
         controller: passwordController,
         obscureText: true,
         decoration: InputDecoration(
-          labelText: "Password",
+          labelText: "Contraseña",
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),
@@ -147,7 +140,7 @@ class SingUp extends StatelessWidget {
         controller: confirmPasswordController,
         obscureText: true,
         decoration: InputDecoration(
-          labelText: "Confirm Password",
+          labelText: "Confirmar Contraseña",
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),
@@ -192,7 +185,7 @@ class SingUp extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'Create Account',
+                'Crear Cuenta',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 18,

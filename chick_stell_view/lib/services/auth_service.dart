@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:get/state_manager.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
 
 class AuthService {
 
@@ -49,6 +50,45 @@ class AuthService {
       Get.snackbar('error', 'Error al iniciar sesion {$e message}' );
     }
     return null;
+  }
+
+  // Iniciar sesion con Google
+  Future<User?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      if (googleUser == null) {
+        return null;
+      }  
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken
+      );
+
+      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      User? user = userCredential.user;
+      if (user != null) {
+        final doc = await _firestore.collection('usuarios').doc(user.uid).get();
+        if (!doc.exists) {
+          await _firestore.collection('usarios').doc(user.uid).set({
+            'imageUrl': user.photoURL,
+            'name': user.displayName,
+            'email': user.email,
+            'ws': '',
+            'phone': '',
+            'fnac': '',
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+        }
+      }
+      return user;
+    } catch (e) {
+      Get.snackbar('Error', 'Error al iniciar sesion con Google: $e');
+      return null; 
+    }
   }
 
  
