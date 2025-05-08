@@ -31,7 +31,7 @@ class SimulacionController extends GetxController {
   Future<void> _simular() async {
     _actualizarSensores();
     final body = {
-      "galpones": sensores.map((s) => s.toJson()).toList(),
+      "galpones": sensores.map((s) => s.toPrediccionJson()).toList(),
       "forzar_estres": forzandoEstres.value,
     };
     try {
@@ -53,8 +53,7 @@ class SimulacionController extends GetxController {
           final ultima = predicciones.last;
 
           // Detectar si hubo cambio significativo para guardar y actualizar
-          final cambio =
-              anterior == null ||
+          final cambio = anterior == null ||
               (ultima["estres_termico"] != anterior.last["estres_termico"] ||
                   (ultima["probabilidad"] - anterior.last["probabilidad"])
                           .abs() >
@@ -101,11 +100,9 @@ class SimulacionController extends GetxController {
     final random = Random();
 
     for (var sensor in sensores) {
-
       // Simulación más lenta y realista
-      sensor.temperaturaInterna +=
-          (random.nextDouble() - 0.5) * 0.1; 
-      sensor.humedadInterna += (random.nextDouble() - 0.5) * 0.5; 
+      sensor.temperaturaInterna += (random.nextDouble() - 0.5) * 0.1;
+      sensor.humedadInterna += (random.nextDouble() - 0.5) * 0.5;
       sensor.velocidadAire += (random.nextDouble() - 0.5) * 0.03;
 
       // Limitar los valores a rangos razonables
@@ -113,9 +110,7 @@ class SimulacionController extends GetxController {
       sensor.humedadInterna = sensor.humedadInterna.clamp(40.0, 90.0);
       sensor.velocidadAire = sensor.velocidadAire.clamp(0.5, 3.0);
 
-        sensores.refresh();
-      
+      sensores.refresh();
     }
   }
-
 }

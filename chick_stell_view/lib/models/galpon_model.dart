@@ -27,22 +27,23 @@ class Galpon {
     this.humedadInterna = 0.0,
   });
 
-  factory Galpon.fromJson(Map<String, dynamic> json) {
-    return Galpon(
-      id: json['id'] as String,
-      nombre: json['nombre'] as String,
-      largo: (json['largo'] as num).toDouble(),
-      ancho: (json['ancho'] as num).toDouble(),
-      edadDias: (json['edadDias'] as num).toInt(),
-      densidadPollos: (json['densidadPollos'] as num).toDouble(),
-      ventiladores: json['ventiladores'] as int,
-      nebulizadores: json['nebulizadores'] as int,
-      sensores: json['sensores'] as int,
-            velocidadAire: (json['velocidadAire'] as num).toDouble(),
-      temperaturaInterna: (json['temperaturaInterna'] as num).toDouble(),
-      humedadInterna: (json['humedadInterna'] as num).toDouble(),
-    );
-  }
+factory Galpon.fromJson(Map<String, dynamic> json) {
+  return Galpon(
+    id: json['id'] as String? ?? '',
+    nombre: json['nombre'] as String? ?? '',
+    largo: (json['largo'] as num?)?.toDouble() ?? 0.0,
+    ancho: (json['ancho'] as num?)?.toDouble() ?? 0.0,
+    edadDias: (json['edadDias'] as num?)?.toInt() ?? 0,
+    densidadPollos: (json['densidadPollos'] as num?)?.toDouble() ?? 0.0,
+    ventiladores: json['ventiladores'] as int? ?? 0,
+    nebulizadores: json['nebulizadores'] as int? ?? 0,
+    sensores: json['sensores'] as int? ?? 0,
+    velocidadAire: (json['velocidadAire'] as num?)?.toDouble() ?? 0.0,
+    temperaturaInterna: (json['temperaturaInterna'] as num?)?.toDouble() ?? 0.0,
+    humedadInterna: (json['humedadInterna'] as num?)?.toDouble() ?? 0.0,
+  );
+}
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -89,4 +90,15 @@ class Galpon {
       humedadInterna: humedadInterna ?? this.humedadInterna,
     );
   }
+
+  Map<String, dynamic> toPrediccionJson() {
+  return {
+    "id_galpon": id,
+    "edad_dias": edadDias,
+    "densidad_pollos": densidadPollos,
+    "velocidad_aire": velocidadAire,
+    "temperatura_interna": temperaturaInterna,
+    "humedad_interna": humedadInterna,
+  };
+}
 }
