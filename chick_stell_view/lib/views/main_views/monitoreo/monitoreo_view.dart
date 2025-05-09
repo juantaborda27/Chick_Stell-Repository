@@ -65,62 +65,66 @@ class MonitoreoView extends StatelessWidget {
   
   
   // ignore: unused_element
-  Widget _buildMetricsGrid() {
-  return GridView.count(
-    crossAxisCount: 2,
-    shrinkWrap: true,
-    mainAxisSpacing: 16,
-    crossAxisSpacing: 16,
-    childAspectRatio: 1.5,
-    physics: NeverScrollableScrollPhysics(),
-    children: [
-      MetricCard(
-        icon: Icons.thermostat_outlined,
-        iconColor: Colors.orange,
-        title: 'Temperatura',
-        value: controller.temperature,
-        unit: '°C',
-        additionalInfo: '+1.2°C',
-        limit: 'Límite: 35°C',
-        progress: 0.85,
-        progressColor: Colors.orange,
-      ),
-      MetricCard(
-        icon: Icons.water_drop_outlined,
-        iconColor: Colors.blue,
-        title: 'Humedad',
-        value: controller.humidity,
-        unit: '%',
-        additionalInfo: '+3%',
-        limit: 'Óptimo: 60-70%',
-        progress: 0.65,
-        progressColor: Colors.blue,
-      ),
-      MetricCard(
-        icon: Icons.air,
-        iconColor: Colors.green,
-        title: 'CO₂',
-        value: controller.co2Level,
-        unit: 'ppm',
-        additionalInfo: 'Óptimo',
-        limit: 'Límite: 1500 ppm',
-        progress: 0.57,
-        progressColor: Colors.green,
-      ),
-      MetricCard(
-        icon: Icons.pets_outlined,
-        iconColor: Colors.purple,
-        title: 'Actividad Aves',
-        value: controller.birdActivity,
-        unit: '',
-        additionalInfo: 'Estable',
-        limit: 'Últimas 2h',
-        progress: 0.7,
-        progressColor: Colors.purple,
-      ),
-    ],
-  );
-}
+//   Widget _buildMetricsGrid() {
+//   return GridView.count(
+//     crossAxisCount: 2,
+//     shrinkWrap: true,
+//     mainAxisSpacing: 16,
+//     crossAxisSpacing: 16,
+//     childAspectRatio: 1.5,
+//     physics: NeverScrollableScrollPhysics(),
+//     children: [
+//       MetricCard(
+//         icon: Icons.thermostat_outlined,
+//         iconColor: Colors.orange,
+//         title: 'Temperatura',
+//         value: controller.temperature,
+//         unit: '°C',
+//         additionalInfo: '+1.2°C',
+//         limit: 'Límite: 35°C',
+//         progress: 0.85.obs,
+//         progressColor: Colors.orange,
+//       ),
+
+//     ],
+//   );
+// }
+
+
+Widget _buildMetricsGrid() {
+    return Obx(() {
+      final galpon = controller.galponSeleccionado;
+      if (galpon == null) return const SizedBox.shrink();
+
+      double temp = galpon.temperaturaInterna;
+      double progress =
+          (temp / 35).clamp(0.0, 1.0); // Suponiendo que 35°C es el máximo
+
+      return GridView.count(
+        crossAxisCount: 2,
+        shrinkWrap: true,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        childAspectRatio: 1.5,
+        physics: const NeverScrollableScrollPhysics(),
+        children: [
+          MetricCard(
+            icon: Icons.thermostat_outlined,
+            iconColor: Colors.orange,
+            title: 'Temperatura',
+            value: RxDouble(temp),
+            unit: '°C',
+            additionalInfo: '+1.2°C',
+            limit: 'Límite: 35°C',
+            progress: RxDouble(progress),
+            progressColor: Colors.orange,
+          ),
+          // Puedes agregar más MetricCards para humedad, CO₂, etc.
+        ],
+      );
+    });
+  }
+
 
 
 

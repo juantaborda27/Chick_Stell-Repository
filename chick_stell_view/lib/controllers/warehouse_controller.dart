@@ -68,6 +68,13 @@ class WarehouseController extends GetxController {
     }
   }
 
+  Galpon? get galponSeleccionado {
+    if (galpones.isEmpty || selectedWarehouse.value >= galpones.length)
+      return null;
+    return galpones[selectedWarehouse.value];
+  }
+
+
 
   int get warehouseCount => galpones.length;
 }
