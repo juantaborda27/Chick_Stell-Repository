@@ -2,6 +2,7 @@ import 'package:chick_stell_view/controllers/galpon_controller.dart';
 import 'package:chick_stell_view/models/galpon_model.dart';
 import 'package:chick_stell_view/services/galpon_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class EditGalpon extends StatefulWidget {
@@ -13,17 +14,33 @@ class EditGalpon extends StatefulWidget {
   EditGalponState createState() => EditGalponState();
 }
 
-class EditGalponState extends State<EditGalpon> {
+class EditGalponState extends State<EditGalpon> with SingleTickerProviderStateMixin {
   final GalponService galponService = Get.find<GalponService>();
   final GalponController galponController = Get.find<GalponController>();
 
-
+  // Controladores para los campos de texto
   late TextEditingController nombreController;
   late TextEditingController largoController;
   late TextEditingController anchoController;
   late TextEditingController ventiladoresController;
   late TextEditingController nebulizadoresController;
   late TextEditingController sensoresController;
+  
+  // Controlador de animación para efectos visuales
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+
+  // Colores de la aplicación
+  final Color primaryColor = const Color(0xFF0F4C3A);
+  final Color accentColor = const Color(0xFF26A69A);
+  final Color backgroundColor = Colors.white;
+  final Color errorColor = Colors.red.shade700;
+  final Color deleteColor = Colors.red.shade600;
+
+  // Validación del formulario
+  final _formKey = GlobalKey<FormState>();
+  bool _autovalidate = false;
+  bool _isProcessing = false;
 
   @override
   void initState() {
@@ -35,6 +52,15 @@ class EditGalponState extends State<EditGalpon> {
     ventiladoresController = TextEditingController(text: g.ventiladores.toString());
     nebulizadoresController = TextEditingController(text: g.nebulizadores.toString());
     sensoresController = TextEditingController(text: g.sensores.toString());
+    
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
+    _animationController.forward();
   }
 
   @override
@@ -45,103 +71,305 @@ class EditGalponState extends State<EditGalpon> {
     ventiladoresController.dispose();
     nebulizadoresController.dispose();
     sensoresController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      insetPadding: EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        width: double.infinity,
-        constraints: BoxConstraints(maxWidth: 400),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildHeader(context),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildTextField(
-                    label: 'Nombre del Galpón',
-                    hintText: 'Ingrese el nombre del galpón',
-                    controller: nombreController,
-                    keyboardType: TextInputType.text,
+        elevation: 10,
+        child: Container(
+          width: double.infinity,
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildHeader(context),
+              Flexible(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                  child: Form(
+                    key: _formKey,
+                    autovalidateMode: _autovalidate 
+                        ? AutovalidateMode.onUserInteraction 
+                        : AutovalidateMode.disabled,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildGalponInfoCard(),
+                        const SizedBox(height: 16),
+                        _buildDivider('Información Básica'),
+                        _buildTextField(
+                          label: 'Nombre del Galpón',
+                          hintText: 'Ingrese el nombre del galpón',
+                          controller: nombreController,
+                          keyboardType: TextInputType.text,
+                          icon: Icons.warehouse_outlined,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor ingrese un nombre';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTextField(
+                                label: 'Largo (m)',
+                                hintText: 'Largo',
+                                controller: largoController,
+                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                icon: Icons.straighten,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')),
+                                ],
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Requerido';
+                                  }
+                                  if (double.tryParse(value) == null || double.parse(value) <= 0) {
+                                    return 'Valor inválido';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildTextField(
+                                label: 'Ancho (m)',
+                                hintText: 'Ancho',
+                                controller: anchoController,
+                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                icon: Icons.swap_horiz,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')),
+                                ],
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Requerido';
+                                  }
+                                  if (double.tryParse(value) == null || double.parse(value) <= 0) {
+                                    return 'Valor inválido';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        _buildDivider('Equipamiento'),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTextField(
+                                label: 'Ventiladores',
+                                hintText: 'Cantidad',
+                                controller: ventiladoresController,
+                                keyboardType: TextInputType.number,
+                                icon: Icons.air,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Requerido';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildTextField(
+                                label: 'Nebulizadores',
+                                hintText: 'Cantidad',
+                                controller: nebulizadoresController,
+                                keyboardType: TextInputType.number,
+                                icon: Icons.water_drop_outlined,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Requerido';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          label: 'Sensores',
+                          hintText: 'Ingrese la cantidad de sensores',
+                          controller: sensoresController,
+                          keyboardType: TextInputType.number,
+                          icon: Icons.sensors,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor ingrese la cantidad de sensores';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                        _buildActionButtons(context),
+                      ],
+                    ),
                   ),
-                  SizedBox(height: 16),
-                  _buildTextField(
-                    label: 'Largo',
-                    hintText: 'Ingrese el largo en metros',
-                    controller: largoController,
-                    keyboardType: TextInputType.number,
-                  ),
-                  SizedBox(height: 16),
-                  _buildTextField(
-                    label: 'Ancho',
-                    hintText: 'Ingrese el ancho en metros',
-                    controller: anchoController,
-                    keyboardType: TextInputType.number,
-                  ),
-                  SizedBox(height: 16),
-                  _buildTextField(
-                    label: 'Cantidad de Ventiladores',
-                    hintText: 'Ingrese la cantidad de ventiladores',
-                    controller: ventiladoresController,
-                    keyboardType: TextInputType.number,
-                  ),
-                  SizedBox(height: 16),
-                  _buildTextField(
-                    label: 'Cantidad de Nebulizadores',
-                    hintText: 'Ingrese la cantidad de nebulizadores',
-                    controller: nebulizadoresController,
-                    keyboardType: TextInputType.number,
-                  ),
-                  SizedBox(height: 16),
-                  _buildTextField(
-                    label: 'Cantidad de Sensores',
-                    hintText: 'Ingrese la cantidad de sensores',
-                    controller: sensoresController,
-                    keyboardType: TextInputType.number,
-                  ),
-                  SizedBox(height: 24),
-                  _buildActionButtons(context),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildGalponInfoCard() {
+    final superficie = widget.galpon.largo * widget.galpon.ancho;
+    
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [primaryColor, accentColor],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.warehouse, color: Colors.white.withOpacity(0.9), size: 28),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  widget.galpon.nombre,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildInfoItem('ID', widget.galpon.id.substring(0, 8), Icons.tag),
+              _buildInfoItem('Superficie', '${superficie.toStringAsFixed(1)} m²', Icons.aspect_ratio),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoItem(String label, String value, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.white.withOpacity(0.7), size: 16),
+        const SizedBox(width: 4),
+        Text(
+          '$label: $value',
+          style: TextStyle(
+            fontSize: 13,
+            color: Colors.white.withOpacity(0.9),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDivider(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: primaryColor,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Container(
+              height: 1,
+              color: Colors.grey.shade300,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
       decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.grey.shade200),
-        ),
+        color: primaryColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            'Editar Galpón',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF0F4C3A),
-            ),
+          Row(
+            children: [
+              const Icon(Icons.edit, color: Colors.white),
+              const SizedBox(width: 12),
+              Text(
+                'Editar Galpón',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white.withOpacity(0.95),
+                ),
+              ),
+            ],
           ),
-          GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
-            child: Icon(Icons.close, color: Colors.grey),
+          IconButton(
+            onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(Icons.close, color: Colors.white70),
+            splashRadius: 20,
           ),
         ],
       ),
@@ -153,23 +381,50 @@ class EditGalponState extends State<EditGalpon> {
     required String hintText,
     required TextEditingController controller,
     required TextInputType keyboardType,
+    IconData? icon,
+    List<TextInputFormatter>? inputFormatters,
+    String? Function(String?)? validator,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: primaryColor.withOpacity(0.8),
+          ),
         ),
-        SizedBox(height: 8),
-        TextField(
+        const SizedBox(height: 8),
+        TextFormField(
           controller: controller,
           keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
+          validator: validator,
           decoration: InputDecoration(
             hintText: hintText,
+            hintStyle: TextStyle(color: Colors.grey.shade400),
+            prefixIcon: icon != null ? Icon(icon, color: accentColor) : null,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.grey.shade300),
             ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: accentColor, width: 2),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: errorColor),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            filled: true,
+            fillColor: Colors.grey.shade50,
           ),
         ),
       ],
@@ -177,62 +432,274 @@ class EditGalponState extends State<EditGalpon> {
   }
 
   Widget _buildActionButtons(BuildContext context) {
-  return Column(
-    children: [
-      ElevatedButton(
-        onPressed: () async {
-          final galponEditado = widget.galpon.copyWith(
-            nombre: nombreController.text,
-            largo: double.tryParse(largoController.text) ?? 0,
-            ancho: double.tryParse(anchoController.text) ?? 0,
-            ventiladores: int.tryParse(ventiladoresController.text) ?? 0,
-            nebulizadores: int.tryParse(nebulizadoresController.text) ?? 0,
-            sensores: int.tryParse(sensoresController.text) ?? 0,
-          );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ElevatedButton.icon(
+          onPressed: _isProcessing ? null : () async {
+            setState(() {
+              _autovalidate = true;
+              _isProcessing = true;
+            });
+            
+            if (_formKey.currentState?.validate() ?? false) {
+              // Mostrar indicador de carga
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              );
 
-          await galponService.updateGalpon(galponEditado.id, galponEditado.toJson());
-          galponController.cargarGalpones;
+              try {
+                final galponEditado = widget.galpon.copyWith(
+                  nombre: nombreController.text,
+                  largo: double.tryParse(largoController.text) ?? 0,
+                  ancho: double.tryParse(anchoController.text) ?? 0,
+                  ventiladores: int.tryParse(ventiladoresController.text) ?? 0,
+                  nebulizadores: int.tryParse(nebulizadoresController.text) ?? 0,
+                  sensores: int.tryParse(sensoresController.text) ?? 0,
+                );
 
-          // setState(() {}); 
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Galpón actualizado')),
-          );
-          Navigator.of(context).pop();
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFF26A69A),
-          foregroundColor: Colors.white,
-          minimumSize: Size(double.infinity, 48),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6),
+                await galponService.updateGalpon(galponEditado.id, galponEditado.toJson());
+                await galponController.cargarGalpones();
+                
+                // Cerrar el indicador de carga
+                Navigator.of(context).pop();
+                
+                // Mostrar mensaje de éxito y cerrar el diálogo
+                _showSuccessMessage(context, 'Galpón actualizado exitosamente');
+              } catch (e) {
+                // Cerrar el indicador de carga
+                Navigator.of(context).pop();
+                
+                // Mostrar mensaje de error
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Error al actualizar el galpón: ${e.toString()}'),
+                    backgroundColor: errorColor,
+                  ),
+                );
+              } finally {
+                setState(() {
+                  _isProcessing = false;
+                });
+              }
+            } else {
+              setState(() {
+                _isProcessing = false;
+              });
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: accentColor,
+            foregroundColor: Colors.white,
+            disabledBackgroundColor: Colors.grey.shade400,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            elevation: 2,
+          ),
+          icon: _isProcessing 
+              ? SizedBox(
+                  width: 18, 
+                  height: 18, 
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2, 
+                    color: Colors.white,
+                  )
+                ) 
+              : const Icon(Icons.save),
+          label: Text(
+            'GUARDAR CAMBIOS',
+            style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5),
           ),
         ),
-        child: Text('Guardar Cambios'),
-      ),
-      SizedBox(height: 8),
-      TextButton(
-        onPressed: () async {
-          await galponService.deleteGalpon(widget.galpon.id);
-          await galponController.cargarGalpones;
-
-          // setState(() {}); 
-          ScaffoldMessenger.of(context).showSnackBar( 
-            SnackBar(content: Text('Galpón eliminado')),
-          );
-          Navigator.of(context).pop();
-        },
-        style: TextButton.styleFrom(
-          foregroundColor: Colors.red,
-          minimumSize: Size(double.infinity, 48),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6),
+        const SizedBox(height: 16),
+        _buildDeleteButton(context),
+        const SizedBox(height: 8),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.grey.shade700,
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
+          child: const Text('CANCELAR'),
         ),
-        child: Text('Eliminar Galpón'),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
+  Widget _buildDeleteButton(BuildContext context) {
+    return OutlinedButton.icon(
+      onPressed: _isProcessing ? null : () {
+        _showDeleteConfirmation(context);
+      },
+      style: OutlinedButton.styleFrom(
+        foregroundColor: deleteColor,
+        side: BorderSide(color: deleteColor.withOpacity(0.5)),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+      icon: const Icon(Icons.delete_outline),
+      label: const Text(
+        'ELIMINAR GALPÓN',
+        style: TextStyle(fontWeight: FontWeight.w500),
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          title: const Text(
+            '¿Eliminar galpón?',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: RichText(
+            text: TextSpan(
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey.shade800,
+              ),
+              children: [
+                const TextSpan(
+                  text: '¿Está seguro que desea eliminar el galpón ',
+                ),
+                TextSpan(
+                  text: '"${widget.galpon.nombre}"',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const TextSpan(
+                  text: '? Esta acción no se puede deshacer.',
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'CANCELAR',
+                style: TextStyle(
+                  color: Colors.grey.shade700,
+                ),
+              ),
+            ),
+            ElevatedButton.icon(
+              onPressed: () async {
+                Navigator.of(context).pop(); // Cerrar el diálogo de confirmación
+                
+                setState(() {
+                  _isProcessing = true;
+                });
+                
+                // Mostrar indicador de carga
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  },
+                );
+
+                try {
+                  await galponService.deleteGalpon(widget.galpon.id);
+                  await galponController.cargarGalpones();
+                  
+                  // Cerrar el indicador de carga
+                  Navigator.of(context).pop();
+                  
+                  // Cerrar el diálogo principal y mostrar mensaje
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: [
+                          const Icon(Icons.check_circle, color: Colors.white),
+                          const SizedBox(width: 12),
+                          const Text('Galpón eliminado exitosamente'),
+                        ],
+                      ),
+                      backgroundColor: deleteColor,
+                      duration: const Duration(seconds: 3),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  // Cerrar el indicador de carga
+                  Navigator.of(context).pop();
+                  
+                  // Mostrar mensaje de error
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error al eliminar el galpón: ${e.toString()}'),
+                      backgroundColor: errorColor,
+                    ),
+                  );
+                } finally {
+                  setState(() {
+                    _isProcessing = false;
+                  });
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: deleteColor,
+                foregroundColor: Colors.white,
+              ),
+              icon: const Icon(Icons.delete_forever),
+              label: const Text('ELIMINAR'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showSuccessMessage(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: 12),
+            Text(message),
+          ],
+        ),
+        backgroundColor: Colors.green.shade700,
+        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+    
+    Navigator.of(context).pop(); // Cerrar el diálogo
+  }
 }

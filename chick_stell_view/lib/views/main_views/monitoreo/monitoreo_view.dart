@@ -62,34 +62,6 @@ class MonitoreoView extends StatelessWidget {
       ),
     );
   }
-  
-  
-  // ignore: unused_element
-//   Widget _buildMetricsGrid() {
-//   return GridView.count(
-//     crossAxisCount: 2,
-//     shrinkWrap: true,
-//     mainAxisSpacing: 16,
-//     crossAxisSpacing: 16,
-//     childAspectRatio: 1.5,
-//     physics: NeverScrollableScrollPhysics(),
-//     children: [
-//       MetricCard(
-//         icon: Icons.thermostat_outlined,
-//         iconColor: Colors.orange,
-//         title: 'Temperatura',
-//         value: controller.temperature,
-//         unit: '°C',
-//         additionalInfo: '+1.2°C',
-//         limit: 'Límite: 35°C',
-//         progress: 0.85.obs,
-//         progressColor: Colors.orange,
-//       ),
-
-//     ],
-//   );
-// }
-
 
 Widget _buildMetricsGrid() {
   return Obx(() {
@@ -99,13 +71,13 @@ Widget _buildMetricsGrid() {
     double temp = double.parse(galpon.temperaturaInterna.toStringAsFixed(2));
     double humedad = double.parse(galpon.humedadInterna.toStringAsFixed(2));
     double velocidadAire = double.parse(galpon.velocidadAire.toStringAsFixed(2));
-    double edadDias = double.parse(galpon.edadDias.toDouble().toStringAsFixed(2));
+    //double edadDias = double.parse(galpon.edadDias.toDouble().toStringAsFixed(2));
     double densidadPollos = double.parse(galpon.densidadPollos.toDouble().toStringAsFixed(2));
 
     double progressTemp = (temp / 35).clamp(0.0, 1.0); // Límite: 35°C
     double progressHumedad = (humedad / 100).clamp(0.0, 1.0); // 100% máx
     double progressVelocidad = (velocidadAire / 5).clamp(0.0, 1.0); // Límite arbitrario
-    double progressEdad = (edadDias / 50).clamp(0.0, 1.0); // Suponiendo 50 días
+    //double progressEdad = (edadDias / 50).clamp(0.0, 1.0); // Suponiendo 50 días
     double progressDensidad = (densidadPollos / 20).clamp(0.0, 1.0); // Límite arbitrario
 
     return GridView.count(
