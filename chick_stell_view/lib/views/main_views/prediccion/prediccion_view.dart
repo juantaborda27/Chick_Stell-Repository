@@ -1,6 +1,5 @@
 // simulacion_view.dart (Vista)
-import 'package:chick_stell_view/controllers/prediccion_controller.dart';
-import 'package:chick_stell_view/models/galpon_model.dart';
+import 'package:chick_stell_view/controllers/simulacion_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -8,38 +7,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 class SimulacionView extends StatelessWidget {
   final controller = Get.put(SimulacionController());
 
-  SimulacionView({super.key}) {
-    controller.sensores.addAll([
-      Galpon(
-        id: "G1",
-        nombre: "Galpón 1",
-        largo: 20.0,
-        ancho: 10.0,
-        ventiladores: 2,
-        nebulizadores: 1,
-        sensores: 5,
-        temperaturaInterna: 30.0,
-        humedadInterna: 55.0,
-        velocidadAire: 1.5,
-        edadDias: 30,
-        densidadPollos: 16.0,
-      ),
-      Galpon(
-        id: "G2",
-        nombre: "Galpón 2",
-        largo: 40.0,
-        ancho: 15.0,
-        ventiladores: 1,
-        nebulizadores: 3,
-        sensores: 2,
-        temperaturaInterna: 33.0,
-        humedadInterna: 65.0,
-        velocidadAire: 0.5,
-        edadDias: 25,
-        densidadPollos: 18.0,
-      ),
-    ]);
-  }
+  SimulacionView({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -71,9 +40,9 @@ class SimulacionView extends StatelessWidget {
           Obx(
             () => Expanded(
               child: ListView.builder(
-                itemCount: controller.sensores.length,
+                itemCount: controller.galpones.length,
                 itemBuilder: (context, index) {
-                  final s = controller.sensores[index];
+                  final s = controller.galpones[index];
                   return Card(
                     child: ListTile(
                       title: Text("Galpón ${s.id}"),
@@ -92,7 +61,7 @@ class SimulacionView extends StatelessWidget {
             valueListenable: Hive.box("predicciones").listenable(),
             builder: (context, box, _) {
               return Column(
-                children: controller.sensores.map((sensor) {
+                children: controller.galpones.map((sensor) {
                   final List? predList = box.get(sensor.id);
                   if (predList == null || predList.isEmpty) {
                     return const SizedBox.shrink();
