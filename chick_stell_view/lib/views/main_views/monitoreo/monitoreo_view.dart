@@ -92,38 +92,79 @@ class MonitoreoView extends StatelessWidget {
 
 
 Widget _buildMetricsGrid() {
-    return Obx(() {
-      final galpon = controller.galponSeleccionado;
-      if (galpon == null) return const SizedBox.shrink();
+  return Obx(() {
+    final galpon = controller.galponSeleccionado;
+    if (galpon == null) return const SizedBox.shrink();
 
-      double temp = galpon.temperaturaInterna;
-      double progress =
-          (temp / 35).clamp(0.0, 1.0); // Suponiendo que 35°C es el máximo
+    double temp = double.parse(galpon.temperaturaInterna.toStringAsFixed(2));
+    double humedad = double.parse(galpon.humedadInterna.toStringAsFixed(2));
+    double velocidadAire = double.parse(galpon.velocidadAire.toStringAsFixed(2));
+    double edadDias = double.parse(galpon.edadDias.toDouble().toStringAsFixed(2));
+    double densidadPollos = double.parse(galpon.densidadPollos.toDouble().toStringAsFixed(2));
 
-      return GridView.count(
-        crossAxisCount: 2,
-        shrinkWrap: true,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
-        childAspectRatio: 1.5,
-        physics: const NeverScrollableScrollPhysics(),
-        children: [
-          MetricCard(
-            icon: Icons.thermostat_outlined,
-            iconColor: Colors.orange,
-            title: 'Temperatura',
-            value: RxDouble(temp),
-            unit: '°C',
-            additionalInfo: '+1.2°C',
-            limit: 'Límite: 35°C',
-            progress: RxDouble(progress),
-            progressColor: Colors.orange,
-          ),
-          // Puedes agregar más MetricCards para humedad, CO₂, etc.
-        ],
-      );
-    });
-  }
+    double progressTemp = (temp / 35).clamp(0.0, 1.0); // Límite: 35°C
+    double progressHumedad = (humedad / 100).clamp(0.0, 1.0); // 100% máx
+    double progressVelocidad = (velocidadAire / 5).clamp(0.0, 1.0); // Límite arbitrario
+    double progressEdad = (edadDias / 50).clamp(0.0, 1.0); // Suponiendo 50 días
+    double progressDensidad = (densidadPollos / 20).clamp(0.0, 1.0); // Límite arbitrario
+
+    return GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      mainAxisSpacing: 16,
+      crossAxisSpacing: 16,
+      childAspectRatio: 1.5,
+      physics: const NeverScrollableScrollPhysics(),
+      children: [
+        MetricCard(
+          icon: Icons.thermostat_outlined,
+          iconColor: Colors.orange,
+          title: 'Temperatura',
+          value: RxDouble(temp),
+          unit: '°C',
+          additionalInfo: '+1.2°C',
+          limit: 'Límite: 35°C',
+          progress: RxDouble(progressTemp),
+          progressColor: Colors.orange,
+        ),
+        MetricCard(
+          icon: Icons.water_drop_outlined,
+          iconColor: Colors.blue,
+          title: 'Humedad',
+          value: RxDouble(humedad),
+          unit: '%',
+          additionalInfo: '',
+          limit: 'Límite: 100%',
+          progress: RxDouble(progressHumedad),
+          progressColor: Colors.blue,
+        ),
+        MetricCard(
+          icon: Icons.air_outlined,
+          iconColor: Colors.green,
+          title: 'Vel. Aire',
+          value: RxDouble(velocidadAire),
+          unit: 'm/s',
+          additionalInfo: '',
+          limit: 'Límite: 5 m/s',
+          progress: RxDouble(progressVelocidad),
+          progressColor: Colors.green,
+        ),
+        MetricCard(
+          icon: Icons.groups_outlined,
+          iconColor: Colors.teal,
+          title: 'Densidad',
+          value: RxDouble(densidadPollos),
+          unit: 'pollos/m²',
+          additionalInfo: '',
+          limit: 'Límite: 20',
+          progress: RxDouble(progressDensidad),
+          progressColor: Colors.teal,
+        ),
+      ],
+    );
+  });
+}
+
 
 
 
