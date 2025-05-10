@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:chick_stell_view/models/galpon_model.dart';
+import 'package:chick_stell_view/services/city_weather_service.dart';
 import 'package:chick_stell_view/services/galpon_service.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -9,16 +10,32 @@ import 'dart:math';
 
 class SimulacionController extends GetxController {
   final GalponService _galponService = GalponService();
+  final CityWeatherService _cityWeatherService = Get.put(CityWeatherService());
   final galpones = <Galpon>[].obs;
   final simulando = false.obs;
   final forzandoEstres = false.obs;
   Timer? _timer;
   int progresoEstres = 0;
 
+  //longtid y latitud
+  double? latitud;
+  double? longitud;
+
   @override
   void onInit() {
     super.onInit();
     _cargarGalponesDesdeFirebase();
+    obtenerLatitudLongitud();
+  }
+
+  obtenerLatitudLongitud() async {
+    try {
+      final location = await _cityWeatherService.getLocation();
+      if (location != null) {
+        latitud = location['latitude'];
+        longitud = location['longitude'];
+      }
+    } catch (e) {}
   }
 
   void iniciarSimulacion() {
@@ -36,7 +53,7 @@ class SimulacionController extends GetxController {
     progresoEstres = 0;
   }
 
-    Future<void> _cargarGalponesDesdeFirebase() async {
+  Future<void> _cargarGalponesDesdeFirebase() async {
     try {
       var resultado = await _galponService.getGalpones();
       galpones.assignAll(resultado);
@@ -46,79 +63,81 @@ class SimulacionController extends GetxController {
   }
 
   Future<void> _actualizarFirebase(Galpon galpon) async {
-        try {
+    try {
       await _galponService.updateGalpon(galpon.id, galpon.toJson());
       // _cargarGalponesDesdeFirebase();
       print("✅ Firebase actualizado para galpón ${galpon.id}");
     } catch (e) {
-       print("❌ Error actualizando Firebase: $e");
+      print("❌ Error actualizando Firebase: $e");
     }
   }
 
   Future<void> _simular() async {
     _actualizarSensores();
-    // final body = {
-    //   "galpones": galpones.map((s) => s.toPrediccionJson()).toList(),
-    //   "forzar_estres": forzandoEstres.value,
-    // };
-    // try {
-    //   final response = await http.post(
-    //     Uri.parse("https://microservicioprediccion.onrender.com/predecir"),
-    //     headers: {"Content-Type": "application/json"},
-    //     body: jsonEncode(body),
-    //   );
+    final body = {
+      "galpones": galpones.map((s) => s.toPrediccionJson()).toList(),
+      "forzar_estres": forzandoEstres.value,
+      "longitude": longitud,
+      "latitude": latitud,
+    };
+    try {
+      final response = await http.post(
+        Uri.parse("https://microservicioprediccion.onrender.com/predecir"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(body),
+      );
 
-    //   if (response.statusCode == 200) {
-    //     final data = jsonDecode(response.body);
-    //     final box = await Hive.openBox("predicciones");
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final box = await Hive.openBox("predicciones");
 
-    //     for (var galpon in galpones) {
-    //       final List predicciones = data["predicciones"][galpon.id];
-    //       if (predicciones.isEmpty) continue;
+        for (var galpon in galpones) {
+          final List predicciones = data["predicciones"][galpon.id];
+          if (predicciones.isEmpty) continue;
 
-    //       final List? anterior = box.get(galpon.id);
-    //       final ultima = predicciones.last;
+          final List? anterior = box.get(galpon.id);
+          final ultima = predicciones.last;
 
-    //       // Detectar si hubo cambio significativo para guardar y actualizar
-    //       final cambio = anterior == null ||
-    //           (ultima["estres_termico"] != anterior.last["estres_termico"] ||
-    //               (ultima["probabilidad"] - anterior.last["probabilidad"])
-    //                       .abs() >
-    //                   0.2 ||
-    //               (ultima["confianza"] - anterior.last["confianza"]).abs() >
-    //                   0.2);
+          // Detectar si hubo cambio significativo para guardar y actualizar
+          final cambio = anterior == null ||
+              (ultima["estres_termico"] != anterior.last["estres_termico"] ||
+                  (ultima["probabilidad"] - anterior.last["probabilidad"])
+                          .abs() >
+                      0.2 ||
+                  (ultima["confianza"] - anterior.last["confianza"]).abs() >
+                      0.2);
 
-    //       if (cambio) {
-    //         box.put(galpon.id, predicciones);
+          if (cambio) {
+            box.put(galpon.id, predicciones);
 
-    //         // Aqui se envia al firebase
+            // Aqui se envia al firebase
 
-    //         if (ultima["estres_termico"] == 1 &&
-    //             ultima["probabilidad"] > 0.6 &&
-    //             ultima["confianza"] > 0.6) {
-    //           _activarVentilador(galpon.id);
-    //         }
-    //       }
-    //       print(
-    //         "✅ Predicción actualizada para galpón ${galpon.id}: ${ultima["estres_termico"] == 1 ? "Estrés Térmico" : "Sin Estrés"}",
-    //       );
-    //     }
-    //   } else {
-    //     print(
-    //       "❌ Error en respuesta: ${response.statusCode} - ${response.body}",
-    //     );
-    //   }
-    // } catch (e) {
-    //   print("❌ Error en la simulación: $e");
-    // } finally {
-    //   if (forzandoEstres.value) {
-    //     progresoEstres++;
-    //     if (progresoEstres >= 10) {
-    //       forzandoEstres.value = false;
-    //       progresoEstres = 0;
-    //     }
-    //   }
-    // }
+            if (ultima["estres_termico"] == 1 &&
+                ultima["probabilidad"] > 0.6 &&
+                ultima["confianza"] > 0.6) {
+              // _activarVentilador(galpon.id);
+            }
+          }
+          print(
+            "✅ Predicción actualizada para galpón ${galpon.id}: ${ultima["estres_termico"] == 1 ? "Estrés Térmico" : "Sin Estrés"}",
+          );
+        }
+      } else {
+        print(
+          "❌ Error en respuesta: ${response.statusCode} - ${response.body}",
+        );
+      }
+    } catch (e) {
+      print("❌ Error en la simulación: $e");
+    } finally {
+      if (forzandoEstres.value) {
+        progresoEstres++;
+        if (progresoEstres >= 10) {
+          forzandoEstres.value = false;
+          progresoEstres = 0;
+        }
+      }
+    }
   }
 
   // void _activarVentilador(String idGalpon) {

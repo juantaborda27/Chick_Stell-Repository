@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 
 class CityWeatherService {
-  
   Future<CityWeather> fetchWeather(String cityName) async {
     final response = await http.get(Uri.parse(
       'https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=fcc4f477aa87fdfe93ebb35a141b26c0&units=metric&lang=es',
@@ -54,5 +53,18 @@ class CityWeatherService {
 
     return await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
+  }
+
+  // Método para obtener longitud y latitud
+  Future<Map<String, double>?> getLocation() async {
+    try {
+      final pos = await detectarUbicacion();
+      return {
+        'latitude': pos.latitude,
+        'longitude': pos.longitude,
+      };
+    } catch (e) {
+      return null;
+    }
   }
 }
