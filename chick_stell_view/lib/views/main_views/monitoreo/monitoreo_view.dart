@@ -18,7 +18,8 @@ import 'dart:math' as math;
 class MonitoreoView extends StatelessWidget {
 
   final WarehouseController controller = Get.put(WarehouseController());
-  final SimulacionController simulacionController = Get.put(SimulacionController());
+    final SimulacionController simulacionController =
+      Get.put(SimulacionController());
   MonitoreoView({super.key});
 
   @override
