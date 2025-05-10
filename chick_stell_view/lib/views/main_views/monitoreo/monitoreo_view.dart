@@ -70,7 +70,7 @@ class MonitoreoView extends StatelessWidget {
                           const SizedBox(height: 20),
 
                           // Tarjetas dinámicas basadas en el galpón seleccionado
-                          //_buildMetricsGrid(galponSeleccionado),
+                          _buildMetricsGrid(galponSeleccionado),
                         ],
                       ),
                     ),
@@ -81,63 +81,63 @@ class MonitoreoView extends StatelessWidget {
     );
   }
 
-  // Widget _buildMetricsGrid(Galpon galponSeleccionado) {
-  //   return GridView.count(
-  //     crossAxisCount: 2,
-  //     shrinkWrap: true,
-  //     mainAxisSpacing: 16,
-  //     crossAxisSpacing: 16,
-  //     childAspectRatio: 1.5,
-  //     physics: const NeverScrollableScrollPhysics(),
-  //     children: [
-  //       MetricCard(
-  //         icon: Icons.thermostat_outlined,
-  //         iconColor: Colors.orange,
-  //         title: 'Temperatura',
-  //         value: RxString(
-  //             galponSeleccionado.temperaturaInterna.toStringAsFixed(2)),
-  //         unit: '°C',
-  //         additionalInfo: '+1.2°C',
-  //         limit: 'Límite: 35°C',
-  //         progress: galponSeleccionado.temperaturaInterna / 35,
-  //         progressColor: Colors.orange,
-  //       ),
-  //       MetricCard(
-  //         icon: Icons.water_drop_outlined,
-  //         iconColor: Colors.blue,
-  //         title: 'Humedad',
-  //         value: RxString(galponSeleccionado.humedadInterna.toStringAsFixed(2)),
-  //         unit: '%',
-  //         additionalInfo: '+3%',
-  //         limit: 'Óptimo: 60-70%',
-  //         progress: galponSeleccionado.humedadInterna / 100,
-  //         progressColor: Colors.blue,
-  //       ),
-  //       MetricCard(
-  //         icon: Icons.air,
-  //         iconColor: Colors.green,
-  //         title: 'CO₂',
-  //         value: controller.co2Level,
-  //         unit: 'ppm',
-  //         additionalInfo: 'Óptimo',
-  //         limit: 'Límite: 1500 ppm',
-  //         progress: 0.57,
-  //         progressColor: Colors.green,
-  //       ),
-  //       MetricCard(
-  //         icon: Icons.pets_outlined,
-  //         iconColor: Colors.purple,
-  //         title: 'Actividad Aves',
-  //         value: controller.birdActivity,
-  //         unit: '',
-  //         additionalInfo: 'Estable',
-  //         limit: 'Últimas 2h',
-  //         progress: 0.7,
-  //         progressColor: Colors.purple,
-  //       ),
-  //     ],
-  //   );
-  // }
+  Widget _buildMetricsGrid(Galpon galponSeleccionado) {
+    return GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      mainAxisSpacing: 16,
+      crossAxisSpacing: 16,
+      childAspectRatio: 1.5,
+      physics: const NeverScrollableScrollPhysics(),
+      children: [
+        MetricCard(
+          icon: Icons.thermostat_outlined,
+          iconColor: Colors.orange,
+          title: 'Temperatura',
+          value: RxString(
+              galponSeleccionado.temperaturaInterna.toStringAsFixed(2)),
+          unit: '°C',
+          additionalInfo: '+1.2°C',
+          limit: 'Límite: 35°C',
+          progress: (galponSeleccionado.temperaturaInterna / 35).obs,
+          progressColor: Colors.orange,
+        ),
+        MetricCard(
+          icon: Icons.water_drop_outlined,
+          iconColor: Colors.blue,
+          title: 'Humedad',
+          value: RxString(galponSeleccionado.humedadInterna.toStringAsFixed(2)),
+          unit: '%',
+          additionalInfo: '+3%',
+          limit: 'Óptimo: 60-70%',
+          progress: (galponSeleccionado.humedadInterna / 100).obs,
+          progressColor: Colors.blue,
+        ),
+        MetricCard(
+          icon: Icons.air,
+          iconColor: Colors.green,
+          title: 'CO₂',
+          value: controller.co2Level,
+          unit: 'ppm',
+          additionalInfo: 'Óptimo',
+          limit: 'Límite: 1500 ppm',
+          progress: 0.57.obs,
+          progressColor: Colors.green,
+        ),
+        MetricCard(
+          icon: Icons.pets_outlined,
+          iconColor: Colors.purple,
+          title: 'Actividad Aves',
+          value: controller.birdActivity,
+          unit: '',
+          additionalInfo: 'Estable',
+          limit: 'Últimas 2h',
+          progress: 0.7.obs,
+          progressColor: Colors.purple,
+        ),
+      ],
+    );
+  }
 
 
 

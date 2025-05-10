@@ -28,25 +28,20 @@ class Galpon {
   });
 
 factory Galpon.fromJson(Map<String, dynamic> json) {
-  final sensores = json['sensores_datos'] as Map<String, dynamic>? ?? {};
 
   return Galpon(
     id: json['id'] as String? ?? '',
     nombre: json['nombre'] as String? ?? '',
     largo: (json['largo'] as num?)?.toDouble() ?? 0.0,
     ancho: (json['ancho'] as num?)?.toDouble() ?? 0.0,
-    // DATOS NUEVOS
     edadDias: (json['edadDias'] as num?)?.toInt() ?? 0,
     densidadPollos: (json['densidadPollos'] as num?)?.toDouble() ?? 0.0,
-    // DATOS NUEVOS
     ventiladores: json['ventiladores'] as int? ?? 0,
     nebulizadores: json['nebulizadores'] as int? ?? 0,
     sensores: json['sensores'] as int? ?? 0,
-    //-----------------------
-    //DATOS NUEVOS
-    velocidadAire: (sensores['velocidadAire'] as num?)?.toDouble() ?? 0.0,
-    temperaturaInterna: (sensores['temperaturaInterna'] as num?)?.toDouble() ?? 0.0,
-    humedadInterna: (sensores['humedadInterna'] as num?)?.toDouble() ?? 0.0,
+    velocidadAire: (json['velocidadAire'] as num?)?.toDouble() ?? 0.0,
+    temperaturaInterna: (json['temperaturaInterna'] as num?)?.toDouble() ?? 0.0,
+    humedadInterna: (json['humedadInterna'] as num?)?.toDouble() ?? 0.0,
   );
 }
 

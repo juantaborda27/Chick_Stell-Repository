@@ -11,6 +11,10 @@ class WarehouseController extends GetxController {
 
   // Variables de monitoreo (pueden mantenerse como están)
   RxBool ventilationActive = true.obs;
+  RxInt co2Level = 850.obs;
+  RxString birdActivity = "Normal".obs;
+  RxBool hasWarning = true.obs;
+
 
   @override
   void onInit() {
