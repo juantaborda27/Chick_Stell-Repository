@@ -1,4 +1,5 @@
 import 'package:chick_stell_view/controllers/galpon_controller.dart';
+import 'package:chick_stell_view/controllers/simulacion_controller.dart';
 import 'package:chick_stell_view/services/galpon_service.dart';
 import 'package:chick_stell_view/utils/routes.dart';
 import 'package:chick_stell_view/views/widgets/botton_nav_var.dart';
@@ -7,6 +8,7 @@ import 'package:get/get.dart';
 
 //importaciones de firebase
 import 'package:firebase_core/firebase_core.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -17,7 +19,15 @@ void main() async {
   //Get.find<GalponController>();
   Get.put(GalponService());
   Get.put(GalponController()); // <- Inyectas el controlador
-  runApp(MyApp());
+
+  // Inicializar Hive
+  await Hive.initFlutter();
+  //limpiar la base de datos
+  await Hive.openBox("predicciones");
+
+  Get.put(SimulacionController(), permanent: true);
+
+    runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {

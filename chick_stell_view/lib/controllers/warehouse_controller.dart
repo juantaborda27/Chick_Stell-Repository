@@ -11,11 +11,10 @@ class WarehouseController extends GetxController {
 
   // Variables de monitoreo (pueden mantenerse como están)
   RxBool ventilationActive = true.obs;
-  RxDouble temperature = 32.5.obs;
-  RxDouble humidity = 65.0.obs;
   RxInt co2Level = 850.obs;
   RxString birdActivity = "Normal".obs;
   RxBool hasWarning = true.obs;
+
 
   @override
   void onInit() {
@@ -67,6 +66,13 @@ class WarehouseController extends GetxController {
       selectedWarehouse.value = galpones.indexOf(galponesFiltrados[0]);
     }
   }
+
+  Galpon? get galponSeleccionado {
+    if (galpones.isEmpty || selectedWarehouse.value >= galpones.length)
+      return null;
+    return galpones[selectedWarehouse.value];
+  }
+
 
 
   int get warehouseCount => galpones.length;

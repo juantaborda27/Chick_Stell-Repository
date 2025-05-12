@@ -34,7 +34,7 @@ class AppRoutes{
     ),
     GetPage(
       name: '/prediccion',
-      page: () => PrediccionView(),
+      page: () => SimulacionView(),
     ),
     GetPage(
       name: '/ajustes',

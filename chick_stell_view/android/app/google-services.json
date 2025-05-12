@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "303250406776",
+    "project_id": "chickstell-fe495",
+    "storage_bucket": "chickstell-fe495.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:303250406776:android:f939a7268ef3138cb25c8d",
+        "android_client_info": {
+          "package_name": "com.example.chick_stell_view"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "303250406776-k8cjddobjji29mn6cqa6vlp9bsso2sdd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chick_stell_view",
+            "certificate_hash": "e644c269bed45f7298dc8e69e597869db66805df"
+          }
+        },
+        {
+          "client_id": "303250406776-etco8r98ai3oii98utnfboqibkj79ohk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEM1e_6xvtJW4pgieIRDqO14yEo13DBf4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "303250406776-0l522tcb2rdjmg6g9c2paog69us167mm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "303250406776-j3macl1mv08d0ocppu69al6qvod8ua1i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.chickStellView"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
