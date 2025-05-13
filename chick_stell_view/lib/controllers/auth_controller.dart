@@ -1,7 +1,11 @@
+import 'dart:io';
+
+import 'package:chick_stell_view/models/profile.dart';
 import 'package:chick_stell_view/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart';
 
 class AuthController {
 
@@ -61,6 +65,21 @@ final storage = GetStorage();
   await storage.write('password', password);
 
   }
+
+Future<void> updateProfile(Profile updatedProfile, File? imageFile) async {
+  isloading.value = true;
+  try {
+    // Llama al método del service
+    final updatedUser = await _authService.updateUserProfile(updatedProfile, imageFile!);
+
+    // Notifica que fue exitoso
+    Get.snackbar('Éxito', 'Perfil actualizado correctamente');
+  } catch (e) {
+    Get.snackbar('Error', 'Error al actualizar perfil: $e');
+  } finally {
+    isloading.value = false;
+  }
+}
 
 
 

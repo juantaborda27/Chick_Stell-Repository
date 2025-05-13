@@ -15,6 +15,7 @@
 //   }
 // }
 
+import 'package:chick_stell_view/views/main_views/ajustes/editar_profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -28,8 +29,6 @@ class _SettingsViewState extends State<AjustesView> {
   bool alertasCriticas = true;
   bool predicciones = true;
   bool informesDiarios = true;
-  bool modoSinConexion = true;
-  bool autenticacionBiometrica = false;
   String frecuenciaActualizacion = 'Cada 5 minutos';
 
   @override
@@ -91,37 +90,11 @@ class _SettingsViewState extends State<AjustesView> {
               
               SizedBox(height: 24),
               
-              // Conectividad
-              _buildSectionTitle('Conectividad', Icons.wifi),
-              _buildDropdownOption(),
-              _buildDivider(),
-              _buildToggleOption(
-                'Modo sin conexión', 
-                'Guardar datos cuando no hay conexión', 
-                modoSinConexion,
-                (value) {
-                  setState(() {
-                    modoSinConexion = value;
-                  });
-                }
-              ),
-              
-              SizedBox(height: 24),
-              
               // Seguridad
               _buildSectionTitle('Seguridad', Icons.lock_outline),
               _buildPasswordButton(),
               _buildDivider(),
-              _buildToggleOption(
-                'Autenticación biométrica', 
-                'Usar huella digital o Face ID', 
-                autenticacionBiometrica,
-                (value) {
-                  setState(() {
-                    autenticacionBiometrica = value;
-                  });
-                }
-              ),
+              
               
               SizedBox(height: 24),
               
@@ -235,7 +208,9 @@ class _SettingsViewState extends State<AjustesView> {
             ),
             SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                EditarProfileView().show(context); 
+              },
               child: Center(child: Text('Editar perfil')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
