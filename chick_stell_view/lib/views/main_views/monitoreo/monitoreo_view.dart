@@ -126,13 +126,13 @@ class MonitoreoView extends StatelessWidget {
               : Colors.green,
         ),
         MetricCard(
-          icon: Icons.group_outlined,
+          icon: Icons.pets_outlined,
           iconColor: Colors.purple,
           title: 'Densidad',
           value: RxString (galponSeleccionado.densidadPollos.toStringAsFixed(2)),
-          unit: 'aves/m²',
-          additionalInfo: 'Recomendada: 10-14',
-          limit: 'Máx: 16 aves/m²',
+          unit: 'm²',
+          additionalInfo: 'Óptimo',
+          limit: 'Máx: 12 aves/m²',
           progress:
               (galponSeleccionado.densidadPollos / 20).obs, // Escala máxima de referencia
           progressColor:
