@@ -48,4 +48,39 @@ class GalponService {
   Future<void> addGalponConId(Galpon galpon) async {
     await galponesRef.doc(galpon.id).set(galpon.toJson());
   }
+
+  Future<void> guardarPredicciones({
+    required String idGalpon,
+    required String nombreGalpon,
+    required List<Map<String, dynamic>> predicciones,
+  }) async {
+    try {
+      final now = DateTime.now().toIso8601String();
+
+      // Crear documento del galpón si no existe o actualizar el nombre
+      await firestore.collection('predicciones').doc(idGalpon).set(
+        {
+          'nombre': nombreGalpon,
+        },
+        SetOptions(merge: true),
+      );
+      print('Documento del galpón creado o actualizado correctamente.');
+
+      // Guardar predicciones en subcolección historial
+      await firestore
+          .collection('predicciones')
+          .doc(idGalpon)
+          .collection('historial')
+          .doc(now)
+          .set({
+        'fecha': now,
+        'predicciones': predicciones,
+      });
+      print('Predicciones guardadas correctamente en el historial.');
+    } catch (e) {
+      print('Error al guardar las predicciones: $e');
+      throw Exception('No se pudo guardar las predicciones.');
+    }
+  }
+  
 }
