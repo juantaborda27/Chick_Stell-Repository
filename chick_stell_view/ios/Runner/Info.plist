@@ -47,5 +47,8 @@
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Esta app necesita tu ubicación para mostrar el clima local.</string>
+	<key>NSUserNotificationUsageDescription</key>
+    <string>Esta app necesita mostrar notificaciones para alertas de temperatura</string>
+
 </dict>
 </plist>

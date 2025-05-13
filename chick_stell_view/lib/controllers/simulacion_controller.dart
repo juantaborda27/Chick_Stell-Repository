@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:chick_stell_view/models/galpon_model.dart';
 import 'package:chick_stell_view/services/city_weather_service.dart';
 import 'package:chick_stell_view/services/galpon_service.dart';
+import 'package:chick_stell_view/services/notification_service.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -74,8 +75,10 @@ class SimulacionController extends GetxController {
 
   Future<void> _simular() async {
     _actualizarSensores();
+    final now = DateTime.now().toUtc();
     final body = {
       "galpones": galpones.map((s) => s.toPrediccionJson()).toList(),
+      "hora_actual": now.toIso8601String(),
       "forzar_estres": forzandoEstres.value,
       "longitude": longitud,
       "latitude": latitud,
@@ -113,13 +116,18 @@ class SimulacionController extends GetxController {
             // Aqui se envia al firebase
 
             if (ultima["estres_termico"] == 1 &&
-                ultima["probabilidad"] > 0.6 &&
-                ultima["confianza"] > 0.6) {
+                ultima["probabilidad"] > 0.5 &&
+                ultima["confianza"] >= 0.4) {
               // _activarVentilador(galpon.id);
+              await NotificationService.showNotification(
+                '⚠️ Alerta de Estrés Térmico',
+                'El galpón "${galpon.nombre}" presenta riesgo de estrés térmico. Probabilidad: ${(ultima["probabilidad"] * 100).toStringAsFixed(1)}%',
+                id: galpon.id.hashCode,
+              );
             }
           }
           print(
-            "✅ Predicción actualizada para galpón ${galpon.id}: ${ultima["estres_termico"] == 1 ? "Estrés Térmico" : "Sin Estrés"}",
+            "✅ Predicción actualizada para galpón ${galpon.nombre}: ${ultima["estres_termico"] == 1 ? "Estrés Térmico" : "Sin Estrés"}",
           );
         }
       } else {
