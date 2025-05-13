@@ -13,12 +13,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:math' as math;
 
-
-
 class MonitoreoView extends StatelessWidget {
-
   final WarehouseController controller = Get.put(WarehouseController());
-    final SimulacionController simulacionController =
+  final SimulacionController simulacionController =
       Get.put(SimulacionController());
   MonitoreoView({super.key});
 
@@ -117,33 +114,35 @@ class MonitoreoView extends StatelessWidget {
         MetricCard(
           icon: Icons.air,
           iconColor: Colors.green,
-          title: 'CO₂',
-          value: controller.co2Level,
-          unit: 'ppm',
+          title: 'Velocidad Aire',
+          value: RxString(galponSeleccionado.velocidadAire.toStringAsFixed(2)),
+          unit: 'm/s',
           additionalInfo: 'Óptimo',
-          limit: 'Límite: 1500 ppm',
-          progress: 0.57.obs,
-          progressColor: Colors.green,
+          limit: 'Límite: 3.5 m/s',
+          progress:
+              (galponSeleccionado.velocidadAire / 5).obs, // escala esperada
+          progressColor: galponSeleccionado.velocidadAire > 3.0
+              ? Colors.red
+              : Colors.green,
         ),
         MetricCard(
-          icon: Icons.pets_outlined,
+          icon: Icons.group_outlined,
           iconColor: Colors.purple,
-          title: 'Actividad Aves',
-          value: controller.birdActivity,
-          unit: '',
-          additionalInfo: 'Estable',
-          limit: 'Últimas 2h',
-          progress: 0.7.obs,
-          progressColor: Colors.purple,
+          title: 'Densidad',
+          value: RxString (galponSeleccionado.densidadPollos.toStringAsFixed(2)),
+          unit: 'aves/m²',
+          additionalInfo: 'Recomendada: 10-14',
+          limit: 'Máx: 16 aves/m²',
+          progress:
+              (galponSeleccionado.densidadPollos / 20).obs, // Escala máxima de referencia
+          progressColor:
+              galponSeleccionado.densidadPollos > 16 ? Colors.red : Colors.purple,
         ),
       ],
     );
   }
 
-
-
-
-Widget _buildLoadingScreen() {
+  Widget _buildLoadingScreen() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -158,14 +157,14 @@ Widget _buildLoadingScreen() {
             ),
           ),
           const SizedBox(height: 30),
-          
+
           // Indicador de carga
           const CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF26A69A)),
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Texto animado
           FadeInUp(
             from: 20,
@@ -180,9 +179,9 @@ Widget _buildLoadingScreen() {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 10),
-          
+
           // Texto secundario (opcional)
           FadeInUp(
             from: 20,
@@ -200,7 +199,6 @@ Widget _buildLoadingScreen() {
       ),
     );
   }
-
 }
 
 class GridPainter extends CustomPainter {
@@ -238,23 +236,23 @@ class GridPainter extends CustomPainter {
 
 class FanPainter extends CustomPainter {
   final Color color;
-  
+
   FanPainter({required this.color});
-  
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
-    
+
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
-    
+
     // Draw 5 blades
     for (int i = 0; i < 5; i++) {
       final angle = i * 2 * 3.14159 / 5;
       final path = Path();
-      
+
       path.moveTo(center.dx, center.dy);
       path.lineTo(
         center.dx + radius * 0.2 * cos(angle - 0.3),
@@ -269,11 +267,11 @@ class FanPainter extends CustomPainter {
         center.dy + radius * 0.2 * sin(angle + 0.3),
       );
       path.close();
-      
+
       canvas.drawPath(path, paint);
     }
   }
-  
+
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
