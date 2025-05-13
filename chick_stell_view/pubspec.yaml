@@ -40,6 +40,7 @@ dependencies:
   geolocator: ^13.0.4
   geocoding: ^3.0.0
   uuid: ^4.0.0
+  flutter_local_notifications: ^17.1.0
 
   # Dependencies for Firebase
   firebase_core: ^3.13.0
