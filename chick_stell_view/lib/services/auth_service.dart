@@ -1,9 +1,10 @@
 import 'dart:io';
-
-import 'package:chick_stell_view/models/profile.dart';
+import 'package:chick_stell_view/controllers/auth_controller.dart';
+import 'package:chick_stell_view/models/profile_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -36,9 +37,9 @@ class AuthService {
           });
           return user;
         }
-        return null;
+        
     } on FirebaseAuthException catch (e) {
-      Get.snackbar('error', 'Error al registrarse {$e message}' );
+      print('Error al registrarse {$e message}' );
     }
     return null;
   }
@@ -52,7 +53,7 @@ class AuthService {
        return userCredential.user;
 
     } on FirebaseAuthException catch (e) {
-      Get.snackbar('error', 'Error al iniciar sesion {$e message}' );
+      print('Error al iniciar sesion {$e message}' );
     }
     return null;
   }
@@ -116,6 +117,19 @@ class AuthService {
    return user;
   }
 
+  Future<Profile?> getProfileById(String uid) async {
+    try {
+      final doc = await _firestore.collection('usuarios').doc(uid).get();
+      if (doc.exists){
+        return Profile.fromFirestore(doc);
+      }
+    } catch (e) {
+      print('Error al obtener el perfil: $e');
+    }
+  }
+
 }
+
+
   
 

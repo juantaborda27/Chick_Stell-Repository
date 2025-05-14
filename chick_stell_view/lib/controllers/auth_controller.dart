@@ -1,11 +1,10 @@
 import 'dart:io';
-
-import 'package:chick_stell_view/models/profile.dart';
+import 'package:chick_stell_view/models/profile_model.dart';
 import 'package:chick_stell_view/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:http/http.dart';
+
 
 class AuthController {
 
@@ -66,10 +65,24 @@ final storage = GetStorage();
 
   }
 
+  Future<Profile?> loadUserProfile() async {
+    try {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if(uid != null){
+        return await _authService.getProfileById(uid);
+      }
+    } catch (e) {
+
+      Get.snackbar('Error', 'Error al cargar el perfil: $e');
+    }
+    return null;
+  }
+
 Future<void> updateProfile(Profile updatedProfile, File? imageFile) async {
   isloading.value = true;
   try {
     // Llama al método del service
+    // ignore: unused_local_variable
     final updatedUser = await _authService.updateUserProfile(updatedProfile, imageFile!);
 
     // Notifica que fue exitoso

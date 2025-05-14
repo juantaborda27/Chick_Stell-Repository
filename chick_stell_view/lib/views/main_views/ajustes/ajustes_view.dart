@@ -209,7 +209,7 @@ class _SettingsViewState extends State<AjustesView> {
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                EditarProfileView().show(context); 
+               
               },
               child: Center(child: Text('Editar perfil')),
               style: ElevatedButton.styleFrom(
@@ -267,6 +267,7 @@ class _SettingsViewState extends State<AjustesView> {
     );
   }
   
+  // ignore: unused_element
   Widget _buildDropdownOption() {
     return Card(
       elevation: 0,
