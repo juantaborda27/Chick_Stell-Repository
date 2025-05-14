@@ -89,7 +89,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.1"
-<<<<<<< HEAD
   cross_file:
     dependency: transitive
     description:
@@ -98,8 +97,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.4+2"
-=======
->>>>>>> origin/main
   crypto:
     dependency: transitive
     description:
@@ -124,6 +121,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.11"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      sha256: "567c64b3cb4cf82397aac55f4f0cbd3ca20d77c6c03bedbc4ceaddc08904aef7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.7"
   fake_async:
     dependency: transitive
     description:
@@ -252,6 +257,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  fl_chart:
+    dependency: "direct main"
+    description:
+      name: fl_chart
+      sha256: "577aeac8ca414c25333334d7c4bb246775234c0e44b38b10a82b559dd4d764e7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -289,6 +302,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.2.0"
+  flutter_plugin_android_lifecycle:
+    dependency: transitive
+    description:
+      name: flutter_plugin_android_lifecycle
+      sha256: f948e346c12f8d5480d2825e03de228d0eb8c3a737e4cdaa122267b89c022b5e
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.28"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -603,7 +624,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.16.0"
-<<<<<<< HEAD
   mime:
     dependency: transitive
     description:
@@ -612,8 +632,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
-=======
->>>>>>> origin/main
   path:
     dependency: transitive
     description:
@@ -755,8 +773,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.4"
-<<<<<<< HEAD
-=======
   timezone:
     dependency: transitive
     description:
@@ -765,7 +781,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.4"
->>>>>>> origin/main
   typed_data:
     dependency: transitive
     description:
@@ -824,4 +839,4 @@ packages:
     version: "6.5.0"
 sdks:
   dart: ">=3.7.0-0 <4.0.0"
-  flutter: ">=3.27.0"
+  flutter: ">=3.27.4"
