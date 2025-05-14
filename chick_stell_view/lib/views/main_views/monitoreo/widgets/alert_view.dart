@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class WarningAlert extends StatelessWidget {
-  const WarningAlert({super.key});
+  final String title;
+  final String message;
+
+  const WarningAlert({
+    super.key,
+    required this.title,
+    required this.message,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +28,14 @@ class WarningAlert extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Alerta de Predicción',
+                  title,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.orange.shade800,
                   ),
                 ),
                 Text(
-                  'Posible estrés térmico en 2 horas. Se recomienda activar nebulizadores.',
+                  message,
                   style: TextStyle(
                     color: Colors.grey.shade700,
                     fontSize: 13,
@@ -42,3 +49,4 @@ class WarningAlert extends StatelessWidget {
     );
   }
 }
+

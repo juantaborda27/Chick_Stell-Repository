@@ -1,4 +1,5 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:chick_stell_view/controllers/alerta_controller.dart';
 import 'package:chick_stell_view/controllers/simulacion_controller.dart';
 import 'package:chick_stell_view/controllers/warehouse_controller.dart';
 import 'package:chick_stell_view/models/galpon_model.dart';
@@ -64,7 +65,14 @@ class MonitoreoView extends StatelessWidget {
                           const SizedBox(height: 20),
                           Ventilator(controller: controller),
                           const SizedBox(height: 20),
-                          const WarningAlert(),
+                          // Obx(() {
+                          //   final alerta = controller.alertaActiva.value;
+                          //   if (alerta == null)
+                          //     return const SizedBox.shrink(); // No mostrar nada
+                          //   return WarningAlert(
+                          //       title: alerta.title, message: alerta.message);
+                          // }),
+
                           const SizedBox(height: 20),
 
                           // Tarjetas dinámicas basadas en el galpón seleccionado
