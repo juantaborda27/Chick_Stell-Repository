@@ -76,4 +76,27 @@ class WarehouseController extends GetxController {
 
 
   int get warehouseCount => galpones.length;
+
+
+
+  final Rxn<AlertData> alertaActiva = Rxn<AlertData>();
+
+  void activarAlerta(String title, String message) {
+    alertaActiva.value = AlertData(title: title, message: message);
+
+    Future.delayed(const Duration(seconds: 15), () {
+      limpiarAlerta();
+    });
+  }
+
+  void limpiarAlerta() {
+    alertaActiva.value = null;
+  }
+}
+
+class AlertData {
+  final String title;
+  final String message;
+
+  AlertData({required this.title, required this.message});
 }

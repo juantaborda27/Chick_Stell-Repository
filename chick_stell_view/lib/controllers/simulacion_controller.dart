@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:chick_stell_view/controllers/warehouse_controller.dart';
 import 'package:chick_stell_view/models/galpon_model.dart';
 import 'package:chick_stell_view/services/city_weather_service.dart';
 import 'package:chick_stell_view/services/galpon_service.dart';
@@ -127,6 +128,14 @@ class SimulacionController extends GetxController {
                 'El galpón "${galpon.nombre}" presenta riesgo de estrés térmico. Probabilidad: ${(ultima["probabilidad"] * 100).toStringAsFixed(1)}%',
                 id: galpon.id.hashCode,
               );
+
+
+              final warehouseController = Get.find<WarehouseController>();
+              warehouseController.activarAlerta(
+                '⚠️ Alerta de Estrés Térmico',
+                'El galpón "${galpon.nombre}" presenta riesgo de estrés térmico.',
+              );
+
             }
           }
           print(
