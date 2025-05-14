@@ -26,10 +26,17 @@ class _VentilatorState extends State<Ventilator> with SingleTickerProviderStateM
       duration: const Duration(seconds: 15), // Lento por defecto
     )..repeat();
 
+    // widget.controller.ventilationActive.listen((isActive) {
+    //   _controller.duration = Duration(seconds: isActive ? 2 : 15);
+    //   _controller.repeat(); // Reinicia la animación con nueva duración
+    // });
     widget.controller.ventilationActive.listen((isActive) {
-      _controller.duration = Duration(seconds: isActive ? 2 : 15);
-      _controller.repeat(); // Reinicia la animación con nueva duración
+      setState(() {
+        _controller.duration = Duration(seconds: isActive ? 2 : 15);
+        _controller.repeat(); // Reinicia la animación con la nueva duración
+      });
     });
+
   }
 
   @override
@@ -42,6 +49,19 @@ class _VentilatorState extends State<Ventilator> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Column(
       children: [
+        // NUEVO: Muestra el nombre del galpón seleccionado
+        Obx(() {
+          final galpon = widget.controller.galponSeleccionado;
+          return Text(
+            galpon != null
+                ? "${galpon.nombre}"
+                : "Ningún galpón seleccionado",
+            style: const TextStyle(fontSize: 2, fontWeight: FontWeight.bold),
+          );
+        }),
+        const SizedBox(height: 10),
+
+        // Ventilador gráfico
         Container(
           width: 180,
           height: 180,
@@ -87,6 +107,8 @@ class _VentilatorState extends State<Ventilator> with SingleTickerProviderStateM
           ),
         ),
         const SizedBox(height: 16),
+
+        // Botón para controlar el ventilador
         ElevatedButton.icon(
           icon: Obx(() => Icon(
                 widget.controller.ventilationActive.value
@@ -104,11 +126,13 @@ class _VentilatorState extends State<Ventilator> with SingleTickerProviderStateM
             backgroundColor: Colors.grey.shade100,
             foregroundColor: Colors.grey,
             elevation: 0,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
           onPressed: () => widget.controller.toggleVentilation(),
         ),
       ],
     );
   }
+
 }

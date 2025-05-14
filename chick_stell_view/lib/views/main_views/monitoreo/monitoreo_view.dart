@@ -65,13 +65,13 @@ class MonitoreoView extends StatelessWidget {
                           const SizedBox(height: 20),
                           Ventilator(controller: controller),
                           const SizedBox(height: 20),
-                          Obx(() {
-                            final alerta = controller.alertaActiva.value;
-                            if (alerta == null)
-                              return const SizedBox.shrink(); // No mostrar nada
-                            return WarningAlert(
-                                title: alerta.title, message: alerta.message);
-                          }),
+                          // Obx(() {
+                          //   final alerta = controller.alertaActiva.value;
+                          //   if (alerta == null)
+                          //     return const SizedBox.shrink(); // No mostrar nada
+                          //   return WarningAlert(
+                          //       title: alerta.title, message: alerta.message);
+                          // }),
 
                           const SizedBox(height: 20),
 

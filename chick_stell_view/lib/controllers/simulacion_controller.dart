@@ -136,6 +136,11 @@ class SimulacionController extends GetxController {
                 'El galpón "${galpon.nombre}" presenta riesgo de estrés térmico.',
               );
 
+              warehouseController.ventilationActive.value = true;
+              Future.delayed(const Duration(seconds: 10), () {
+                warehouseController.ventilationActive.value = false;
+              });
+
             }
           }
           print(
