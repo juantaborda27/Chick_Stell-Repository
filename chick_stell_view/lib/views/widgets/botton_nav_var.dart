@@ -55,19 +55,19 @@ class BottonNavVar extends StatelessWidget {
             onTap: controller.changePage,
             items: const [
               BottomNavigationBarItem(
-                icon: Icon(Icons.home),
+                icon: Icon(Icons.home_filled),
                 label: 'Monitoreo',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.cloud),
+                icon: Icon(Icons.thermostat_sharp),
                 label: 'Clima',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.bar_chart),
+                icon: Icon(Icons.settings_input_antenna_outlined),
                 label: 'Predicción',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.settings),
+                icon: Icon(Icons.settings_applications_outlined),
                 label: 'Ajustes',
               ),
             ],

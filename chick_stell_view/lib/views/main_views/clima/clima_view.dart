@@ -58,137 +58,148 @@ class ClimaView extends StatelessWidget {
   Widget _buildWeatherContent(CityWeather data, BuildContext context) {
     String iconUrl = "https://openweathermap.org/img/wn/${data.icon}@2x.png";
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '${data.cityName}, ${data.country}',
-                style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Coordenadas: ${data.lat.toStringAsFixed(2)}°, ${data.lon.toStringAsFixed(2)}°',
-            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.network(
-                iconUrl,
-                width: 80,
-                height: 80,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.image_not_supported, size: 80),
-              ),
-              Text(
-                '${data.temperature.toStringAsFixed(1)}°C',
-                style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          Text(
-            data.description,
-            style: const TextStyle(fontSize: 20),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 30),
-          Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  const Text(
-                    'DETALLES',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const Divider(),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildDetailItem(
-                        Icons.thermostat,
-                        'Máxima',
-                        '${data.temMax.toStringAsFixed(1)}°C',
-                      ),
-                      _buildDetailItem(
-                        Icons.ac_unit,
-                        'Mínima',
-                        '${data.temMin.toStringAsFixed(1)}°C',
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildDetailItem(
-                        Icons.compress,
-                        'Presión',
-                        '${data.pressure.toStringAsFixed(0)} hPa',
-                      ),
-                      _buildDetailItem(
-                        Icons.water_drop,
-                        'Humedad',
-                        '${data.humidity.toStringAsFixed(0)}%',
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+    return Padding(
+      padding: const EdgeInsets.all(75.70),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '${data.cityName}, ${data.country}',
+                  style: const TextStyle(
+                      fontSize: 26, fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton.icon(
-            onPressed: () {
-              controller.getWeather(data.cityName);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF26A69A),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            const SizedBox(height: 10),
+            Text(
+              'Coordenadas: ${data.lat.toStringAsFixed(2)}°, ${data.lon.toStringAsFixed(2)}°',
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.network(
+                  iconUrl,
+                  width: 80,
+                  height: 80,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.image_not_supported, size: 80),
+                ),
+                Text(
+                  '${data.temperature.toStringAsFixed(1)}°C',
+                  style: const TextStyle(
+                      fontSize: 48, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            Text(
+              data.description,
+              style: const TextStyle(fontSize: 20),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 30),
+            Card(
+              elevation: 4,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(15)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    const Text(
+                      'DETALLES',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const Divider(),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildDetailItem(
+                          Icons.thermostat,
+                          'Máxima',
+                          '${data.temMax.toStringAsFixed(1)}°C',
+                        ),
+                        _buildDetailItem(
+                          Icons.ac_unit,
+                          'Mínima',
+                          '${data.temMin.toStringAsFixed(1)}°C',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildDetailItem(
+                          Icons.compress,
+                          'Presión',
+                          '${data.pressure.toStringAsFixed(0)} hPa',
+                        ),
+                        _buildDetailItem(
+                          Icons.water_drop,
+                          'Humedad',
+                          '${data.humidity.toStringAsFixed(0)}%',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-            icon: const Icon(Icons.refresh),
-            label: const Text('Actualizar'),
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton.icon(
-            onPressed: () async {
-              try {
-                final pos = await controller.weatherService.detectarUbicacion();
-                await controller.getWeatherByCoordinates(pos.latitude, pos.longitude);
-              } catch (e) {
-                controller.error.value = e.toString();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(e.toString())),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: const Color(0xFF26A69A),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () {
+                controller.getWeather(data.cityName);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF26A69A),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
               ),
-              side: const BorderSide(color: Color(0xFF26A69A), width: 1.5),
+              icon: const Icon(Icons.refresh),
+              label: const Text('Actualizar'),
             ),
-            icon: const Icon(Icons.my_location),
-            label: const Text('Usar mi ubicación'),
-          ),
-        ],
+            const SizedBox(height: 10),
+            ElevatedButton.icon(
+              onPressed: () async {
+                try {
+                  final pos =
+                      await controller.weatherService.detectarUbicacion();
+                  await controller.getWeatherByCoordinates(
+                      pos.latitude, pos.longitude);
+                } catch (e) {
+                  controller.error.value = e.toString();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(e.toString())),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF26A69A),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                side: const BorderSide(color: Color(0xFF26A69A), width: 1.5),
+              ),
+              icon: const Icon(Icons.my_location),
+              label: const Text('Usar mi ubicación'),
+            ),
+          ],
+        ),
       ),
     );
   }
