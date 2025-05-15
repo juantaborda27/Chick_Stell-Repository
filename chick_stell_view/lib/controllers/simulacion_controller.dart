@@ -95,6 +95,7 @@ class SimulacionController extends GetxController {
       "longitude": longitud,
       "latitude": latitud,
     };
+
     try {
       final response = await http.post(
         Uri.parse("https://microservicioprediccion.onrender.com/predecir"),
@@ -113,7 +114,6 @@ class SimulacionController extends GetxController {
           final List? anterior = box.get(galpon.id);
           final ultima = predicciones.last;
 
-          // Detectar si hubo cambio significativo para guardar y actualizar
           final cambio = anterior == null ||
               (ultima["estres_termico"] != anterior.last["estres_termico"] ||
                   (ultima["probabilidad"] - anterior.last["probabilidad"])
@@ -130,12 +130,19 @@ class SimulacionController extends GetxController {
               predicciones: predicciones.cast<Map<String, dynamic>>(),
             );
 
-            if (ultima["estres_termico"] == 1 &&
-                ultima["probabilidad"] > 0.1 &&
-                ultima["confianza"] >= 0.1) {
+            // Buscar si alguna predicción indica riesgo
+            final prediccionesCriticas = predicciones
+                .where((p) =>
+                    p["estres_termico"] == 1 &&
+                    p["probabilidad"] > 0.4 &&
+                    p["confianza"] >= 0.2)
+                .toList();
+
+            if (prediccionesCriticas.isNotEmpty) {
+              final prediccionRiesgo = prediccionesCriticas.first;
               await NotificationService.showNotification(
                 '⚠️ Alerta de Estrés Térmico',
-                'El galpón "${galpon.nombre}" presenta riesgo de estrés térmico. Probabilidad: ${(ultima["probabilidad"] * 100).toStringAsFixed(1)}%',
+                'El galpón "${galpon.nombre}" presenta riesgo de estrés térmico. Probabilidad: ${(prediccionRiesgo["probabilidad"] * 100).toStringAsFixed(1)}%',
                 id: galpon.id.hashCode, // o usa un índice único si lo tienes
               );
               print("notificación enviada para galpón ${galpon.nombre}");
@@ -152,14 +159,13 @@ class SimulacionController extends GetxController {
               });
             }
           }
+
           print(
-            "✅ Predicción actualizada para galpón ${galpon.nombre}: ${ultima["estres_termico"] == 1 ? "Estrés Térmico" : "Sin Estrés"}",
-          );
+              "✅ Predicción actualizada para galpón ${galpon.nombre}: ${ultima["estres_termico"] == 1 ? "Estrés Térmico" : "Sin Estrés"}");
         }
       } else {
         print(
-          "❌ Error en respuesta: ${response.statusCode} - ${response.body}",
-        );
+            "❌ Error en respuesta: ${response.statusCode} - ${response.body}");
       }
     } catch (e) {
       print("❌ Error en la simulación: $e");
