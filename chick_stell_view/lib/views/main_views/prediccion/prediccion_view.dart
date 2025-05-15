@@ -5,7 +5,7 @@ import 'package:chick_stell_view/controllers/simulacion_controller.dart';
 
 class SimulacionView extends StatelessWidget {
   final controller = Get.put(SimulacionController());
-  
+
   // Color palette based on Image 2
   final Color primaryColor = const Color(0xFF118C8C);
   final Color secondaryColor = const Color(0xFF04403A);
@@ -40,7 +40,9 @@ class SimulacionView extends StatelessWidget {
                         ? controller.detenerSimulacion
                         : controller.iniciarSimulacion,
                     icon: Icon(
-                      controller.simulando.value ? Icons.stop : Icons.play_arrow,
+                      controller.simulando.value
+                          ? Icons.stop
+                          : Icons.play_arrow,
                       color: primaryColor,
                     ),
                     label: Text(
@@ -49,7 +51,8 @@ class SimulacionView extends StatelessWidget {
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
                     ),
                   ),
                   ElevatedButton.icon(
@@ -59,25 +62,28 @@ class SimulacionView extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: accentColor,
                       foregroundColor: secondaryColor,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          
+
           // Progress Indicator for Stress Simulation
           Obx(
             () => controller.forzandoEstres.value
                 ? Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
                           "Simulando estrés térmico...",
-                          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 4),
                         LinearProgressIndicator(
@@ -93,8 +99,8 @@ class SimulacionView extends StatelessWidget {
           ),
 
                 const SizedBox(height: 24),
-                
-                // Predictions Section 
+
+                // Predictions Section
                 _buildSectionHeader("Predicciones de Estrés Térmico"),
                 ValueListenableBuilder(
                   valueListenable: Hive.box("predicciones").listenable(),
@@ -134,7 +140,8 @@ class SimulacionView extends StatelessWidget {
                           ),
                           child: ExpansionTile(
                             shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(12)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(12)),
                             ),
                             leading: Container(
                               padding: const EdgeInsets.all(8),
@@ -153,13 +160,14 @@ class SimulacionView extends StatelessWidget {
                             ),
                             children: [
                               ...predList.map<Widget>((pred) {
-                                final bool hayEstres = pred["estres_termico"] == 1;
+                                final bool hayEstres =
+                                    pred["estres_termico"] == 1;
                                 final double prob = pred["probabilidad"] ?? 0.0;
                                 final double conf = pred["confianza"] ?? 0.0;
-                                
+
                                 Color statusColor;
                                 String statusText;
-                                
+
                                 if (hayEstres) {
                                   if (prob > 0.8) {
                                     statusColor = Colors.red;
@@ -173,16 +181,19 @@ class SimulacionView extends StatelessWidget {
                                   statusText = "Bajo Riesgo";
                                 }
 
-                                final hora = DateTime.tryParse(pred["hora"] ?? "");
+                                final hora =
+                                    DateTime.tryParse(pred["hora"] ?? "");
                                 final horaTexto = hora != null
                                     ? "${hora.hour.toString().padLeft(2, '0')}:${hora.minute.toString().padLeft(2, '0')} - ${hora.day}/${hora.month}"
                                     : "Fecha desconocida";
 
                                 return Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 12),
                                   decoration: BoxDecoration(
                                     border: Border(
-                                      top: BorderSide(color: Colors.grey.withOpacity(0.1)),
+                                      top: BorderSide(
+                                          color: Colors.grey.withOpacity(0.1)),
                                     ),
                                   ),
                                   child: Column(
@@ -190,11 +201,15 @@ class SimulacionView extends StatelessWidget {
                                       Row(
                                         children: [
                                           Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 4),
                                             decoration: BoxDecoration(
-                                              color: statusColor.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(color: statusColor),
+                                              color:
+                                                  statusColor.withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
+                                                  color: statusColor),
                                             ),
                                             child: Text(
                                               statusText,
@@ -219,14 +234,14 @@ class SimulacionView extends StatelessWidget {
                                       Row(
                                         children: [
                                           _buildIndicator(
-                                            "Probabilidad", 
+                                            "Probabilidad",
                                             "${(prob * 100).toStringAsFixed(0)}%",
                                             prob,
                                             statusColor,
                                           ),
                                           const SizedBox(width: 12),
                                           _buildIndicator(
-                                            "Confianza", 
+                                            "Confianza",
                                             "${(conf * 100).toStringAsFixed(0)}%",
                                             conf,
                                             Colors.blueAccent,
@@ -235,21 +250,27 @@ class SimulacionView extends StatelessWidget {
                                       ),
                                       if (hayEstres && prob > 0.6)
                                         Container(
-                                          margin: const EdgeInsets.only(top: 12),
+                                          margin:
+                                              const EdgeInsets.only(top: 12),
                                           padding: const EdgeInsets.all(12),
                                           decoration: BoxDecoration(
-                                            color: Colors.amber.withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(8),
-                                            border: Border.all(color: Colors.amber),
+                                            color:
+                                                Colors.amber.withOpacity(0.1),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            border:
+                                                Border.all(color: Colors.amber),
                                           ),
                                           child: Row(
                                             children: [
-                                              const Icon(Icons.warning_amber, color: Colors.amber),
+                                              const Icon(Icons.warning_amber,
+                                                  color: Colors.amber),
                                               const SizedBox(width: 12),
                                               Expanded(
                                                 child: Text(
                                                   "Se recomienda activar nebulizadores y verificar la ventilación",
-                                                  style: TextStyle(color: Colors.amber[800]),
+                                                  style: TextStyle(
+                                                      color: Colors.amber[800]),
                                                 ),
                                               ),
                                             ],
@@ -266,9 +287,9 @@ class SimulacionView extends StatelessWidget {
                     );
                   },
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Stats Section
                 _buildSectionHeader("Métricas de Confianza"),
                 Container(
@@ -294,11 +315,11 @@ class SimulacionView extends StatelessWidget {
                             Row(
                               children: [
                                 Icon(Icons.analytics, color: primaryColor),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 4, height: 1),
                                 Text(
                                   "Confianza IA",
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                     color: secondaryColor,
                                   ),
@@ -306,13 +327,24 @@ class SimulacionView extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: 12),
-                            Text(
-                              "92%",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: primaryColor,
-                              ),
+                            ValueListenableBuilder(
+                              valueListenable:
+                                  Hive.box("predicciones").listenable(),
+                              builder: (context, box, _) {
+                                final promedio =
+                                    controller.calcularPromedioConfianza(box);
+                                final texto =
+                                    "${(promedio * 100).toStringAsFixed(0)}%";
+
+                                return Text(
+                                  texto,
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: primaryColor,
+                                  ),
+                                );
+                              },
                             ),
                             Text(
                               "Basado en datos históricos",
@@ -337,11 +369,12 @@ class SimulacionView extends StatelessWidget {
                             Row(
                               children: [
                                 Icon(Icons.update, color: accentColor),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 4, height: 35),
                                 Text(
                                   "Última Actualización",
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
+                                    //height: .5,
                                     fontWeight: FontWeight.bold,
                                     color: secondaryColor,
                                   ),
@@ -349,13 +382,20 @@ class SimulacionView extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: 12),
-                            Text(
-                              "Hoy 12:45",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: secondaryColor,
-                              ),
+                            ValueListenableBuilder(
+                              valueListenable:
+                                  Hive.box("predicciones").listenable(),
+                              builder: (context, box, _) {
+                                final texto = controller.obtenerHoraGeneracion(box);
+                                return Text(
+                                  texto,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: secondaryColor,
+                                  ),
+                                );
+                              },
                             ),
                             Text(
                               "Próxima: 13:45",
@@ -374,7 +414,7 @@ class SimulacionView extends StatelessWidget {
             ),
           );
   }
-  
+
   Widget _buildSectionHeader(String title) {
     return Padding(
       padding: const EdgeInsets.only(left: 4, bottom: 12, top: 8),
@@ -388,8 +428,9 @@ class SimulacionView extends StatelessWidget {
       ),
     );
   }
-  
-  Widget _buildIndicator(String label, String value, double percentage, Color color) {
+
+  Widget _buildIndicator(
+      String label, String value, double percentage, Color color) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

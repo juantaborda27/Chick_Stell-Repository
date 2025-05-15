@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:chick_stell_view/controllers/warehouse_controller.dart';
 import 'package:chick_stell_view/models/galpon_model.dart';
 import 'package:chick_stell_view/services/city_weather_service.dart';
 import 'package:chick_stell_view/services/galpon_service.dart';
@@ -29,6 +30,9 @@ class SimulacionController extends GetxController {
     super.onInit();
     _cargarGalponesDesdeFirebase();
     obtenerLatitudLongitud();
+    _cityWeatherService.actualizarClimaExterior(); // Primera vez
+    Timer.periodic(Duration(minutes: 10),
+        (_) => _cityWeatherService.actualizarClimaExterior());
   }
 
   obtenerLatitudLongitud() async {
@@ -76,19 +80,17 @@ class SimulacionController extends GetxController {
   }
 
   String getCurrentTime() {
-  DateTime now = DateTime.now();
-  // Formato: "yyyy-MM-ddTHH:mm:ss.SSS"
-  return DateFormat("yyyy-MM-ddTHH:mm:ss.SSS").format(now);
-}
+    DateTime now = DateTime.now();
+    // Formato: "yyyy-MM-ddTHH:mm:ss.SSS"
+    return DateFormat("yyyy-MM-ddTHH:mm:ss.SSS").format(now);
+  }
 
   Future<void> _simular() async {
     _actualizarSensores();
-    // final now = DateTime.now().toUtc();
-    // final hora = "2025-05-14T17:10:32.429";
 
     final body = {
       "galpones": galpones.map((s) => s.toPrediccionJson()).toList(),
-      "hora_actual": getCurrentTime(),//now.toIso8601String(), 
+      "hora_actual": getCurrentTime(),
       "forzar_estres": forzandoEstres.value,
       "longitude": longitud,
       "latitude": latitud,
@@ -131,12 +133,24 @@ class SimulacionController extends GetxController {
             if (ultima["estres_termico"] == 1 &&
                 ultima["probabilidad"] > 0.5 &&
                 ultima["confianza"] >= 0.4) {
-
               await NotificationService.showNotification(
                 '⚠️ Alerta de Estrés Térmico',
                 'El galpón "${galpon.nombre}" presenta riesgo de estrés térmico. Probabilidad: ${(ultima["probabilidad"] * 100).toStringAsFixed(1)}%',
                 id: galpon.id.hashCode,
               );
+
+
+              final warehouseController = Get.find<WarehouseController>();
+              warehouseController.activarAlerta(
+                '⚠️ Alerta de Estrés Térmico',
+                'El galpón "${galpon.nombre}" presenta riesgo de estrés térmico.',
+              );
+
+              warehouseController.ventilationActive.value = true;
+              Future.delayed(const Duration(seconds: 10), () {
+                warehouseController.ventilationActive.value = false;
+              });
+
             }
           }
           print(
@@ -161,12 +175,10 @@ class SimulacionController extends GetxController {
     }
   }
 
-    Future<void> procesarYGuardarPredicciones({
+  Future<void> procesarYGuardarPredicciones({
     required Galpon galpon,
     required List<Map<String, dynamic>> predicciones,
   }) async {
-    // Aquí puedes filtrar, validar o hacer alguna lógica previa si lo deseas
-
     await _galponService.guardarPredicciones(
       idGalpon: galpon.id,
       nombreGalpon: galpon.nombre,
@@ -174,22 +186,146 @@ class SimulacionController extends GetxController {
     );
   }
 
-  /// Simula cambios leves en los sensores con lógica realista
   void _actualizarSensores() {
     final random = Random();
+    final now = DateTime.now();
+    final factorHora = sin((now.hour / 24.0) * 2 * pi); // curva diaria
 
-    for (var sensor in galpones) {
-      // Simulación más lenta y realista
-      sensor.temperaturaInterna += (random.nextDouble() - 0.5) * 0.1;
-      sensor.humedadInterna += (random.nextDouble() - 0.5) * 0.5;
+    for (var i = 0; i < galpones.length; i++) {
+      final sensor = galpones[i];
+
+      // Clima exterior
+      double tempExterior = _cityWeatherService.temperaturaExterior ?? 30.0;
+      double humedadExterior = _cityWeatherService.humedadExterior ?? 65.0;
+
+      // Variación por galpón
+      double ajusteGalpon = (random.nextDouble() - 0.5) * 2; // -1 a +1
+
+      // Variación en temperatura y humedad según clima + galpón + hora
+      double deltaTemp = (tempExterior - sensor.temperaturaInterna) * 0.05;
+      double deltaHum = (humedadExterior - sensor.humedadInterna) * 0.05;
+
+      deltaTemp += factorHora * 0.4 +
+          ajusteGalpon * 0.3 +
+          (random.nextDouble() - 0.5) * 0.2;
+      deltaHum += factorHora * 1.5 +
+          ajusteGalpon * 0.8 +
+          (random.nextDouble() - 0.5) * 2.0;
+
+      // Si se está forzando el estrés, forzamos aumento progresivo
+      if (forzandoEstres.value) {
+        deltaTemp += 0.1 + progresoEstres * 0.05;
+        deltaHum += 0.5 + progresoEstres * 0.1;
+      }
+
+      // Aplicar cambios
+      sensor.temperaturaInterna += deltaTemp;
+      sensor.humedadInterna += deltaHum;
       sensor.velocidadAire += (random.nextDouble() - 0.5) * 0.03;
 
-      // Limitar los valores a rangos razonables
-      sensor.temperaturaInterna = sensor.temperaturaInterna.clamp(24.0, 35.0);
-      sensor.humedadInterna = sensor.humedadInterna.clamp(40.0, 90.0);
+      // Limitar a rangos realistas
+      sensor.temperaturaInterna = sensor.temperaturaInterna
+          .clamp(22.0, forzandoEstres.value ? 38.0 : 35.0);
+      sensor.humedadInterna =
+          sensor.humedadInterna.clamp(35.0, forzandoEstres.value ? 95.0 : 90.0);
       sensor.velocidadAire = sensor.velocidadAire.clamp(0.5, 3.0);
+
       _actualizarFirebase(sensor);
     }
+
     galpones.refresh();
+  }
+
+  // /// Simula cambios leves en los sensores con lógica realista
+  // void _actualizarSensores() {
+  //   final random = Random();
+
+  //   for (var sensor in galpones) {
+  //     // Influencia externa del clima (si se obtuvo correctamente)
+  //     double tempExterior = _cityWeatherService.temperaturaExterior ?? 30.0;
+  //     double humedadExterior = _cityWeatherService.humedadExterior ?? 65.0;
+
+  //     // Cálculo base realista
+  //     double deltaTemp = (tempExterior - sensor.temperaturaInterna) * 0.05;
+  //     double deltaHum = (humedadExterior - sensor.humedadInterna) * 0.05;
+
+  //     // Ajustes aleatorios leves
+  //     deltaTemp += (random.nextDouble() - 0.5) * 0.2;
+  //     deltaHum += (random.nextDouble() - 0.5) * 1.0;
+
+  //     // Si se está forzando el estrés, aumenta gradualmente la temperatura y humedad
+  //     if (forzandoEstres.value) {
+  //       deltaTemp += 0.1 + progresoEstres * 0.05;
+  //       deltaHum += 0.5 + progresoEstres * 0.1;
+  //     }
+
+  //     sensor.temperaturaInterna += deltaTemp;
+  //     sensor.humedadInterna += deltaHum;
+  //     sensor.velocidadAire += (random.nextDouble() - 0.5) * 0.03;
+
+  //     // Limitar a rangos seguros
+  //     sensor.temperaturaInterna = sensor.temperaturaInterna
+  //         .clamp(22.0, forzandoEstres.value ? 38.0 : 35.0);
+  //     sensor.humedadInterna =
+  //         sensor.humedadInterna.clamp(35.0, forzandoEstres.value ? 95.0 : 90.0);
+  //     sensor.velocidadAire = sensor.velocidadAire.clamp(0.5, 3.0);
+
+  //     _actualizarFirebase(sensor);
+  //   }
+
+  //   galpones.refresh();
+  // }
+
+  String obtenerHoraGeneracion(Box box) {
+    DateTime? primeraHora;
+
+    for (var lista in box.values) {
+      if (lista is List && lista.isNotEmpty) {
+        final primerRegistro = lista.first;
+        final horaStr = primerRegistro['hora'];
+        if (horaStr is String) {
+          final hora = DateTime.tryParse(horaStr);
+          if (hora != null) {
+            if (primeraHora == null || hora.isBefore(primeraHora)) {
+              primeraHora = hora;
+            }
+          }
+        }
+      }
+    }
+
+    if (primeraHora == null) return "Sin datos";
+
+    final ahora = DateTime.now();
+    final esHoy = primeraHora.year == ahora.year &&
+        primeraHora.month == ahora.month &&
+        primeraHora.day == ahora.day;
+
+    final horaFormateada =
+        "${primeraHora.hour.toString().padLeft(2, '0')}:${primeraHora.minute.toString().padLeft(2, '0')}";
+
+    return esHoy
+        ? "Hoy $horaFormateada"
+        : "${primeraHora.day}/${primeraHora.month} $horaFormateada";
+  }
+
+  double calcularPromedioConfianza(Box box) {
+    double suma = 0;
+    int total = 0;
+
+    for (var lista in box.values) {
+      // Cada lista es el array de un galpón
+      if (lista is List) {
+        for (var registro in lista) {
+          // Cada registro es un Map<String,dynamic>
+          final conf = registro['confianza'];
+          if (conf is num) {
+            suma += conf.toDouble();
+            total++;
+          }
+        }
+      }
+    }
+    return total == 0 ? 0.0 : suma / total;
   }
 }
