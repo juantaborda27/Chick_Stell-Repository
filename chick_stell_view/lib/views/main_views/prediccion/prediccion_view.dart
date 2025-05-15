@@ -438,13 +438,24 @@ class SimulacionView extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: 12),
-                            Text(
-                              "92%",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: primaryColor,
-                              ),
+                            ValueListenableBuilder(
+                              valueListenable:
+                                  Hive.box("predicciones").listenable(),
+                              builder: (context, box, _) {
+                                final promedio =
+                                    controller.calcularPromedioConfianza(box);
+                                final texto =
+                                    "${(promedio * 100).toStringAsFixed(0)}%";
+
+                                return Text(
+                                  texto,
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: primaryColor,
+                                  ),
+                                );
+                              },
                             ),
                             Text(
                               "Basado en datos históricos",
@@ -482,13 +493,20 @@ class SimulacionView extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: 12),
-                            Text(
-                              "Hoy 12:45",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: secondaryColor,
-                              ),
+                            ValueListenableBuilder(
+                              valueListenable:
+                                  Hive.box("predicciones").listenable(),
+                              builder: (context, box, _) {
+                                final texto = controller.obtenerHoraGeneracion(box);
+                                return Text(
+                                  texto,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: secondaryColor,
+                                  ),
+                                );
+                              },
                             ),
                             Text(
                               "Próxima: 13:45",
