@@ -196,7 +196,7 @@ final profileController = Get.find<ProfileController>();
             ),
             SizedBox(height: 16),
             ElevatedButton(
-              onPressed: EditProfileView,
+              onPressed: editProfileView,
               child: Center(child: Text('Editar perfil')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,

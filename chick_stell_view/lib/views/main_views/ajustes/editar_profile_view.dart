@@ -1,12 +1,16 @@
 import 'dart:io';
-
 import 'package:chick_stell_view/controllers/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-void EditProfileView() {
+void editProfileView() {
   final ProfileController controller = Get.put(ProfileController());
-  final Color primaryColor = Color(0xFF23AB8F);
+  final TextEditingController nameController = TextEditingController(text: controller.name.value);
+  final TextEditingController phoneController = TextEditingController(text: controller.phone.value);
+  final TextEditingController whatsappController = TextEditingController(text: controller.whatsapp.value);
+  final Color primaryColor = Color(0xFF23AB8F); 
+  // Mostrar el BottomSheet   
+  
   
   Get.bottomSheet(
     Container(
@@ -56,33 +60,41 @@ void EditProfileView() {
                     
                     // Foto de perfil
                     Center(
-                      child: Obx(() => Stack(
-                        children: [
-                          CircleAvatar(
-                            radius: 50,
-                            backgroundColor: Colors.grey.shade200,
-                            backgroundImage: controller.profileImage.value != null 
-                                ? FileImage(File(controller.profileImage.value!.path)) 
-                                : NetworkImage('https://via.placeholder.com/150') as ImageProvider,
+                      child: Obx(() {
+                         final imagePath = controller.localImagePath.value;
+                         final networkImage = controller.authController.user.value?.photoURL;
+                          return Stack(
+                                children: [
+                                   CircleAvatar(
+                                       radius: 50,
+                                       backgroundColor: Colors.grey.shade200,
+                                         backgroundImage: imagePath != null && imagePath.isNotEmpty
+                                       ? FileImage(File(imagePath))
+                                       : (networkImage != null ? NetworkImage(networkImage) : null) as ImageProvider?,
+                                       child: (imagePath == null || imagePath.isEmpty) && networkImage == null
+                                       ? Icon(Icons.person, size: 50, color: Colors.grey.shade400)
+                                      : null,
+                                        ),
+                                  Positioned(
+                                       right: 0,
+                                       bottom: 0,
+                                       child: Container(
+                                      padding: EdgeInsets.all(4),
+                                        decoration: BoxDecoration(
+                                        color: primaryColor,
+                                       shape: BoxShape.circle,
+                                         border: Border.all(color: Colors.white, width: 2),
                           ),
-                          Positioned(
-                            right: 0,
-                            bottom: 0,
-                            child: Container(
-                              padding: EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: primaryColor,
-                                shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white, width: 2),
-                              ),
-                              child: InkWell(
-                                onTap: controller.pickImage,
-                                child: Icon(Icons.camera_alt, color: Colors.white, size: 16),
-                              ),
-                            ),
-                          ),
-                        ],
-                      )),
+                             child: InkWell(
+                             onTap: controller.pickImage,
+                              child: Icon(Icons.camera_alt, color: Colors.white, size: 16),
+                           ),
+                        ),
+                  ),
+                  ],
+                 );
+               }),
+
                     ),
                     SizedBox(height: 20),
                     
@@ -169,7 +181,16 @@ void EditProfileView() {
                     
                     // Botón para guardar
                     ElevatedButton(
-                      onPressed: controller.updateProfile,
+                      onPressed: () async {
+                        await controller.updateProfile(
+                          newName: nameController.text,
+                          newPhone: phoneController.text,
+                          newWhatsapp: whatsappController.text,
+                          newImageFile: controller.localImagePath.value != null
+                              ? File(controller.localImagePath.value)
+                              : null,
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,
                         foregroundColor: Colors.white,
