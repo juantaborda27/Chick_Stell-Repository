@@ -4,6 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 
 class CityWeatherService {
+  double? temperaturaExterior;
+  double? humedadExterior;
+
   Future<CityWeather> fetchWeather(String cityName) async {
     final response = await http.get(Uri.parse(
       'https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=fcc4f477aa87fdfe93ebb35a141b26c0&units=metric&lang=es',
@@ -65,6 +68,26 @@ class CityWeatherService {
       };
     } catch (e) {
       return null;
+    }
+  }
+
+  // 🔄 Método para actualizar datos del clima exterior
+  Future<void> actualizarClimaExterior() async {
+    try {
+      final location = await getLocation();
+      if (location == null) return;
+
+      final clima = await fetchWeatherByCoordinates(
+        location['latitude']!,
+        location['longitude']!,
+      );
+
+      temperaturaExterior = clima.temperature;
+      humedadExterior = clima.humidity;
+
+      print("🌤️ Clima actualizado: ${temperaturaExterior}°C / ${humedadExterior}%");
+    } catch (e) {
+      print("❌ Error actualizando clima exterior: $e");
     }
   }
 }
