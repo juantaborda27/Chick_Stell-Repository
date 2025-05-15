@@ -22,7 +22,7 @@ class SimulacionView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
-        title: const Text("Sistema de Monitoreo de Galpones"),
+        title: const Text("Sistema de Predicción de Estrés Térmico"),
         elevation: 0,
       ),
       body: Column(
@@ -92,109 +92,6 @@ class SimulacionView extends StatelessWidget {
                 : const SizedBox(),
           ),
 
-          // Main Content
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(12),
-              children: [
-                // Current Conditions Section
-                _buildSectionHeader("Condiciones Actuales"),
-                Obx(
-                  () => GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 1.5,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                    ),
-                    itemCount: controller.galpones.length,
-                    itemBuilder: (context, index) {
-                      final galpon = controller.galpones[index];
-                      final tempWarning = galpon.temperaturaInterna > 32.0;
-                      
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 10, 
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Galpón ${galpon.nombre}",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: secondaryColor,
-                                  ),
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: tempWarning ? accentColor : primaryColor,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  child: Text(
-                                    tempWarning ? "Alerta" : "Normal",
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                const Icon(Icons.thermostat, color: Colors.redAccent),
-                                const SizedBox(width: 8),
-                                Text(
-                                  "${galpon.temperaturaInterna.toStringAsFixed(1)}°C",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: tempWarning ? Colors.redAccent : Colors.black87,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                const Icon(Icons.water_drop, color: Colors.blueAccent),
-                                const SizedBox(width: 8),
-                                Text(
-                                  "${galpon.humedadInterna.toStringAsFixed(1)}%",
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                
                 const SizedBox(height: 24),
                 
                 // Predictions Section 
@@ -475,10 +372,7 @@ class SimulacionView extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
+          );
   }
   
   Widget _buildSectionHeader(String title) {
