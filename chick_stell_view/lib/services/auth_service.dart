@@ -1,5 +1,8 @@
+import 'dart:io';
+import 'package:chick_stell_view/models/profile_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -8,6 +11,7 @@ class AuthService {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   Future<User?> registerEmail(String email, String password, String confirmPassword) async {
     try {
@@ -31,9 +35,9 @@ class AuthService {
           });
           return user;
         }
-        return null;
+        
     } on FirebaseAuthException catch (e) {
-      Get.snackbar('error', 'Error al registrarse {$e message}' );
+      print('Error al registrarse {$e message}' );
     }
     return null;
   }
@@ -47,7 +51,7 @@ class AuthService {
        return userCredential.user;
 
     } on FirebaseAuthException catch (e) {
-      Get.snackbar('error', 'Error al iniciar sesion {$e message}' );
+      print('Error al iniciar sesion {$e message}' );
     }
     return null;
   }
@@ -91,7 +95,39 @@ class AuthService {
     }
   }
 
- 
+  // Editar Perfil
+  Future<Profile> updateUserProfile(Profile user, File imageFile) async{
+   String? imageUrl = user.imageUrl; 
+
+    if (imageFile != null) {
+      final ref = _storage.ref().child('user_image/${user.id}.jpg');
+      await ref.putFile(imageFile);
+      imageUrl = await ref.getDownloadURL();
+      user.imageUrl = imageUrl;
+    }
+
+    final updateUser = Profile(
+      id: user.id, imageUrl: user.imageUrl, name: user.name, email: user.email, ws: user.ws, phone: user.phone, password: '');
+
+
+      await _firestore.collection('usuarios').doc(user.id).update(user.toFirestore());
+      
+   return user;
+  }
+
+  Future<Profile?> getProfileById(String uid) async {
+    try {
+      final doc = await _firestore.collection('usuarios').doc(uid).get();
+      if (doc.exists){
+        return Profile.fromFirestore(doc);
+      }
+    } catch (e) {
+      print('Error al obtener el perfil: $e');
+    }
+  }
+
 }
+
+
   
 

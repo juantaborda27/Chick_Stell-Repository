@@ -102,5 +102,6 @@
         "único",
         "ventilador",
         "ventiladores"
-    ]
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

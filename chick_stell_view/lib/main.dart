@@ -2,6 +2,7 @@ import 'package:chick_stell_view/controllers/alerta_controller.dart';
 import 'package:chick_stell_view/controllers/galpon_controller.dart';
 import 'package:chick_stell_view/controllers/simulacion_controller.dart';
 import 'package:chick_stell_view/services/galpon_service.dart';
+import 'package:chick_stell_view/services/local_image_service.dart';
 import 'package:chick_stell_view/services/notification_service.dart';
 import 'package:chick_stell_view/utils/routes.dart';
 import 'package:chick_stell_view/views/widgets/botton_nav_var.dart';
@@ -21,10 +22,16 @@ void main() async {
   //Get.find<GalponController>();
   Get.put(AlertaController());
   Get.put(GalponService());
-  Get.put(GalponController()); // <- Inyectas el controlador
+  Get.put(GalponController()); // <- Inyectas el 
+  
+  final localImageService = LocalImageService();
+  Get.put(localImageService);
+
+  
 
   // Inicializar Hive
   await Hive.initFlutter();
+  await Hive.openBox('profile_images');
   //limpiar la base de datos
   await Hive.openBox("predicciones");
   Get.put(SimulacionController(), permanent: true);

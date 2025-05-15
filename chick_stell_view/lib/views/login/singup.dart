@@ -204,22 +204,19 @@ class SingUp extends StatelessWidget {
     );
   }
 
-  void _handleRegister() {
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
-    final confirmPassword = confirmPasswordController.text.trim();
-    authController.register(email, password, confirmPassword);
+void _handleRegister() async {
+  final email = emailController.text.trim();
+  final password = passwordController.text.trim();
+  final confirmPassword = confirmPasswordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-      Get.snackbar('Error', 'Por favor completa todos los campos');
-      return;
-    }
-
-    if (password != confirmPassword) {
-      Get.snackbar('Error', 'Las contraseñas no coinciden');
-      return;
-    }
-
-   Get.offNamed('/home_nav');
+  try {
+    await authController.register(email, password, confirmPassword);
+   
+  } catch (e) {
+    emailController.clear();
+    passwordController.clear();
+    confirmPasswordController.clear();
+    Get.snackbar('Error', e.toString());
   }
+}
 }

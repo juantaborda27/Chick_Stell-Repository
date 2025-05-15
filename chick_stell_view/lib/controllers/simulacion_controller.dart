@@ -10,6 +10,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math';
 
+import 'package:intl/intl.dart';
+
 class SimulacionController extends GetxController {
   final GalponService _galponService = GalponService();
   final CityWeatherService _cityWeatherService = Get.put(CityWeatherService());
@@ -74,12 +76,20 @@ class SimulacionController extends GetxController {
     }
   }
 
+  String getCurrentTime() {
+  DateTime now = DateTime.now();
+  // Formato: "yyyy-MM-ddTHH:mm:ss.SSS"
+  return DateFormat("yyyy-MM-ddTHH:mm:ss.SSS").format(now);
+}
+
   Future<void> _simular() async {
     _actualizarSensores();
-    final now = DateTime.now().toUtc();
+    // final now = DateTime.now().toUtc();
+    // final hora = "2025-05-14T17:10:32.429";
+
     final body = {
       "galpones": galpones.map((s) => s.toPrediccionJson()).toList(),
-      "hora_actual": now.toIso8601String(),
+      "hora_actual": getCurrentTime(),//now.toIso8601String(), 
       "forzar_estres": forzandoEstres.value,
       "longitude": longitud,
       "latitude": latitud,

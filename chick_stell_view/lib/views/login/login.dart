@@ -284,23 +284,18 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  void _handleLogin() {
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
-     authController.login(email, password); 
-    
-    
-    if (email.isEmpty || password.isEmpty) {
-      Get.snackbar('Error', 'Por favor completa todos los campos');
-      return;
-    }
+ void _handleLogin() async {
+  final email = emailController.text.trim();
+  final password = passwordController.text.trim();
 
-    try {
-      authController.login(email, password);
-    } catch (e) {
-      Get.snackbar('Error', e.toString());
-    }
+  try {
+    await authController.login(email, password);
     
     Get.offNamed('/home_nav');
+  } catch (e) {
+    
+    passwordController.clear();
+    Get.snackbar('Error', e.toString());
   }
+}
 }
