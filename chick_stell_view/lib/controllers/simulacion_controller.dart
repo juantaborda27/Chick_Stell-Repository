@@ -131,15 +131,15 @@ class SimulacionController extends GetxController {
             );
 
             if (ultima["estres_termico"] == 1 &&
-                ultima["probabilidad"] > 0.5 &&
-                ultima["confianza"] >= 0.4) {
+                ultima["probabilidad"] > 0.1 &&
+                ultima["confianza"] >= 0.1) {
               await NotificationService.showNotification(
                 '⚠️ Alerta de Estrés Térmico',
                 'El galpón "${galpon.nombre}" presenta riesgo de estrés térmico. Probabilidad: ${(ultima["probabilidad"] * 100).toStringAsFixed(1)}%',
-                id: galpon.id.hashCode,
+                id: galpon.id.hashCode, // o usa un índice único si lo tienes
               );
-
-
+              print("notificación enviada para galpón ${galpon.nombre}");
+              ///////////////////////////////////////////////////////
               final warehouseController = Get.find<WarehouseController>();
               warehouseController.activarAlerta(
                 '⚠️ Alerta de Estrés Térmico',
@@ -150,7 +150,6 @@ class SimulacionController extends GetxController {
               Future.delayed(const Duration(seconds: 10), () {
                 warehouseController.ventilationActive.value = false;
               });
-
             }
           }
           print(

@@ -1,13 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-typedef NotificationCallback = void Function(String title, String body);
-
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
-
-  /// Callback para usar dentro de la app (como en la pantalla principal)
-  static NotificationCallback? onNotificationReceived;
 
   static Future<void> initialize() async {
     const AndroidInitializationSettings androidSettings =
@@ -20,7 +15,7 @@ class NotificationService {
     await _notificationsPlugin.initialize(settings);
   }
 
-  /// Muestra una notificación del sistema y también la propaga a la app
+  /// Muestra una notificación única por ID (por ejemplo, por galpón)
   static Future<void> showNotification(
     String title,
     String body, {
@@ -38,12 +33,11 @@ class NotificationService {
       android: androidDetails,
     );
 
-    // Notificación del sistema
-    await _notificationsPlugin.show(id, title, body, notificationDetails);
-
-    // Callback interno para mostrar algo en la app
-    if (onNotificationReceived != null) {
-      onNotificationReceived!(title, body);
-    }
+    await _notificationsPlugin.show(
+      id,     // ← ID único para evitar sobrescribir
+      title,
+      body,
+      notificationDetails,
+    );
   }
 }
