@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:chick_stell_view/controllers/warehouse_controller.dart';
 import 'package:chick_stell_view/models/galpon_model.dart';
 import 'package:chick_stell_view/services/city_weather_service.dart';
 import 'package:chick_stell_view/services/galpon_service.dart';
@@ -112,18 +113,34 @@ class SimulacionController extends GetxController {
 
           if (cambio) {
             box.put(galpon.id, predicciones);
-
-            // Aqui se envia al firebase
+            print("hubo cambio significativo en galpón ${galpon.id}");
+            procesarYGuardarPredicciones(
+              galpon: galpon,
+              predicciones: predicciones.cast<Map<String, dynamic>>(),
+            );
 
             if (ultima["estres_termico"] == 1 &&
                 ultima["probabilidad"] > 0.5 &&
                 ultima["confianza"] >= 0.4) {
-              // _activarVentilador(galpon.id);
+
               await NotificationService.showNotification(
                 '⚠️ Alerta de Estrés Térmico',
                 'El galpón "${galpon.nombre}" presenta riesgo de estrés térmico. Probabilidad: ${(ultima["probabilidad"] * 100).toStringAsFixed(1)}%',
                 id: galpon.id.hashCode,
               );
+
+
+              final warehouseController = Get.find<WarehouseController>();
+              warehouseController.activarAlerta(
+                '⚠️ Alerta de Estrés Térmico',
+                'El galpón "${galpon.nombre}" presenta riesgo de estrés térmico.',
+              );
+
+              warehouseController.ventilationActive.value = true;
+              Future.delayed(const Duration(seconds: 10), () {
+                warehouseController.ventilationActive.value = false;
+              });
+
             }
           }
           print(
@@ -148,9 +165,18 @@ class SimulacionController extends GetxController {
     }
   }
 
-  // void _activarVentilador(String idGalpon) {
-  //   print("🌀 Ventilador activado en $idGalpon");
-  // }
+    Future<void> procesarYGuardarPredicciones({
+    required Galpon galpon,
+    required List<Map<String, dynamic>> predicciones,
+  }) async {
+    // Aquí puedes filtrar, validar o hacer alguna lógica previa si lo deseas
+
+    await _galponService.guardarPredicciones(
+      idGalpon: galpon.id,
+      nombreGalpon: galpon.nombre,
+      predicciones: predicciones,
+    );
+  }
 
   /// Simula cambios leves en los sensores con lógica realista
   void _actualizarSensores() {
