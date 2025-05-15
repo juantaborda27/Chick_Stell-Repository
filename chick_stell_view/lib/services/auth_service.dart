@@ -1,10 +1,8 @@
 import 'dart:io';
-import 'package:chick_stell_view/controllers/auth_controller.dart';
 import 'package:chick_stell_view/models/profile_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
