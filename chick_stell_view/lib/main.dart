@@ -1,3 +1,4 @@
+import 'package:chick_stell_view/controllers/auth_controller.dart';
 import 'package:chick_stell_view/controllers/galpon_controller.dart';
 import 'package:chick_stell_view/controllers/simulacion_controller.dart';
 import 'package:chick_stell_view/services/galpon_service.dart';
@@ -20,7 +21,8 @@ void main() async {
   );
   //Get.find<GalponController>();
   Get.put(GalponService());
-  Get.put(GalponController()); // <- Inyectas el 
+  Get.put(GalponController()); // <- Inyectas el
+  Get.put(AuthController()); 
   
   final localImageService = LocalImageService();
   Get.put(localImageService);
