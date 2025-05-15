@@ -1,3 +1,4 @@
+import 'package:chick_stell_view/controllers/auth_controller.dart';
 import 'package:chick_stell_view/controllers/profile_controller.dart';
 import 'package:chick_stell_view/views/main_views/ajustes/editar_profile_view.dart';
 import 'package:flutter/material.dart';
@@ -7,12 +8,15 @@ import 'package:get/get_core/src/get_main.dart';
 
 class AjustesView extends StatefulWidget {
   final ProfileController profileController = Get.put(ProfileController());
+  final AuthController authController = Get.find<AuthController>();
   @override
   _SettingsViewState createState() => _SettingsViewState();
 }
 
 class _SettingsViewState extends State<AjustesView> {
-final profileController = Get.find<ProfileController>();
+final profileController = Get.put(ProfileController());
+
+final authContreller = Get.put(AuthController()); 
   // Variables de estado local (temporales)
   bool alertasCriticas = true;
   bool predicciones = true;
@@ -143,7 +147,7 @@ final profileController = Get.find<ProfileController>();
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  profileController.name.value,
+                  profileController.name.value ?? '',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -192,7 +196,7 @@ final profileController = Get.find<ProfileController>();
                 border: Border.all(color: Colors.grey[300]!),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: Text(profileController.email.value),
+              child: Text(authContreller.user.value?.email ?? ''),
             ),
             SizedBox(height: 16),
             ElevatedButton(
