@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 void editProfileView() {
   final ProfileController controller = Get.put(ProfileController());
+  final emailController = TextEditingController(text: controller.authController.user.value?.email ?? '');
   final TextEditingController nameController = TextEditingController(text: controller.name.value);
   final TextEditingController phoneController = TextEditingController(text: controller.phone.value);
   final TextEditingController whatsappController = TextEditingController(text: controller.whatsapp.value);
@@ -101,14 +102,14 @@ void editProfileView() {
                     // Campos del formulario con estilo similar a la imagen
                     _buildStyledTextField(
                       label: 'Nombre',
-                      value: controller.name,
+                      controller: nameController,
                       icon: Icons.person_outline,
                       iconColor: primaryColor,
                     ),
                     SizedBox(height: 15),
                     _buildStyledTextField(
                       label: 'Email',
-                      value: controller.email,
+                      controller: emailController,
                       icon: Icons.email_outlined,
                       iconColor: primaryColor,
                       keyboardType: TextInputType.emailAddress,
@@ -125,7 +126,7 @@ void editProfileView() {
                               Text('Teléfono', style: TextStyle(color: Colors.black54, fontSize: 14)),
                               _buildStyledTextField(
                                 label: 'Teléfono',
-                                value: controller.phone,
+                                controller: phoneController,
                                 icon: Icons.phone_outlined,
                                 iconColor: primaryColor,
                                 keyboardType: TextInputType.phone,
@@ -142,7 +143,7 @@ void editProfileView() {
                               Text('WhatsApp', style: TextStyle(color: Colors.black54, fontSize: 14)),
                               _buildStyledTextField(
                                 label: 'WhatsApp',
-                                value: controller.whatsapp,
+                                controller: whatsappController,
                                 icon: Icons.messenger,
                                 iconColor: primaryColor,
                                 keyboardType: TextInputType.phone,
@@ -181,14 +182,11 @@ void editProfileView() {
                     
                     // Botón para guardar
                     ElevatedButton(
-                      onPressed: () async {
-                        await controller.updateProfile(
+                      onPressed: () {
+                        controller.updateProfile(
                           newName: nameController.text,
                           newPhone: phoneController.text,
                           newWhatsapp: whatsappController.text,
-                          newImageFile: controller.localImagePath.value != null
-                              ? File(controller.localImagePath.value)
-                              : null,
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -236,9 +234,9 @@ void editProfileView() {
 
 Widget _buildStyledTextField({
   required String label,
-  required RxString value,
   required IconData icon,
   required Color iconColor,
+  required TextEditingController controller,
   bool enabled = true,
   TextInputType keyboardType = TextInputType.text,
   bool hintVisible = true,
@@ -258,6 +256,7 @@ Widget _buildStyledTextField({
         SizedBox(width: 6),
         Expanded(
           child: TextField(
+            controller: controller,
             enabled: enabled,
             keyboardType: keyboardType,
             decoration: InputDecoration(
@@ -267,8 +266,6 @@ Widget _buildStyledTextField({
               isDense: true,
               contentPadding: EdgeInsets.symmetric(vertical: 12),
             ),
-            controller: TextEditingController(text: value.value),
-            onChanged: (text) => value.value = text,
             style: TextStyle(fontSize: 15),
           ),
         ),
