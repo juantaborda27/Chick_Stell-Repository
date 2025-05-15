@@ -1,35 +1,22 @@
-
-
-// import 'package:flutter/material.dart';
-
-// class AjustesView extends StatelessWidget {
-//   const AjustesView({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Ajustes'),
-//       ),
-//     );
-//   }
-// }
-
+import 'package:chick_stell_view/controllers/profile_controller.dart';
+import 'package:chick_stell_view/views/main_views/ajustes/editar_profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class AjustesView extends StatefulWidget {
+  final ProfileController profileController = Get.put(ProfileController());
   @override
   _SettingsViewState createState() => _SettingsViewState();
 }
 
 class _SettingsViewState extends State<AjustesView> {
+final profileController = Get.find<ProfileController>();
   // Variables de estado local (temporales)
   bool alertasCriticas = true;
   bool predicciones = true;
   bool informesDiarios = true;
-  bool modoSinConexion = true;
-  bool autenticacionBiometrica = false;
   String frecuenciaActualizacion = 'Cada 5 minutos';
 
   @override
@@ -91,37 +78,11 @@ class _SettingsViewState extends State<AjustesView> {
               
               SizedBox(height: 24),
               
-              // Conectividad
-              _buildSectionTitle('Conectividad', Icons.wifi),
-              _buildDropdownOption(),
-              _buildDivider(),
-              _buildToggleOption(
-                'Modo sin conexión', 
-                'Guardar datos cuando no hay conexión', 
-                modoSinConexion,
-                (value) {
-                  setState(() {
-                    modoSinConexion = value;
-                  });
-                }
-              ),
-              
-              SizedBox(height: 24),
-              
               // Seguridad
               _buildSectionTitle('Seguridad', Icons.lock_outline),
               _buildPasswordButton(),
               _buildDivider(),
-              _buildToggleOption(
-                'Autenticación biométrica', 
-                'Usar huella digital o Face ID', 
-                autenticacionBiometrica,
-                (value) {
-                  setState(() {
-                    autenticacionBiometrica = value;
-                  });
-                }
-              ),
+              
               
               SizedBox(height: 24),
               
@@ -182,7 +143,7 @@ class _SettingsViewState extends State<AjustesView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Juan Díaz',
+                  profileController.name.value,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -231,11 +192,11 @@ class _SettingsViewState extends State<AjustesView> {
                 border: Border.all(color: Colors.grey[300]!),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: Text('juan.diaz@ejemplo.com'),
+              child: Text(profileController.email.value),
             ),
             SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: editProfileView,
               child: Center(child: Text('Editar perfil')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
@@ -292,6 +253,7 @@ class _SettingsViewState extends State<AjustesView> {
     );
   }
   
+  // ignore: unused_element
   Widget _buildDropdownOption() {
     return Card(
       elevation: 0,

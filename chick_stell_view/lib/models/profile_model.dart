@@ -27,7 +27,7 @@ class Profile {
 
   factory Profile.fromFirestore(DocumentSnapshot data) {
     return Profile(
-      id: data['id'] ?? '',
+      id: data.id,
       imageUrl: data['imageUrl'] ?? '',
       name: data['name'] ?? '',
       email: data['email'] ?? '',
