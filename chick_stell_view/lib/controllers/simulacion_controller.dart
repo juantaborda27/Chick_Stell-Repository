@@ -241,46 +241,6 @@ class SimulacionController extends GetxController {
     galpones.refresh();
   }
 
-  // /// Simula cambios leves en los sensores con lógica realista
-  // void _actualizarSensores() {
-  //   final random = Random();
-
-  //   for (var sensor in galpones) {
-  //     // Influencia externa del clima (si se obtuvo correctamente)
-  //     double tempExterior = _cityWeatherService.temperaturaExterior ?? 30.0;
-  //     double humedadExterior = _cityWeatherService.humedadExterior ?? 65.0;
-
-  //     // Cálculo base realista
-  //     double deltaTemp = (tempExterior - sensor.temperaturaInterna) * 0.05;
-  //     double deltaHum = (humedadExterior - sensor.humedadInterna) * 0.05;
-
-  //     // Ajustes aleatorios leves
-  //     deltaTemp += (random.nextDouble() - 0.5) * 0.2;
-  //     deltaHum += (random.nextDouble() - 0.5) * 1.0;
-
-  //     // Si se está forzando el estrés, aumenta gradualmente la temperatura y humedad
-  //     if (forzandoEstres.value) {
-  //       deltaTemp += 0.1 + progresoEstres * 0.05;
-  //       deltaHum += 0.5 + progresoEstres * 0.1;
-  //     }
-
-  //     sensor.temperaturaInterna += deltaTemp;
-  //     sensor.humedadInterna += deltaHum;
-  //     sensor.velocidadAire += (random.nextDouble() - 0.5) * 0.03;
-
-  //     // Limitar a rangos seguros
-  //     sensor.temperaturaInterna = sensor.temperaturaInterna
-  //         .clamp(22.0, forzandoEstres.value ? 38.0 : 35.0);
-  //     sensor.humedadInterna =
-  //         sensor.humedadInterna.clamp(35.0, forzandoEstres.value ? 95.0 : 90.0);
-  //     sensor.velocidadAire = sensor.velocidadAire.clamp(0.5, 3.0);
-
-  //     _actualizarFirebase(sensor);
-  //   }
-
-  //   galpones.refresh();
-  // }
-
   String obtenerHoraGeneracion(Box box) {
     DateTime? primeraHora;
 
