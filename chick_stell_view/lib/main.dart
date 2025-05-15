@@ -20,6 +20,7 @@ void main() async {
   //Get.find<GalponController>();
   Get.put(GalponService());
   Get.put(GalponController()); // <- Inyectas el controlador
+  
 
   // Inicializar Hive
   await Hive.initFlutter();
@@ -40,7 +41,7 @@ class MyApp extends StatelessWidget {
       title: 'Chick Stell',
       theme:
           ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue)),
-      initialRoute: '/',
+      initialRoute: '/login',
       getPages: AppRoutes.routes,
       home: BottonNavVar(),
       // home: HomePage(),

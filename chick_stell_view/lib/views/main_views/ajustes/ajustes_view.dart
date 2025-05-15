@@ -1,30 +1,18 @@
-
-
-// import 'package:flutter/material.dart';
-
-// class AjustesView extends StatelessWidget {
-//   const AjustesView({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Ajustes'),
-//       ),
-//     );
-//   }
-// }
-
+import 'package:chick_stell_view/controllers/profile_controller.dart';
 import 'package:chick_stell_view/views/main_views/ajustes/editar_profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class AjustesView extends StatefulWidget {
+  final ProfileController profileController = Get.put(ProfileController());
   @override
   _SettingsViewState createState() => _SettingsViewState();
 }
 
 class _SettingsViewState extends State<AjustesView> {
+final profileController = Get.find<ProfileController>();
   // Variables de estado local (temporales)
   bool alertasCriticas = true;
   bool predicciones = true;
@@ -155,7 +143,7 @@ class _SettingsViewState extends State<AjustesView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Juan Díaz',
+                  profileController.name.value,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -204,13 +192,11 @@ class _SettingsViewState extends State<AjustesView> {
                 border: Border.all(color: Colors.grey[300]!),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: Text('juan.diaz@ejemplo.com'),
+              child: Text(profileController.email.value),
             ),
             SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-               
-              },
+              onPressed: EditProfileView,
               child: Center(child: Text('Editar perfil')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
