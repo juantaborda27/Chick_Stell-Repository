@@ -112,7 +112,7 @@ class SimulacionView extends StatelessWidget {
                             ),
                             child: Center(
                               child: Text(
-                                "No hay predicciones disponibles para Galpón ${galpon.id}",
+                                "No hay predicciones disponibles para Galpón ${galpon.nombre}",
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
                             ),
