@@ -5,7 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
 class GalponController extends GetxController {
-  var galpones = <Galpon>[].obs;
+  final RxList<Galpon> galpones = <Galpon>[].obs;
+
   final GalponService _galponService = GalponService();
 
   @override
@@ -21,6 +22,7 @@ class GalponController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', 'No se pudieron cargar los galpones');
     }
+    galpones.refresh();
   }
 
   Future<void> agregarGalpon(Galpon galpon) async {
@@ -44,12 +46,15 @@ class GalponController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', 'No se pudo actualizar el galpón');
     }
+    galpones.refresh();
   }
 
   Future<void> eliminarGalpon(String id) async {
     try {
       await _galponService.deleteGalpon(id);
       await cargarGalpones();
+      galpones.refresh();
+      
       Get.snackbar('Éxito', 'Galpón eliminado correctamente');
     } catch (e) {
       Get.snackbar('Error', 'No se pudo eliminar el galpón');
