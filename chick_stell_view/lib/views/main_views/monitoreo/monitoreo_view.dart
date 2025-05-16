@@ -16,16 +16,14 @@ import 'dart:math' as math;
 
 class MonitoreoView extends StatelessWidget {
   final WarehouseController controller = Get.put(WarehouseController());
-  final SimulacionController simulacionController =
-      Get.put(SimulacionController());
+  final SimulacionController simulacionController = Get.put(SimulacionController());
+
   MonitoreoView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Variable reactiva para controlar el estado de carga
     final isLoading = true.obs;
 
-    // Simular tiempo de carga
     Future.delayed(const Duration(milliseconds: 1500), () {
       isLoading.value = false;
     });
@@ -33,17 +31,45 @@ class MonitoreoView extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Obx(() {
-          // Verificar si hay galpones disponibles
           if (simulacionController.galpones.isEmpty) {
-            return const Center(
-              child: Text("No hay galpones disponibles."),
-            );
+            return isLoading.value
+                ? _buildLoadingScreen()
+                : Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "No hay galpones disponibles.",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton.icon(
+                            // Cambia la ruta según tu configuración
+                            onPressed: () => Get.toNamed('/create_galpon'), //Navigator.of(context).pushNamed('/create_galpon'),
+                            // Reemplaza con la ruta de tu vista de creación de galpón 
+                            icon: const Icon(Icons.add),
+                            label: const Text("Añadir Galpón"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF26A69A),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 24, vertical: 12),
+                              textStyle: const TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
           }
 
-          // Obtener el galpón seleccionado
           final selectedWarehouseIndex = controller.selectedWarehouse.value;
-          final galponSeleccionado =
-              simulacionController.galpones[selectedWarehouseIndex];
+          final galponSeleccionado = simulacionController.galpones[selectedWarehouseIndex];
 
           return isLoading.value
               ? _buildLoadingScreen()
@@ -54,7 +80,6 @@ class MonitoreoView extends StatelessWidget {
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          // Widgets existentes
                           SearchGalpon(controller: controller),
                           const SizedBox(height: 6),
                           WarehouseSelector(controller: controller),
@@ -65,17 +90,6 @@ class MonitoreoView extends StatelessWidget {
                           const SizedBox(height: 20),
                           Ventilator(controller: controller),
                           const SizedBox(height: 20),
-                          // Obx(() {
-                          //   final alerta = controller.alertaActiva.value;
-                          //   if (alerta == null)
-                          //     return const SizedBox.shrink(); // No mostrar nada
-                          //   return WarningAlert(
-                          //       title: alerta.title, message: alerta.message);
-                          // }),
-
-                          const SizedBox(height: 20),
-
-                          // Tarjetas dinámicas basadas en el galpón seleccionado
                           _buildMetricsGrid(galponSeleccionado),
                         ],
                       ),
@@ -100,8 +114,7 @@ class MonitoreoView extends StatelessWidget {
           icon: Icons.thermostat_outlined,
           iconColor: Colors.orange,
           title: 'Temperatura',
-          value: RxString(
-              galponSeleccionado.temperaturaInterna.toStringAsFixed(2)),
+          value: RxString(galponSeleccionado.temperaturaInterna.toStringAsFixed(2)),
           unit: '°C',
           additionalInfo: '+1.2°C',
           limit: 'Límite: 35°C',
@@ -127,8 +140,7 @@ class MonitoreoView extends StatelessWidget {
           unit: 'm/s',
           additionalInfo: 'Óptimo',
           limit: 'Límite: 3.5 m/s',
-          progress:
-              (galponSeleccionado.velocidadAire / 5).obs, // escala esperada
+          progress: (galponSeleccionado.velocidadAire / 5).obs,
           progressColor: galponSeleccionado.velocidadAire > 3.0
               ? Colors.red
               : Colors.green,
@@ -137,14 +149,14 @@ class MonitoreoView extends StatelessWidget {
           icon: Icons.pets_outlined,
           iconColor: Colors.purple,
           title: 'Densidad',
-          value: RxString (galponSeleccionado.densidadPollos.toStringAsFixed(2)),
+          value: RxString(galponSeleccionado.densidadPollos.toStringAsFixed(2)),
           unit: 'm²',
           additionalInfo: 'Óptimo',
           limit: 'Máx: 12 aves/m²',
-          progress:
-              (galponSeleccionado.densidadPollos / 20).obs, // Escala máxima de referencia
-          progressColor:
-              galponSeleccionado.densidadPollos > 16 ? Colors.red : Colors.purple,
+          progress: (galponSeleccionado.densidadPollos / 20).obs,
+          progressColor: galponSeleccionado.densidadPollos > 16
+              ? Colors.red
+              : Colors.purple,
         ),
       ],
     );
@@ -155,25 +167,18 @@ class MonitoreoView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Logo o imagen (opcional)
           FadeIn(
             child: Image.asset(
-              'assets/images/logo.png', // Reemplaza con tu ruta de imagen
+              'assets/images/logo.png',
               width: 120,
               height: 120,
-              // Si no tienes una imagen, comenta o elimina este widget
             ),
           ),
           const SizedBox(height: 30),
-
-          // Indicador de carga
           const CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF26A69A)),
           ),
-
           const SizedBox(height: 20),
-
-          // Texto animado
           FadeInUp(
             from: 20,
             delay: const Duration(milliseconds: 300),
@@ -187,10 +192,7 @@ class MonitoreoView extends StatelessWidget {
               ),
             ),
           ),
-
           const SizedBox(height: 10),
-
-          // Texto secundario (opcional)
           FadeInUp(
             from: 20,
             delay: const Duration(milliseconds: 500),
@@ -217,24 +219,14 @@ class GridPainter extends CustomPainter {
       ..strokeWidth = 0.5
       ..style = PaintingStyle.stroke;
 
-    // Draw horizontal lines
     for (int i = 1; i < 5; i++) {
       double y = i * size.height / 5;
-      canvas.drawLine(
-        Offset(0, y),
-        Offset(size.width, y),
-        paint,
-      );
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
 
-    // Draw vertical lines
     for (int i = 1; i < 5; i++) {
       double x = i * size.width / 5;
-      canvas.drawLine(
-        Offset(x, 0),
-        Offset(x, size.height),
-        paint,
-      );
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
     }
   }
 
@@ -256,11 +248,9 @@ class FanPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
 
-    // Draw 5 blades
     for (int i = 0; i < 5; i++) {
-      final angle = i * 2 * 3.14159 / 5;
+      final angle = i * 2 * math.pi / 5;
       final path = Path();
-
       path.moveTo(center.dx, center.dy);
       path.lineTo(
         center.dx + radius * 0.2 * cos(angle - 0.3),
@@ -275,7 +265,6 @@ class FanPainter extends CustomPainter {
         center.dy + radius * 0.2 * sin(angle + 0.3),
       );
       path.close();
-
       canvas.drawPath(path, paint);
     }
   }
