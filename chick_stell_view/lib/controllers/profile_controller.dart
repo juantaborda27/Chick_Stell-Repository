@@ -20,6 +20,7 @@ class ProfileController extends GetxController {
     super.onInit();
     await loadUserData(); // <-- carga datos del usuario
     await loadLocalProfileImage();
+
   }
 
   Future<void> loadUserData() async {
@@ -112,6 +113,28 @@ class ProfileController extends GetxController {
     Get.snackbar('Error', 'No se pudo actualizar el perfil: ${e.toString()}');
   }
 }
+
+// Metodo obtener datos del FireStore
+ Future<void> loadProfileFromFirestore() async {
+  final uid = authController.user.value?.uid;
+  if (uid == null) return;
+
+  final doc = await FirebaseFirestore.instance
+      .collection('usuarios')
+      .doc(uid)
+      .get();
+
+  if (doc.exists) {
+    final data = doc.data()!;
+    name.value = data['name'] ?? '';
+    phone.value = data['phone'] ?? '';
+    whatsapp.value = data['whatsapp'] ?? '';
+    email.value = authController.user.value?.email ?? '';
+
+
+    print('Perfil cargado correctamente');
+  }
+ }
 
 
 }

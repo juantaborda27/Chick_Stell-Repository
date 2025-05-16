@@ -1,5 +1,6 @@
 import 'package:chick_stell_view/controllers/auth_controller.dart';
 import 'package:chick_stell_view/controllers/profile_controller.dart';
+import 'package:chick_stell_view/controllers/simulacion_controller.dart';
 import 'package:chick_stell_view/views/main_views/ajustes/editar_profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,19 +10,23 @@ import 'package:get/get_core/src/get_main.dart';
 class AjustesView extends StatefulWidget {
   final ProfileController profileController = Get.put(ProfileController());
   final AuthController authController = Get.find<AuthController>();
+  final SimulacionController simulacionController = Get.put(SimulacionController());
+  
+  
+
   @override
   _SettingsViewState createState() => _SettingsViewState();
 }
 
 class _SettingsViewState extends State<AjustesView> {
 final profileController = Get.put(ProfileController());
-
 final authContreller = Get.put(AuthController()); 
+final simulacionController = Get.put(SimulacionController());
+
   // Variables de estado local (temporales)
   bool alertasCriticas = true;
-  bool predicciones = true;
   bool informesDiarios = true;
-  String frecuenciaActualizacion = 'Cada 5 minutos';
+
 
   @override
   Widget build(BuildContext context) {
@@ -58,20 +63,18 @@ final authContreller = Get.put(AuthController());
                 }
               ),
               _buildDivider(),
-              _buildToggleOption(
-                'Predicciones', 
-                'Notificaciones de predicciones de IA', 
-                predicciones,
-                (value) {
-                  setState(() {
-                    predicciones = value;
-                  });
-                }
-              ),
+              Obx(() => _buildToggleOption(
+                'Predicciones',
+                'Modulo de predicciones de IA',
+                simulacionController.simulando.value,
+              (value) {
+                simulacionController.toggleSimulacion(value);
+                },
+              )),
               _buildDivider(),
               _buildToggleOption(
                 'Informes diarios', 
-                'Recibir resumen diario por email', 
+                'Recibir informes diarios', 
                 informesDiarios,
                 (value) {
                   setState(() {
@@ -121,7 +124,14 @@ final authContreller = Get.put(AuthController());
     );
   }
   
-  Widget _buildUserProfileCard() {
+Widget _buildUserProfileCard() {
+  return Obx(() {
+    final name = profileController.name.value;
+    final photoUrl = profileController.profileImageUrl.value;
+    final initials = name.isNotEmpty
+        ? name.trim().split(' ').map((e) => e[0]).take(2).join().toUpperCase()
+        : 'JD';
+
     return Card(
       elevation: 0,
       color: Colors.white,
@@ -133,21 +143,26 @@ final authContreller = Get.put(AuthController());
             CircleAvatar(
               backgroundColor: Colors.teal,
               radius: 24,
-              child: Text(
-                'JD',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
+              backgroundImage: photoUrl != null && photoUrl.isNotEmpty
+                  ? NetworkImage(photoUrl)
+                  : null,
+              child: photoUrl == null || photoUrl.isEmpty
+                  ? Text(
+                      initials,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    )
+                  : null,
             ),
             SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  profileController.name.value ?? '',
+                  name,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -166,13 +181,19 @@ final authContreller = Get.put(AuthController());
         ),
       ),
     );
-  }
+  });
+}
+
+
   
   Widget _buildDivider() {
     return Divider(height: 1, thickness: 1, color: Colors.grey[200]);
   }
   
-  Widget _buildEditProfileButton() {
+Widget _buildEditProfileButton() {
+  return Obx(() {
+    final email = authContreller.user.value?.email ?? '';
+
     return Card(
       elevation: 0,
       color: Colors.white,
@@ -196,7 +217,7 @@ final authContreller = Get.put(AuthController());
                 border: Border.all(color: Colors.grey[300]!),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: Text(authContreller.user.value?.email ?? ''),
+              child: Text(email),
             ),
             SizedBox(height: 16),
             ElevatedButton(
@@ -214,7 +235,9 @@ final authContreller = Get.put(AuthController());
         ),
       ),
     );
-  }
+  });
+}
+
   
   Widget _buildToggleOption(String title, String subtitle, bool value, Function(bool) onChanged) {
     return Card(
@@ -257,63 +280,6 @@ final authContreller = Get.put(AuthController());
     );
   }
   
-  // ignore: unused_element
-  Widget _buildDropdownOption() {
-    return Card(
-      elevation: 0,
-      color: Colors.white,
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Frecuencia de actualización',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            SizedBox(height: 8),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: frecuenciaActualizacion,
-                  icon: Icon(Icons.keyboard_arrow_down),
-                  isExpanded: true,
-                  items: [
-                    'Cada 1 minuto',
-                    'Cada 5 minutos',
-                    'Cada 15 minutos',
-                    'Cada 30 minutos',
-                    'Cada hora',
-                  ].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        frecuenciaActualizacion = newValue;
-                      });
-                    }
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
   
   Widget _buildPasswordButton() {
     return Card(
@@ -323,7 +289,9 @@ final authContreller = Get.put(AuthController());
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            authContreller.logOut();
+          },
           child: Center(child: Text('Cambiar contraseña')),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white,
@@ -357,7 +325,9 @@ final authContreller = Get.put(AuthController());
         SizedBox(width: 12),
         Expanded(
           child: ElevatedButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              authContreller.logOut();
+            },
             icon: Icon(Icons.logout),
             label: Text('Cerrar sesión'),
             style: ElevatedButton.styleFrom(
