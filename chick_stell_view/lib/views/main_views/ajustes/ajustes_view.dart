@@ -82,7 +82,7 @@ final notificacionController = Get.put(NotificacionController());
                 icon: Icon(Icons.picture_as_pdf),
                 label: Text("Descargar informe PDF"),
                 style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
+                backgroundColor: Colors.teal[800],
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                 textStyle: TextStyle(fontSize: 16),
