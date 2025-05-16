@@ -1,17 +1,34 @@
 import 'package:chick_stell_view/models/galpon_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class GalponService {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final CollectionReference galponesRef =
-      FirebaseFirestore.instance.collection('galpones');
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
+  // Referencia a la subcolección de galpones del usuario autenticado
+  CollectionReference<Map<String, dynamic>> get galponesRef {
+    final userId = auth.currentUser?.uid;
+    if (userId == null) {
+      throw Exception('Usuario no autenticado');
+    }
+    return firestore.collection('usuarios').doc(userId).collection('galpones');
+  }
+  
+  /// Método para obtener todos los galpones del usuario autenticado
   Future<List<Galpon>> getGalpones() async {
-    final snapshot = await firestore.collection('galpones').get();
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return [];
+
+    final snapshot = await FirebaseFirestore.instance
+        .collection('usuarios')
+        .doc(uid)
+        .collection('galpones')
+        .get();
 
     final galpones = snapshot.docs.map((e) {
       final data = e.data();
-      data['id'] = e.id; // Esto asegura que el modelo tenga el ID del documento
+      data['id'] = e.id;
       return Galpon.fromJson(data);
     }).toList();
 
@@ -19,8 +36,7 @@ class GalponService {
   }
 
   Future<void> addGalpon(Galpon galpon) async {
-    final docRef =
-        firestore.collection('galpones').doc(galpon.id); // usa tu ID generado
+    final docRef = galponesRef.doc(galpon.id);
     await docRef.set(galpon.toJson());
   }
 
@@ -49,6 +65,7 @@ class GalponService {
     await galponesRef.doc(galpon.id).set(galpon.toJson());
   }
 
+  /// Guardar predicciones sigue en colección general, pero se puede ajustar si deseas por usuario
   Future<void> guardarPredicciones({
     required String idGalpon,
     required String nombreGalpon,
@@ -57,7 +74,7 @@ class GalponService {
     try {
       final now = DateTime.now().toIso8601String();
 
-      // Crear documento del galpón si no existe o actualizar el nombre
+      // Crear o actualizar documento del galpón en colección predicciones
       await firestore.collection('predicciones').doc(idGalpon).set(
         {
           'nombre': nombreGalpon,
@@ -82,5 +99,4 @@ class GalponService {
       throw Exception('No se pudo guardar las predicciones.');
     }
   }
-  
 }

@@ -5,6 +5,7 @@ import 'package:chick_stell_view/views/login/login.dart';
 import 'package:chick_stell_view/views/login/singup.dart';
 import 'package:chick_stell_view/views/main_views/ajustes/ajustes_view.dart';
 import 'package:chick_stell_view/views/main_views/clima/clima_view.dart';
+import 'package:chick_stell_view/views/main_views/monitoreo/create_galpon/create_galpon.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/monitoreo_view.dart';
 import 'package:chick_stell_view/views/main_views/prediccion/prediccion_view.dart';
 import 'package:chick_stell_view/views/widgets/botton_nav_var.dart';
@@ -43,6 +44,10 @@ class AppRoutes{
     GetPage(
       name: '/home_nav',
       page: () => BottonNavVar(),
-    )
+    ),
+    GetPage(
+      name: '/create_galpon',
+      page: () => CreateGalpon(),
+    ),
   ];
 }
