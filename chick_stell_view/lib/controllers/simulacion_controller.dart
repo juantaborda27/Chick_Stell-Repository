@@ -47,16 +47,16 @@ class SimulacionController extends GetxController {
     } catch (e) {}
   }
 
-  Future<void> descargarHistorialPredicciones() async {
-    try {
-      await _pdfService.generatePdf();
-      Get.snackbar('Exito', 'PDF generado exitosamente',
-          duration: Duration(seconds: 2));
-    } catch (e) {
-      Get.snackbar('Error', 'No se pudo generar el PDF',
-          duration: Duration(seconds: 2)); 
-    }
-  }
+
+  Future<void> generatePdf() async {
+      try {
+            await _pdfService.generatePdf();
+            Get.snackbar('Éxito', 'PDF generado y abierto correctamente');
+          } catch (e) {
+            Get.snackbar('Error', 'No se pudo generar el PDF');
+          }
+        }
+
 
   void iniciarSimulacion() {
     simulando.value = true;

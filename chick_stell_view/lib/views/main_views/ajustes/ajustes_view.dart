@@ -77,7 +77,7 @@ final notificacionController = Get.put(NotificacionController());
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: ElevatedButton.icon(
                 onPressed: () {
-                  simulacionController.descargarHistorialPredicciones();
+                  simulacionController.generatePdf();
               },
                 icon: Icon(Icons.picture_as_pdf),
                 label: Text("Descargar informe PDF"),
