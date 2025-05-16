@@ -15,8 +15,9 @@ class AjustesView extends StatefulWidget {
 
 class _SettingsViewState extends State<AjustesView> {
 final profileController = Get.put(ProfileController());
-
 final authContreller = Get.put(AuthController()); 
+
+
   // Variables de estado local (temporales)
   bool alertasCriticas = true;
   bool predicciones = true;
@@ -121,7 +122,14 @@ final authContreller = Get.put(AuthController());
     );
   }
   
-  Widget _buildUserProfileCard() {
+Widget _buildUserProfileCard() {
+  return Obx(() {
+    final name = profileController.name.value;
+    final photoUrl = profileController.profileImageUrl.value;
+    final initials = name.isNotEmpty
+        ? name.trim().split(' ').map((e) => e[0]).take(2).join().toUpperCase()
+        : 'JD';
+
     return Card(
       elevation: 0,
       color: Colors.white,
@@ -133,21 +141,26 @@ final authContreller = Get.put(AuthController());
             CircleAvatar(
               backgroundColor: Colors.teal,
               radius: 24,
-              child: Text(
-                'JD',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
+              backgroundImage: photoUrl != null && photoUrl.isNotEmpty
+                  ? NetworkImage(photoUrl)
+                  : null,
+              child: photoUrl == null || photoUrl.isEmpty
+                  ? Text(
+                      initials,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    )
+                  : null,
             ),
             SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  profileController.name.value ?? '',
+                  name,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -166,13 +179,19 @@ final authContreller = Get.put(AuthController());
         ),
       ),
     );
-  }
+  });
+}
+
+
   
   Widget _buildDivider() {
     return Divider(height: 1, thickness: 1, color: Colors.grey[200]);
   }
   
-  Widget _buildEditProfileButton() {
+Widget _buildEditProfileButton() {
+  return Obx(() {
+    final email = authContreller.user.value?.email ?? '';
+
     return Card(
       elevation: 0,
       color: Colors.white,
@@ -196,7 +215,7 @@ final authContreller = Get.put(AuthController());
                 border: Border.all(color: Colors.grey[300]!),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: Text(authContreller.user.value?.email ?? ''),
+              child: Text(email),
             ),
             SizedBox(height: 16),
             ElevatedButton(
@@ -214,7 +233,9 @@ final authContreller = Get.put(AuthController());
         ),
       ),
     );
-  }
+  });
+}
+
   
   Widget _buildToggleOption(String title, String subtitle, bool value, Function(bool) onChanged) {
     return Card(

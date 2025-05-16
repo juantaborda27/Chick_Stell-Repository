@@ -1,3 +1,4 @@
+import 'package:chick_stell_view/controllers/profile_controller.dart';
 import 'package:chick_stell_view/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -56,6 +57,8 @@ class AuthController {
     if (newUser == null) throw Exception('Credenciales incorrectas');
     
     user.value = newUser;
+    final profilController = Get.put(ProfileController());
+    await profilController.loadProfileFromFirestore();
     await saveUserStorage(email, password);
     
     
