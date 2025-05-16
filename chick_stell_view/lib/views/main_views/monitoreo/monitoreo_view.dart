@@ -32,9 +32,7 @@ class MonitoreoView extends StatelessWidget {
       body: SafeArea(
         child: Obx(() {
           if (simulacionController.galpones.isEmpty) {
-            return isLoading.value
-                ? _buildLoadingScreen()
-                : Center(
+            return Center(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 32.0),
                       child: Column(
@@ -71,9 +69,7 @@ class MonitoreoView extends StatelessWidget {
           final selectedWarehouseIndex = controller.selectedWarehouse.value;
           final galponSeleccionado = simulacionController.galpones[selectedWarehouseIndex];
 
-          return isLoading.value
-              ? _buildLoadingScreen()
-              : FadeIn(
+          return FadeIn(
                   duration: const Duration(milliseconds: 600),
                   child: SingleChildScrollView(
                     child: Padding(
@@ -89,6 +85,15 @@ class MonitoreoView extends StatelessWidget {
                           InformationGalpon(controller: controller),
                           const SizedBox(height: 20),
                           Ventilator(controller: controller),
+                          const SizedBox(height: 20),
+                          Obx(() {
+                            final alerta = controller.alertaActiva.value;
+                            if (alerta == null)
+                              return const SizedBox.shrink(); 
+                            return WarningAlert(
+                                title: alerta.title, message: alerta.message);
+                          }),
+
                           const SizedBox(height: 20),
                           _buildMetricsGrid(galponSeleccionado),
                         ],
@@ -169,7 +174,7 @@ class MonitoreoView extends StatelessWidget {
         children: [
           FadeIn(
             child: Image.asset(
-              'assets/images/logo.png',
+              'assets/images/logo2.png',
               width: 120,
               height: 120,
             ),
