@@ -1,4 +1,6 @@
+import 'package:chick_stell_view/controllers/notificacion_controller.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
@@ -21,6 +23,10 @@ class NotificationService {
     String body, {
     int id = 0,
   }) async {
+    // Verificar si la notificación está activa
+    final NotificacionController notificacionController = Get.find<NotificacionController>();
+    if (!notificacionController.notificacionesActivas.value) return;
+    
     const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       'alert_channel',
       'Alertas',
