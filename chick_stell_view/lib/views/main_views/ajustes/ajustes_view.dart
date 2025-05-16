@@ -1,5 +1,6 @@
 import 'package:chick_stell_view/controllers/auth_controller.dart';
 import 'package:chick_stell_view/controllers/profile_controller.dart';
+import 'package:chick_stell_view/controllers/simulacion_controller.dart';
 import 'package:chick_stell_view/views/main_views/ajustes/editar_profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,6 +10,10 @@ import 'package:get/get_core/src/get_main.dart';
 class AjustesView extends StatefulWidget {
   final ProfileController profileController = Get.put(ProfileController());
   final AuthController authController = Get.find<AuthController>();
+  final SimulacionController simulacionController = Get.put(SimulacionController());
+  
+  
+
   @override
   _SettingsViewState createState() => _SettingsViewState();
 }
@@ -16,13 +21,12 @@ class AjustesView extends StatefulWidget {
 class _SettingsViewState extends State<AjustesView> {
 final profileController = Get.put(ProfileController());
 final authContreller = Get.put(AuthController()); 
-
+final simulacionController = Get.put(SimulacionController());
 
   // Variables de estado local (temporales)
   bool alertasCriticas = true;
-  bool predicciones = true;
   bool informesDiarios = true;
-  String frecuenciaActualizacion = 'Cada 5 minutos';
+
 
   @override
   Widget build(BuildContext context) {
@@ -59,20 +63,18 @@ final authContreller = Get.put(AuthController());
                 }
               ),
               _buildDivider(),
-              _buildToggleOption(
-                'Predicciones', 
-                'Notificaciones de predicciones de IA', 
-                predicciones,
-                (value) {
-                  setState(() {
-                    predicciones = value;
-                  });
-                }
-              ),
+              Obx(() => _buildToggleOption(
+                'Predicciones',
+                'Modulo de predicciones de IA',
+                simulacionController.simulando.value,
+              (value) {
+                simulacionController.toggleSimulacion(value);
+                },
+              )),
               _buildDivider(),
               _buildToggleOption(
                 'Informes diarios', 
-                'Recibir resumen diario por email', 
+                'Recibir informes diarios', 
                 informesDiarios,
                 (value) {
                   setState(() {
@@ -278,63 +280,6 @@ Widget _buildEditProfileButton() {
     );
   }
   
-  // ignore: unused_element
-  Widget _buildDropdownOption() {
-    return Card(
-      elevation: 0,
-      color: Colors.white,
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Frecuencia de actualización',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            SizedBox(height: 8),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: frecuenciaActualizacion,
-                  icon: Icon(Icons.keyboard_arrow_down),
-                  isExpanded: true,
-                  items: [
-                    'Cada 1 minuto',
-                    'Cada 5 minutos',
-                    'Cada 15 minutos',
-                    'Cada 30 minutos',
-                    'Cada hora',
-                  ].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        frecuenciaActualizacion = newValue;
-                      });
-                    }
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
   
   Widget _buildPasswordButton() {
     return Card(
@@ -344,7 +289,9 @@ Widget _buildEditProfileButton() {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            authContreller.logOut();
+          },
           child: Center(child: Text('Cambiar contraseña')),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white,
@@ -378,7 +325,9 @@ Widget _buildEditProfileButton() {
         SizedBox(width: 12),
         Expanded(
           child: ElevatedButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              authContreller.logOut();
+            },
             icon: Icon(Icons.logout),
             label: Text('Cerrar sesión'),
             style: ElevatedButton.styleFrom(

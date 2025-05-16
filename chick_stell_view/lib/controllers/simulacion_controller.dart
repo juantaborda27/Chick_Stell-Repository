@@ -55,6 +55,14 @@ class SimulacionController extends GetxController {
     _timer?.cancel();
   }
 
+   void toggleSimulacion(bool value) {
+    if (value) {
+      iniciarSimulacion();
+    } else {
+      detenerSimulacion();
+    }
+  }
+
   void forzarEstresTermico() {
     forzandoEstres.value = true;
     progresoEstres = 0;

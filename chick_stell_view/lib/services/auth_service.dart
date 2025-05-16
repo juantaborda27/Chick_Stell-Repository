@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 
@@ -54,6 +55,15 @@ class AuthService {
       print('Error al iniciar sesion {$e message}' );
     }
     return null;
+  }
+
+  // Cerrar Sesion
+  Future<void> singOut() async {
+    await _auth.signOut();
+
+    // Si usas almacenamiento local (opcional):
+    await GetStorage().erase();
+
   }
 
   // Iniciar sesion con Google

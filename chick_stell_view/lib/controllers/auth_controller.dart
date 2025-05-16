@@ -79,6 +79,21 @@ class AuthController {
   }
 }
 
+ Future<void> logOut() async {
+  isloading.value = true;
+  try {
+    await _authService.singOut();
+    user.value = null;
+    await storage.remove('email');
+    await storage.remove('password');
+    Get.offAllNamed('/login');
+  } catch (e) {
+    Get.snackbar('Error', 'Error al cerrar sesión: $e');
+  } finally {
+    isloading.value = false;
+  }
+ }
+
 
   Future<void> saveUserStorage(String email, String password) async {
   await storage.write('email', email);
