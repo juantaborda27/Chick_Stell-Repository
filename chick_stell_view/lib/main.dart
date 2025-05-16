@@ -1,6 +1,7 @@
 import 'package:chick_stell_view/controllers/auth_controller.dart';
 import 'package:chick_stell_view/controllers/galpon_controller.dart';
 import 'package:chick_stell_view/controllers/alerta_controller.dart';
+import 'package:chick_stell_view/controllers/notificacion_controller.dart';
 import 'package:chick_stell_view/controllers/simulacion_controller.dart';
 import 'package:chick_stell_view/controllers/theme_controller.dart';
 import 'package:chick_stell_view/services/galpon_service.dart';
@@ -13,8 +14,8 @@ import 'package:get/get.dart';
 
 //importaciones de firebase
 import 'package:firebase_core/firebase_core.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:http/http.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -27,12 +28,13 @@ void main() async {
   Get.put(GalponService());
   Get.put(GalponController()); // <- Inyectas el
   Get.put(AuthController()); 
-  
+  Get.put(NotificacionController());
+
   final localImageService = LocalImageService();
   Get.put(localImageService);
 
+  await GetStorage.init();
   
-
   // Inicializar Hive
   await Hive.initFlutter();
   await Hive.openBox('profile_images');
