@@ -69,38 +69,50 @@ class MonitoreoView extends StatelessWidget {
           final selectedWarehouseIndex = controller.selectedWarehouse.value;
           final galponSeleccionado = simulacionController.galpones[selectedWarehouseIndex];
 
-          return FadeIn(
-                  duration: const Duration(milliseconds: 600),
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          SearchGalpon(controller: controller),
-                          const SizedBox(height: 6),
-                          WarehouseSelector(controller: controller),
-                          const SizedBox(height: 16),
-                          WarehouseHeader(controller: controller),
-                          const SizedBox(height: 10),
-                          InformationGalpon(controller: controller),
-                          const SizedBox(height: 20),
-                          Ventilator(controller: controller),
-                          const SizedBox(height: 20),
-                          Obx(() {
-                            final alerta = controller.alertaActiva.value;
-                            if (alerta == null)
-                              return const SizedBox.shrink(); 
-                            return WarningAlert(
-                                title: alerta.title, message: alerta.message);
-                          }),
-
-                          const SizedBox(height: 20),
-                          _buildMetricsGrid(galponSeleccionado),
-                        ],
+          return Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color.fromARGB(255, 110, 221, 221), // Color base
+                  Colors.white // Puedes ajustar este segundo tono para un buen degradado
+                ],
+              ),
+            ),
+            child: FadeIn(
+                    duration: const Duration(milliseconds: 600),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            SearchGalpon(controller: controller),
+                            const SizedBox(height: 6),
+                            WarehouseSelector(controller: controller),
+                            const SizedBox(height: 16),
+                            WarehouseHeader(controller: controller),
+                            const SizedBox(height: 10),
+                            InformationGalpon(controller: controller),
+                            const SizedBox(height: 20),
+                            Ventilator(controller: controller),
+                            const SizedBox(height: 20),
+                            Obx(() {
+                              final alerta = controller.alertaActiva.value;
+                              if (alerta == null)
+                                return const SizedBox.shrink(); 
+                              return WarningAlert(
+                                  title: alerta.title, message: alerta.message);
+                            }),
+            
+                            const SizedBox(height: 20),
+                            _buildMetricsGrid(galponSeleccionado),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                );
+          );
         }),
       ),
     );
