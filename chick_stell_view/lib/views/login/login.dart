@@ -27,12 +27,40 @@ class LoginPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Column(
           children: [
-            // Header Section
+            // Header Section with Logo
             SizedBox(height: screenSize.height * 0.05),
             FadeInDown(
               duration: const Duration(milliseconds: 1000),
               child: Column(
                 children: [
+                  // Logo Image
+                  FadeInDown(
+                    duration: const Duration(milliseconds: 800),
+                    child: Container(
+                      height: 120,
+                      width: 120,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        // Reemplaza esto con tu logo real
+                        child: Image.asset(
+                          'assets/images/logo2.png',
+                          height: 80,
+                          width: 80,
+                          fit: BoxFit.contain,
+                        ),
+                        // Si prefieres usar un icono como placeholder:
+                        // child: Icon(
+                        //   Icons.chat,
+                        //   size: 60,
+                        //   color: Colors.greenAccent,
+                        // ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   Text(
                     'Iniciar Sesión',
                     style: TextStyle(
