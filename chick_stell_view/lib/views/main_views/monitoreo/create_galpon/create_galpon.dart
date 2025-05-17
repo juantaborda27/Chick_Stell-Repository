@@ -12,17 +12,21 @@ class CreateGalpon extends StatefulWidget {
   CreateGalponState createState() => CreateGalponState();
 }
 
-class CreateGalponState extends State<CreateGalpon> with SingleTickerProviderStateMixin {
+class CreateGalponState extends State<CreateGalpon>
+    with SingleTickerProviderStateMixin {
   // Controladores para los campos de texto
   final TextEditingController nombreController = TextEditingController();
   final TextEditingController largoController = TextEditingController();
   final TextEditingController anchoController = TextEditingController();
   final TextEditingController edadDiasController = TextEditingController();
-  final TextEditingController densidadPollosController = TextEditingController();
+  final TextEditingController densidadPollosController =
+      TextEditingController();
   final TextEditingController ventiladoresController = TextEditingController();
   final TextEditingController nebulizadoresController = TextEditingController();
   final TextEditingController sensoresController = TextEditingController();
-  
+  final TextEditingController cantidadPollosController =
+      TextEditingController();
+
   // Controlador de animación para efectos visuales
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -59,6 +63,7 @@ class CreateGalponState extends State<CreateGalpon> with SingleTickerProviderSta
     densidadPollosController.dispose();
     ventiladoresController.dispose();
     nebulizadoresController.dispose();
+    cantidadPollosController.dispose();
     sensoresController.dispose();
     _animationController.dispose();
     super.dispose();
@@ -87,8 +92,8 @@ class CreateGalponState extends State<CreateGalpon> with SingleTickerProviderSta
                   padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
                   child: Form(
                     key: _formKey,
-                    autovalidateMode: _autovalidate 
-                        ? AutovalidateMode.onUserInteraction 
+                    autovalidateMode: _autovalidate
+                        ? AutovalidateMode.onUserInteraction
                         : AutovalidateMode.disabled,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -115,16 +120,20 @@ class CreateGalponState extends State<CreateGalpon> with SingleTickerProviderSta
                                 label: 'Largo (m)',
                                 hintText: 'Largo',
                                 controller: largoController,
-                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                        decimal: true),
                                 icon: Icons.straighten,
                                 inputFormatters: [
-                                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')),
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'^\d*\.?\d*$')),
                                 ],
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Requerido';
                                   }
-                                  if (double.tryParse(value) == null || double.parse(value) <= 0) {
+                                  if (double.tryParse(value) == null ||
+                                      double.parse(value) <= 0) {
                                     return 'Valor inválido';
                                   }
                                   return null;
@@ -137,16 +146,20 @@ class CreateGalponState extends State<CreateGalpon> with SingleTickerProviderSta
                                 label: 'Ancho (m)',
                                 hintText: 'Ancho',
                                 controller: anchoController,
-                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                        decimal: true),
                                 icon: Icons.swap_horiz,
                                 inputFormatters: [
-                                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')),
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'^\d*\.?\d*$')),
                                 ],
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Requerido';
                                   }
-                                  if (double.tryParse(value) == null || double.parse(value) <= 0) {
+                                  if (double.tryParse(value) == null ||
+                                      double.parse(value) <= 0) {
                                     return 'Valor inválido';
                                   }
                                   return null;
@@ -198,22 +211,47 @@ class CreateGalponState extends State<CreateGalpon> with SingleTickerProviderSta
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        _buildTextField(
-                          label: 'Sensores',
-                          hintText: 'Ingrese la cantidad de sensores',
-                          controller: sensoresController,
-                          keyboardType: TextInputType.number,
-                          icon: Icons.sensors,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
+                        const SizedBox(height: 24),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTextField(
+                                label: 'Sensores',
+                                hintText: 'Ingrese la cantidad de sensores',
+                                controller: sensoresController,
+                                keyboardType: TextInputType.number,
+                                icon: Icons.sensors,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Por favor ingrese la cantidad de sensores';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildTextField(
+                                label: 'Numero de Pollos',
+                                hintText: 'Cantidad',
+                                controller: cantidadPollosController,
+                                keyboardType: TextInputType.number,
+                                icon: Icons.egg,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Requerido';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            )
                           ],
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Por favor ingrese la cantidad de sensores';
-                            }
-                            return null;
-                          },
                         ),
                         const SizedBox(height: 16),
                         _buildInfoCard(),
@@ -368,7 +406,8 @@ class CreateGalponState extends State<CreateGalpon> with SingleTickerProviderSta
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(color: errorColor),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -386,7 +425,7 @@ class CreateGalponState extends State<CreateGalpon> with SingleTickerProviderSta
             setState(() {
               _autovalidate = true;
             });
-            
+
             if (_formKey.currentState?.validate() ?? false) {
               final galponController = Get.find<GalponController>();
               final Uuid uuid = const Uuid();
@@ -401,7 +440,11 @@ class CreateGalponState extends State<CreateGalpon> with SingleTickerProviderSta
                 largo: double.tryParse(largoController.text) ?? 0,
                 ancho: double.tryParse(anchoController.text) ?? 0,
                 edadDias: int.tryParse(edadDiasController.text) ?? 0,
-                densidadPollos: double.tryParse(densidadPollosController.text) ?? 0.0,
+                densidadPollos: galponController.calcularDensidad(
+                  largoText: largoController.text,
+                  anchoText: anchoController.text,
+                  cantidadPollosText: cantidadPollosController.text,
+                ),
                 ventiladores: int.tryParse(ventiladoresController.text) ?? 0,
                 nebulizadores: int.tryParse(nebulizadoresController.text) ?? 0,
                 sensores: int.tryParse(sensoresController.text) ?? 0,
@@ -421,16 +464,16 @@ class CreateGalponState extends State<CreateGalpon> with SingleTickerProviderSta
               try {
                 await galponController.agregarGalpon(galpon);
                 await galponController.cargarGalpones();
-                
+
                 // Cerrar el indicador de carga
                 Navigator.of(context).pop();
-                
+
                 // Mostrar mensaje de éxito y cerrar el diálogo
                 _showSuccessMessage(context);
               } catch (e) {
                 // Cerrar el indicador de carga
                 Navigator.of(context).pop();
-                
+
                 // Mostrar mensaje de error
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -490,7 +533,7 @@ class CreateGalponState extends State<CreateGalpon> with SingleTickerProviderSta
         ),
       ),
     );
-    
+
     Navigator.of(context).pop(); // Cerrar el diálogo
   }
 }

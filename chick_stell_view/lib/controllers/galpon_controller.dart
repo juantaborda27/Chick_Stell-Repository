@@ -25,6 +25,21 @@ class GalponController extends GetxController {
     galpones.refresh();
   }
 
+  double calcularDensidad({
+    required String largoText,
+    required String anchoText,
+    required String cantidadPollosText,
+  }) {
+    final largo = double.tryParse(largoText) ?? 0.0;
+    final ancho = double.tryParse(anchoText) ?? 0.0;
+    final cantidad = double.tryParse(cantidadPollosText) ?? 0.0;
+
+    final area = largo * ancho;
+    if (area <= 0) return 0.0;
+
+    return cantidad / area;
+  }
+
   Future<void> agregarGalpon(Galpon galpon) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) throw Exception('Usuario no autenticado');
@@ -54,7 +69,7 @@ class GalponController extends GetxController {
       await _galponService.deleteGalpon(id);
       await cargarGalpones();
       galpones.refresh();
-      
+
       Get.snackbar('Éxito', 'Galpón eliminado correctamente');
     } catch (e) {
       Get.snackbar('Error', 'No se pudo eliminar el galpón');
