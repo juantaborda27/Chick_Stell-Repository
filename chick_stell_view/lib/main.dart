@@ -3,7 +3,6 @@ import 'package:chick_stell_view/controllers/galpon_controller.dart';
 import 'package:chick_stell_view/controllers/alerta_controller.dart';
 import 'package:chick_stell_view/controllers/notificacion_controller.dart';
 import 'package:chick_stell_view/controllers/simulacion_controller.dart';
-import 'package:chick_stell_view/controllers/theme_controller.dart';
 import 'package:chick_stell_view/services/galpon_service.dart';
 import 'package:chick_stell_view/services/local_image_service.dart';
 import 'package:chick_stell_view/services/notification_service.dart';
@@ -23,6 +22,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  WidgetsFlutterBinding.ensureInitialized();
   //Get.find<GalponController>();
   Get.put(AlertaController());
   Get.put(GalponService());

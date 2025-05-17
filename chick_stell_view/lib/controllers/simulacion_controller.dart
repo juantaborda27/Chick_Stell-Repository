@@ -49,13 +49,16 @@ class SimulacionController extends GetxController {
 
 
   Future<void> generatePdf() async {
-      try {
-            await _pdfService.generatePdf();
-            Get.snackbar('Éxito', 'PDF generado y abierto correctamente');
-          } catch (e) {
-            Get.snackbar('Error', 'No se pudo generar el PDF');
-          }
-        }
+            try {
+              await _pdfService.generatePdf();
+                Get.snackbar('Éxito', 'PDF generado y abierto correctamente');
+                } catch (e, stacktrace) {
+                print('Error al generar PDF: $e');
+                print('Stacktrace: $stacktrace');
+                Get.snackbar('Error', 'No se pudo generar el PDF');
+              }
+
+            } 
 
 
   void iniciarSimulacion() {
