@@ -10,7 +10,7 @@ class EditGalpon extends StatelessWidget {
   EditGalpon({Key? key, required this.galpon}) : super(key: key);
 
   final GalponController galponController = Get.find<GalponController>();
-  
+  final _formKey = GlobalKey<FormState>();
 
   // Colores de la aplicación
   final Color primaryColor = const Color(0xFF0F4C3A);
@@ -22,7 +22,6 @@ class EditGalpon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
     final nombreController = TextEditingController(text: galpon.nombre);
     final largoController = TextEditingController(text: galpon.largo.toString());
     final anchoController = TextEditingController(text: galpon.ancho.toString());
@@ -38,7 +37,7 @@ class EditGalpon extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold)
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: primaryColor,
         elevation: 2,
         leading: FadeInLeft(
           duration: const Duration(milliseconds: 400),
@@ -211,7 +210,6 @@ class EditGalpon extends StatelessWidget {
   ) {
     return ElevatedButton(
       onPressed: () async {
-        final _formKey = GlobalKey<FormState>();
         if (_formKey.currentState!.validate()) {
           galponController.isProcessing.value = true;
 

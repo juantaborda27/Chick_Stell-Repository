@@ -32,7 +32,13 @@ class WarehouseSelector extends StatelessWidget {
                     onPressed: () {
                       final selectedIndex = controller.galpones.indexWhere(
                           (g) => g.id == controller.galponesFiltrados[i].id);
-                      controller.selectWarehouse(selectedIndex);
+                      if (selectedIndex >= 0 &&
+                          selectedIndex < controller.galpones.length) {
+                        controller.selectWarehouse(selectedIndex);
+                      } else {
+                        // Manejar el caso cuando no se encuentra el galpón
+                        print('Galpón no encontrado en la lista principal');
+                      }
                     },
                     child: Text(controller.galponesFiltrados[i].nombre),
                   ),
