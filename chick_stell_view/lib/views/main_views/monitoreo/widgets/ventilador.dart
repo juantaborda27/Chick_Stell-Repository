@@ -22,16 +22,28 @@ class _VentilatorState extends State<Ventilator> with SingleTickerProviderStateM
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 15), // Lento por defecto
-    )..repeat();
+      duration: const Duration(seconds: 15), // Por defecto, lento
+    )..repeat(); // AnimationController
 
-    widget.controller.ventilationActive.listen((isActive) {
+    // Escuchar solo el observable válido
+    ever(widget.controller.ventilationActive, (_) {
+      final isVentilationActive = widget.controller.ventilationActive.value;
+      final galpon = widget.controller.galponSeleccionado;
+
+      final isHot =
+          galpon?.temperaturaInterna != null && galpon!.temperaturaInterna > 30;
+
+      // Si hay ventilación activa o temperatura alta => rápido
+      final shouldSpinFast = isVentilationActive || isHot;
+
       setState(() {
-        _controller.duration = Duration(seconds: isActive ? 2 : 15);
-        _controller.repeat(); // Reinicia la animación con la nueva duración
+        _controller.duration = Duration(seconds: shouldSpinFast ? 2 : 15);
+        _controller.repeat(); // Reinicia con la nueva duración
       });
     });
   }
+
+
 
   @override
   void dispose() {
