@@ -1,9 +1,7 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:chick_stell_view/controllers/alerta_controller.dart';
 import 'package:chick_stell_view/controllers/simulacion_controller.dart';
 import 'package:chick_stell_view/controllers/warehouse_controller.dart';
 import 'package:chick_stell_view/models/galpon_model.dart';
-import 'package:chick_stell_view/views/main_views/monitoreo/widgets/alert_view.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/information_galpon.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/metric_card.dart';
 import 'package:chick_stell_view/views/main_views/monitoreo/widgets/search_galpon.dart';

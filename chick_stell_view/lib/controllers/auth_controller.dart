@@ -104,22 +104,25 @@ class AuthController {
 
   // Inicio con Google
   Future<void> loginWithGoogle() async {
-    isloading.value = true;
-    try {
-      User? newUser = await _authService.signInWithGoogle();
-      if (newUser != null) {
-        user.value = newUser;
-        await saveUserStorage(newUser.email ?? '', '');
-        Get.offAllNamed('/');
-      } else {
-        Get.snackbar('Erorr', 'No se pudo iniciar sesion con Google');
-      }
-    } catch (e) {
-      Get.snackbar('Error', 'Error al iniciar sesion con Google: $e');
-    } finally {
-      isloading.value = false;
+  isloading.value = true;
+  try {
+    User? newUser = await _authService.signInWithGoogle();
+    
+    if (newUser != null) {
+      user.value = newUser;
+      await saveUserStorage(newUser.email ?? '', '');
       
+      // Navegar y limpiar el stack de navegación
+      Get.offAllNamed('/home'); // Asegúrate que esta ruta exista
+      
+      Get.snackbar('Éxito', 'Bienvenido ${newUser.displayName ?? ''}');
     }
+  } catch (e) {
+    // Los errores ya son manejados por AuthService
+    print('Error en loginWithGoogle: $e');
+  } finally {
+    isloading.value = false;
   }
+}
 
 }

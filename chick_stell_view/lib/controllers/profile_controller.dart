@@ -58,12 +58,12 @@ class ProfileController extends GetxController {
 
       if (image != null) {
         final path = await localImageService.saveProfileImage(image);
-        localImagePath.value = path!;
+        localImagePath.value = path;
         Get.snackbar('Éxito', 'Imagen guardada correctamente');
       }
     } catch (e) {
       Get.snackbar('Error', 'No se pudo guardar la imagen: ${e.toString()}');
-      print('Error detallado: $e');
+      //print('Error detallado: $e');
     }
   }
 
@@ -131,8 +131,6 @@ class ProfileController extends GetxController {
     whatsapp.value = data['whatsapp'] ?? '';
     email.value = authController.user.value?.email ?? '';
 
-
-    print('Perfil cargado correctamente');
   }
  }
 

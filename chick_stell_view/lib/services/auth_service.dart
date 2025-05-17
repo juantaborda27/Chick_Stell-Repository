@@ -13,6 +13,7 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn( scopes: ['email', 'profile']);
 
   Future<User?> registerEmail(String email, String password, String confirmPassword) async {
     try {
@@ -69,40 +70,80 @@ class AuthService {
   // Iniciar sesion con Google
   Future<User?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-      if (googleUser == null) {
-        return null;
-      }  
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return null;
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-      final credential = GoogleAuthProvider.credential(
+      final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken
+        idToken: googleAuth.idToken,
       );
+      
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final User? user = userCredential.user;
 
-      UserCredential userCredential = await _auth.signInWithCredential(credential);
-      User? user = userCredential.user;
       if (user != null) {
-        final doc = await _firestore.collection('usuarios').doc(user.uid).get();
-        if (!doc.exists) {
-          await _firestore.collection('usarios').doc(user.uid).set({
-            'imageUrl': user.photoURL,
-            'name': user.displayName,
-            'email': user.email,
-            'ws': '',
-            'phone': '',
-            'fnac': '',
-            'createdAt': FieldValue.serverTimestamp(),
-          });
-        }
+
+        await _firestore.collection('usarios').doc(user.uid).set({
+          'uid': user.uid,
+          'imageUrl': user.photoURL ?? googleUser.photoUrl,
+          'name': user.displayName ?? googleUser.displayName,
+          'email': user.email,
+          'provider': 'google',
+          'ws': '',
+          'phone': '',
+          'fnac': '',
+          'lastLogin': FieldValue.serverTimestamp(),
+          'createdAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
       }
+
       return user;
+
+    } on FirebaseAuthException catch (e) {
+      _handleAuthError(e);
+      return null;
     } catch (e) {
-      Get.snackbar('Error', 'Error al iniciar sesion con Google: $e');
-      return null; 
+      print('Error al iniciar sesión con Google: $e');
+      return null;
     }
+  }
+
+  // Exepciones de Google
+   void _handleAuthError(FirebaseAuthException e) {
+    String errorMessage = 'Error al iniciar sesión';
+    
+    switch (e.code) {
+      case 'account-exists-with-different-credential':
+        errorMessage = 'Ya existe una cuenta con este email';
+        break;
+      case 'invalid-credential':
+        errorMessage = 'Credenciales inválidas';
+        break;
+      case 'operation-not-allowed':
+        errorMessage = 'Operación no permitida';
+        break;
+      case 'user-disabled':
+        errorMessage = 'Usuario deshabilitado';
+        break;
+      case 'user-not-found':
+        errorMessage = 'Usuario no encontrado';
+        break;
+      case 'wrong-password':
+        errorMessage = 'Contraseña incorrecta';
+        break;
+      case 'invalid-verification-code':
+        errorMessage = 'Código de verificación inválido';
+        break;
+      case 'invalid-verification-id':
+        errorMessage = 'ID de verificación inválido';
+        break;
+      default:
+        errorMessage = 'Error desconocido: ${e.message}';
+    }
+    
+    Get.snackbar('Error', errorMessage);
   }
 
   // Editar Perfil

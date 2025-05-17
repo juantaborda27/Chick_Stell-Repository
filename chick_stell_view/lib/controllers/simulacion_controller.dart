@@ -44,7 +44,9 @@ class SimulacionController extends GetxController {
         latitud = location['latitude'];
         longitud = location['longitude'];
       }
-    } catch (e) {}
+    } catch (e) {
+      print("Error al obtener latitud y longitud: $e");   
+    }
   }
 
 
