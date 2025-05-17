@@ -9,6 +9,9 @@ class GalponController extends GetxController {
 
   final GalponService _galponService = GalponService();
 
+  final RxBool isProcessing = false.obs;
+
+
   @override
   void onInit() {
     super.onInit();
