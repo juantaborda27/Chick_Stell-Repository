@@ -30,7 +30,11 @@ class WarehouseController extends GetxController {
   }
 
   void selectWarehouse(int index) {
-    selectedWarehouse.value = index;
+    if (index >= 0 && index < galpones.length) {
+      selectedWarehouse.value = index;
+    } else {
+      print('Índice inválido: $index. La lista tiene ${galpones.length} elementos');
+    }
   }
 
   void toggleVentilation() {
