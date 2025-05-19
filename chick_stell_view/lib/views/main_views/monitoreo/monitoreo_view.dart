@@ -102,7 +102,16 @@ class MonitoreoView extends StatelessWidget {
                         const SizedBox(height: 10),
                         InformationGalpon(controller: controller),
                         const SizedBox(height: 20),
-                        Ventilator(controller: controller),
+                        //Ventilator(controller: controller),
+                        Obx(() {
+                          // Este key único fuerza la reconstrucción cuando cambia el galpón
+                          final uniqueKey = ValueKey(
+                              controller.galponSeleccionado?.id ?? 'none');
+                          return Ventilator(
+                            key: uniqueKey,
+                            controller: controller,
+                          );
+                        }),
                         const SizedBox(height: 20),
                         Obx(() {
                           final alerta = controller.alertaActiva.value;
