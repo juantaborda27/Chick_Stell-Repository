@@ -22,23 +22,30 @@ class WarehouseController extends GetxController {
     cargarGalpones();
   }
 
-  void cargarGalpones() async {
+  Future<void> cargarGalpones() async {
     galpones.value = (await _galponService.getGalpones()).cast<Galpon>();
     // galpones.sort();
     galpones.sort((a, b) => a.id.compareTo(b.id));
     galpones.refresh(); // Actualizar la lista
   }
 
-  void selectWarehouse(int index) {
-    if (index >= 0 && index < galpones.length) {
-      selectedWarehouse.value = index;
-    } else {
-      print('Índice inválido: $index. La lista tiene ${galpones.length} elementos');
-    }
-  }
+  // void selectWarehouse(int index) {
+  //   if (index >= 0 && index < galpones.length) {
+  //     selectedWarehouse.value = index;
+  //   } else {
+  //     print('Índice inválido: $index. La lista tiene ${galpones.length} elementos');
+  //   }
+  // }
 
-  void toggleVentilation() {
+  // void toggleVentilation() {
+  //   ventilationActive.value = !ventilationActive.value;
+  // }
+
+  // En tu WarehouseController
+void toggleVentilation() {
     ventilationActive.value = !ventilationActive.value;
+    update(); // Asegúrate de notificar a los listeners
+    print('Ventilación: ${ventilationActive.value}'); // Para depuración
   }
 
   void addWarehouse(Galpon galpon) async {
@@ -83,19 +90,47 @@ class WarehouseController extends GetxController {
 
 
 
-  final Rxn<AlertData> alertaActiva = Rxn<AlertData>();
+  final Rx<AlertData?> alertaActiva = Rx<AlertData?>(null);
 
   void activarAlerta(String title, String message) {
+    // Cancela cualquier alerta pendiente
+    limpiarAlerta();
+
     alertaActiva.value = AlertData(title: title, message: message);
 
+    // Programa la limpieza automática
     Future.delayed(const Duration(seconds: 15), () {
-      limpiarAlerta();
+      if (alertaActiva.value != null) {
+        limpiarAlerta();
+      }
     });
   }
 
   void limpiarAlerta() {
     alertaActiva.value = null;
   }
+
+
+  
+
+
+
+
+
+  Rx<Galpon?> get galponSeleccionadoObs => Rx<Galpon?>(galponSeleccionado);
+
+// Y actualizarlo cuando cambie la selección
+void selectWarehouse(int index) {
+  if (index >= 0 && index < galpones.length) {
+    selectedWarehouse.value = index;
+    galpones.refresh(); // Esto activará los listeners
+  }
+}
+
+
+
+
+
 }
 
 class AlertData {
