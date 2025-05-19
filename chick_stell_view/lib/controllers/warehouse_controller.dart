@@ -22,20 +22,20 @@ class WarehouseController extends GetxController {
     cargarGalpones();
   }
 
-  void cargarGalpones() async {
+  Future<void> cargarGalpones() async {
     galpones.value = (await _galponService.getGalpones()).cast<Galpon>();
     // galpones.sort();
     galpones.sort((a, b) => a.id.compareTo(b.id));
     galpones.refresh(); // Actualizar la lista
   }
 
-  void selectWarehouse(int index) {
-    if (index >= 0 && index < galpones.length) {
-      selectedWarehouse.value = index;
-    } else {
-      print('Índice inválido: $index. La lista tiene ${galpones.length} elementos');
-    }
-  }
+  // void selectWarehouse(int index) {
+  //   if (index >= 0 && index < galpones.length) {
+  //     selectedWarehouse.value = index;
+  //   } else {
+  //     print('Índice inválido: $index. La lista tiene ${galpones.length} elementos');
+  //   }
+  // }
 
   void toggleVentilation() {
     ventilationActive.value = !ventilationActive.value;
@@ -96,6 +96,25 @@ class WarehouseController extends GetxController {
   void limpiarAlerta() {
     alertaActiva.value = null;
   }
+
+
+
+
+
+  Rx<Galpon?> get galponSeleccionadoObs => Rx<Galpon?>(galponSeleccionado);
+
+// Y actualizarlo cuando cambie la selección
+void selectWarehouse(int index) {
+  if (index >= 0 && index < galpones.length) {
+    selectedWarehouse.value = index;
+    galpones.refresh(); // Esto activará los listeners
+  }
+}
+
+
+
+
+
 }
 
 class AlertData {

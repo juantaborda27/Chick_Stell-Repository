@@ -1,5 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:chick_stell_view/controllers/auth_controller.dart';
+import 'package:chick_stell_view/controllers/warehouse_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -115,7 +116,7 @@ class LoginPage extends StatelessWidget {
               child: _buildLoginButton(screenSize),
             ),
 
-            const SizedBox(height: 5),
+            const SizedBox(height: 10),
 
             FadeInUp(
               duration: const Duration(milliseconds: 1400),
@@ -199,6 +200,7 @@ class LoginPage extends StatelessWidget {
             spreadRadius: 1,
             blurRadius: 8,
             offset: const Offset(0, 3),
+            color: Colors.grey.withOpacity(0.5),
           ),
         ],
       ),
@@ -312,18 +314,35 @@ class LoginPage extends StatelessWidget {
     );
   }
 
- void _handleLogin() async {
-  final email = emailController.text.trim();
-  final password = passwordController.text.trim();
+//  void _handleLogin() async {
+//   final email = emailController.text.trim();
+//   final password = passwordController.text.trim();
 
-  try {
-    await authController.login(email, password);
+//   try {
+//     await authController.login(email, password);
     
-    Get.offNamed('/home_nav');
-  } catch (e) {
+//     Get.offNamed('/home_nav');
+//   } catch (e) {
     
-    passwordController.clear();
-    Get.snackbar('Error', e.toString());
+//     passwordController.clear();
+//     Get.snackbar('Error', e.toString());
+//   }
+// }
+void _handleLogin() async {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+
+    try {
+      await authController.login(email, password);
+
+      // Cargar los galpones antes de navegar
+      await Get.find<WarehouseController>().cargarGalpones();
+
+      // Navegar reemplazando toda la pila de navegación
+      Get.offAllNamed('/home_nav');
+    } catch (e) {
+      passwordController.clear();
+      Get.snackbar('Error', e.toString());
+    }
   }
-}
 }
