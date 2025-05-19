@@ -37,8 +37,15 @@ class WarehouseController extends GetxController {
   //   }
   // }
 
-  void toggleVentilation() {
+  // void toggleVentilation() {
+  //   ventilationActive.value = !ventilationActive.value;
+  // }
+
+  // En tu WarehouseController
+void toggleVentilation() {
     ventilationActive.value = !ventilationActive.value;
+    update(); // Asegúrate de notificar a los listeners
+    print('Ventilación: ${ventilationActive.value}'); // Para depuración
   }
 
   void addWarehouse(Galpon galpon) async {
@@ -83,19 +90,28 @@ class WarehouseController extends GetxController {
 
 
 
-  final Rxn<AlertData> alertaActiva = Rxn<AlertData>();
+  final Rx<AlertData?> alertaActiva = Rx<AlertData?>(null);
 
   void activarAlerta(String title, String message) {
+    // Cancela cualquier alerta pendiente
+    limpiarAlerta();
+
     alertaActiva.value = AlertData(title: title, message: message);
 
+    // Programa la limpieza automática
     Future.delayed(const Duration(seconds: 15), () {
-      limpiarAlerta();
+      if (alertaActiva.value != null) {
+        limpiarAlerta();
+      }
     });
   }
 
   void limpiarAlerta() {
     alertaActiva.value = null;
   }
+
+
+  
 
 
 

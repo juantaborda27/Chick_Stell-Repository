@@ -18,6 +18,10 @@ class _VentilatorState extends State<Ventilator> with SingleTickerProviderStateM
   late AnimationController _controller;
   bool _initialized = false;
   Galpon? _lastGalpon;
+  bool _isHot = false;
+  bool _isActive = false;
+
+
 
   @override
   void initState() {
@@ -26,52 +30,40 @@ class _VentilatorState extends State<Ventilator> with SingleTickerProviderStateM
       vsync: this,
       duration: const Duration(seconds: 15),
     );
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeAnimation();
-    });
-
-    // Escuchar cambios en ventilationActive
-    ever(widget.controller.ventilationActive, (_) => _updateAnimationSpeed());
-    
-    // Escuchar cambios en el índice seleccionado y en la lista de galpones
-    ever(widget.controller.selectedWarehouse, (_) => _updateAnimationSpeed());
-    ever(widget.controller.galpones, (_) => _updateAnimationSpeed());
+    _initializeAnimation();
   }
 
 
 
   void _initializeAnimation() {
-    final galpon = widget.controller.galponSeleccionado;
-    if (galpon != null) {
-      final isHot = galpon.temperaturaInterna > 23;
-      final isActive = widget.controller.ventilationActive.value;
-      
-      _controller.duration = Duration(seconds: (isHot || isActive) ? 2 : 15);
-      _controller.repeat();
-      setState(() => _initialized = true);
-    }
+    _updateAnimationSpeed();
+    _controller.repeat();
+    setState(() => _initialized = true);
   }
 
 
   void _updateAnimationSpeed() {
     final currentGalpon = widget.controller.galponSeleccionado;
-    
-    // Solo actualizar si el galpón cambió o si es la primera vez
-    if (currentGalpon != _lastGalpon || _lastGalpon == null) {
-      _lastGalpon = currentGalpon;
+    if (currentGalpon == null) return;
+
+    final newIsHot = currentGalpon.temperaturaInterna > 25;
+    final newIsActive = widget.controller.ventilationActive.value;
+
+    // Solo actualizar si hay cambios
+    if (currentGalpon != _lastGalpon || 
+        newIsHot != _isHot || 
+        newIsActive != _isActive) {
       
-      final isVentilationActive = widget.controller.ventilationActive.value;
-      final isHot = currentGalpon!.temperaturaInterna > 30;
-      final shouldSpinFast = isVentilationActive || isHot;
+      _lastGalpon = currentGalpon;
+      _isHot = newIsHot;
+      _isActive = newIsActive;
+
+      final shouldSpinFast = _isActive || _isHot;
 
       if (mounted) {
-        setState(() {
-          _controller.duration = Duration(seconds: shouldSpinFast ? 2 : 15);
-          if (!_controller.isAnimating) {
-            _controller.repeat();
-          }
-        });
+        _controller.stop();
+        _controller.duration = Duration(seconds: shouldSpinFast ? 2 : 15);
+        _controller.forward(from: 0);
       }
     }
   }
@@ -167,28 +159,42 @@ class _VentilatorState extends State<Ventilator> with SingleTickerProviderStateM
         const SizedBox(height: 16),
 
         // Botón para controlar el ventilador
-        // ElevatedButton.icon(
-        //   icon: Obx(() => Icon(
-        //         widget.controller.ventilationActive.value
-        //             ? Icons.pause_circle_outline
-        //             : Icons.play_circle_outline,
-        //         color: Colors.grey,
-        //       )),
-        //   label: Obx(() => Text(
-        //         widget.controller.ventilationActive.value
-        //             ? 'Ventilador Activo'
-        //             : 'Ventilador Inactivo',
-        //         style: const TextStyle(color: Colors.grey),
-        //       )),
-        //   style: ElevatedButton.styleFrom(
-        //     backgroundColor: Colors.grey.shade100,
-        //     foregroundColor: Colors.grey,
-        //     elevation: 0,
-        //     shape:
-        //         RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        //   ),
-        //   onPressed: () => widget.controller.toggleVentilation(),
-        // ),
+        ElevatedButton.icon(
+            icon: Obx(() => Icon(
+                  widget.controller.ventilationActive.value
+                      ? Icons.pause_circle_outline
+                      : Icons.play_circle_outline,
+                  color: widget.controller.ventilationActive.value
+                      ? Colors.grey
+                      : Colors.green,
+                )),
+            label: Obx(() => Text(
+                  widget.controller.ventilationActive.value
+                      ? 'Ventilador Inactivo'
+                      : 'Ventilador Activo',
+                  // style: TextStyle(
+                  //   color: widget.controller.ventilationActive.value
+                  //       ? Colors.green
+                  //       : Colors.grey,
+                  // ),
+                )),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.grey.shade100,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: BorderSide(
+                  color: widget.controller.ventilationActive.value
+                      ? Colors.green
+                      : Colors.grey,
+                ),
+              ),
+            ),
+            onPressed: () {
+              widget.controller.toggleVentilation();
+              _updateAnimationSpeed(); // Actualizar velocidad inmediatamente
+            },
+          ),
       ],
     );
   }
