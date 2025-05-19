@@ -123,7 +123,9 @@ void toggleVentilation() {
 void selectWarehouse(int index) {
   if (index >= 0 && index < galpones.length) {
     selectedWarehouse.value = index;
-    galpones.refresh(); // Esto activará los listeners
+    galpones.refresh();
+    update(); // Asegúrate de notificar a los listeners
+     // Esto activará los listeners
   }
 }
 
