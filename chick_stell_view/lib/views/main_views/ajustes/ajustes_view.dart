@@ -1,4 +1,5 @@
 import 'package:chick_stell_view/controllers/auth_controller.dart';
+import 'package:chick_stell_view/controllers/notificacion_controller.dart';
 import 'package:chick_stell_view/controllers/profile_controller.dart';
 import 'package:chick_stell_view/controllers/simulacion_controller.dart';
 import 'package:chick_stell_view/views/main_views/ajustes/editar_profile_view.dart';
@@ -11,6 +12,7 @@ class AjustesView extends StatefulWidget {
   final ProfileController profileController = Get.put(ProfileController());
   final AuthController authController = Get.find<AuthController>();
   final SimulacionController simulacionController = Get.put(SimulacionController());
+  final NotificacionController notificacionController = Get.put(NotificacionController());
   
   
 
@@ -22,6 +24,7 @@ class _SettingsViewState extends State<AjustesView> {
 final profileController = Get.put(ProfileController());
 final authContreller = Get.put(AuthController()); 
 final simulacionController = Get.put(SimulacionController());
+final notificacionController = Get.put(NotificacionController());
 
   // Variables de estado local (temporales)
   bool alertasCriticas = true;
@@ -52,16 +55,14 @@ final simulacionController = Get.put(SimulacionController());
               
               // Notificaciones
               _buildSectionTitle('Notificaciones', Icons.notifications_none),
-              _buildToggleOption(
+              Obx(() => _buildToggleOption(
                 'Alertas críticas', 
-                'Recibir alertas de situaciones críticas', 
-                alertasCriticas,
+                'Recibir alertas de situaciones críticas',
+                notificacionController.notificacionesActivas.value,
                 (value) {
-                  setState(() {
-                    alertasCriticas = value;
-                  });
-                }
-              ),
+                  notificacionController.toggleNotificaciones();
+                },
+              )),
               _buildDivider(),
               Obx(() => _buildToggleOption(
                 'Predicciones',
@@ -72,16 +73,22 @@ final simulacionController = Get.put(SimulacionController());
                 },
               )),
               _buildDivider(),
-              _buildToggleOption(
-                'Informes diarios', 
-                'Recibir informes diarios', 
-                informesDiarios,
-                (value) {
-                  setState(() {
-                    informesDiarios = value;
-                  });
-                }
-              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: ElevatedButton.icon(
+                onPressed: () {
+                  simulacionController.generatePdf();
+              },
+                icon: Icon(Icons.picture_as_pdf),
+                label: Text("Descargar informe PDF"),
+                style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal[800],
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                textStyle: TextStyle(fontSize: 16),
+            ),
+          ),
+        ),
               
               SizedBox(height: 24),
               

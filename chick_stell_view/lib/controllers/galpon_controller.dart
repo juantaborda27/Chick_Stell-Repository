@@ -9,6 +9,9 @@ class GalponController extends GetxController {
 
   final GalponService _galponService = GalponService();
 
+  final RxBool isProcessing = false.obs;
+
+
   @override
   void onInit() {
     super.onInit();
@@ -23,6 +26,21 @@ class GalponController extends GetxController {
       Get.snackbar('Error', 'No se pudieron cargar los galpones');
     }
     galpones.refresh();
+  }
+
+  double calcularDensidad({
+    required String largoText,
+    required String anchoText,
+    required String cantidadPollosText,
+  }) {
+    final largo = double.tryParse(largoText) ?? 0.0;
+    final ancho = double.tryParse(anchoText) ?? 0.0;
+    final cantidad = double.tryParse(cantidadPollosText) ?? 0.0;
+
+    final area = largo * ancho;
+    if (area <= 0) return 0.0;
+
+    return cantidad / area;
   }
 
   Future<void> agregarGalpon(Galpon galpon) async {
@@ -54,7 +72,7 @@ class GalponController extends GetxController {
       await _galponService.deleteGalpon(id);
       await cargarGalpones();
       galpones.refresh();
-      
+
       Get.snackbar('Éxito', 'Galpón eliminado correctamente');
     } catch (e) {
       Get.snackbar('Error', 'No se pudo eliminar el galpón');

@@ -5,6 +5,7 @@ import 'package:chick_stell_view/models/galpon_model.dart';
 import 'package:chick_stell_view/services/city_weather_service.dart';
 import 'package:chick_stell_view/services/galpon_service.dart';
 import 'package:chick_stell_view/services/notification_service.dart';
+import 'package:chick_stell_view/services/pdf_service.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -15,6 +16,7 @@ import 'package:intl/intl.dart';
 class SimulacionController extends GetxController {
   final GalponService _galponService = GalponService();
   final CityWeatherService _cityWeatherService = Get.put(CityWeatherService());
+  final PdfService _pdfService = Get.put(PdfService());
   final galpones = <Galpon>[].obs;
   final simulando = false.obs;
   final forzandoEstres = false.obs;
@@ -44,6 +46,20 @@ class SimulacionController extends GetxController {
       }
     } catch (e) {}
   }
+
+
+  Future<void> generatePdf() async {
+            try {
+              await _pdfService.generatePdf();
+                Get.snackbar('Éxito', 'PDF generado y abierto correctamente');
+                } catch (e, stacktrace) {
+                print('Error al generar PDF: $e');
+                print('Stacktrace: $stacktrace');
+                Get.snackbar('Error', 'No se pudo generar el PDF');
+              }
+
+            } 
+
 
   void iniciarSimulacion() {
     simulando.value = true;

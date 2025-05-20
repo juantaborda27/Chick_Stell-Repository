@@ -5,15 +5,33 @@ import 'package:chick_stell_view/views/main_views/monitoreo/create_galpon/create
 
 class SearchGalpon extends StatelessWidget {
   final WarehouseController controller;
-
+  
   const SearchGalpon({super.key, required this.controller});
-
+  
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Row(
         children: [
+          // Logo de la aplicación
+          Container(
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              shape: BoxShape.circle,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: Image.asset(
+                'assets/images/logo2.png',
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          // Campo de búsqueda
           Expanded(
             child: TextField(
               decoration: InputDecoration(
@@ -27,6 +45,7 @@ class SearchGalpon extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
+          // Botón para añadir
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
