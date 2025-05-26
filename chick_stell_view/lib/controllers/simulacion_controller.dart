@@ -16,6 +16,8 @@ import 'package:intl/intl.dart';
 class SimulacionController extends GetxController {
   final GalponService _galponService = GalponService();
   final CityWeatherService _cityWeatherService = Get.put(CityWeatherService());
+  final WarehouseController warehouseController =
+      Get.put(WarehouseController());
   final PdfService _pdfService = Get.put(PdfService());
   final galpones = <Galpon>[].obs;
   final simulando = false.obs;
@@ -47,19 +49,16 @@ class SimulacionController extends GetxController {
     } catch (e) {}
   }
 
-
   Future<void> generatePdf() async {
-            try {
-              await _pdfService.generatePdf();
-                Get.snackbar('Éxito', 'PDF generado y abierto correctamente');
-                } catch (e, stacktrace) {
-                print('Error al generar PDF: $e');
-                print('Stacktrace: $stacktrace');
-                Get.snackbar('Error', 'No se pudo generar el PDF');
-              }
-
-            } 
-
+    try {
+      await _pdfService.generatePdf();
+      Get.snackbar('Éxito', 'PDF generado y abierto correctamente');
+    } catch (e, stacktrace) {
+      print('Error al generar PDF: $e');
+      print('Stacktrace: $stacktrace');
+      Get.snackbar('Error', 'No se pudo generar el PDF');
+    }
+  }
 
   void iniciarSimulacion() {
     simulando.value = true;
@@ -71,7 +70,7 @@ class SimulacionController extends GetxController {
     _timer?.cancel();
   }
 
-   void toggleSimulacion(bool value) {
+  void toggleSimulacion(bool value) {
     if (value) {
       iniciarSimulacion();
     } else {
@@ -171,14 +170,14 @@ class SimulacionController extends GetxController {
               );
               print("notificación enviada para galpón ${galpon.nombre}");
               ///////////////////////////////////////////////////////
-              final warehouseController = Get.find<WarehouseController>();
+
               warehouseController.activarAlerta(
                 '⚠️ Alerta de Estrés Térmico',
                 'El galpón "${galpon.nombre}" presenta riesgo de estrés térmico.',
               );
 
               warehouseController.ventilationActive.value = true;
-              Future.delayed(const Duration(seconds: 10), () {
+              Future.delayed(const Duration(seconds: 17), () {
                 warehouseController.ventilationActive.value = false;
               });
             }
@@ -245,6 +244,12 @@ class SimulacionController extends GetxController {
       if (forzandoEstres.value) {
         deltaTemp += 0.1 + progresoEstres * 0.05;
         deltaHum += 0.5 + progresoEstres * 0.1;
+      }
+
+      // Si el ventilador está encendido, enfriamos y secamos progresivamente
+      if (warehouseController.ventilationActive.value) {
+        deltaTemp -= 0.15 + random.nextDouble() * 0.1;
+        deltaHum -= 0.8 + random.nextDouble() * 0.4;
       }
 
       // Aplicar cambios
