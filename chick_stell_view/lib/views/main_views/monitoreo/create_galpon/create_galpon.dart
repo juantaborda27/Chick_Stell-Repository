@@ -1,4 +1,5 @@
 import 'package:chick_stell_view/controllers/galpon_controller.dart';
+import 'package:chick_stell_view/controllers/warehouse_controller.dart';
 import 'package:chick_stell_view/models/galpon_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -427,7 +428,7 @@ class CreateGalponState extends State<CreateGalpon>
             });
 
             if (_formKey.currentState?.validate() ?? false) {
-              final galponController = Get.find<GalponController>();
+              final warehouseController = Get.put(WarehouseController());
               final Uuid uuid = const Uuid();
 
               // Generar ID único
@@ -440,7 +441,7 @@ class CreateGalponState extends State<CreateGalpon>
                 largo: double.tryParse(largoController.text) ?? 0,
                 ancho: double.tryParse(anchoController.text) ?? 0,
                 edadDias: int.tryParse(edadDiasController.text) ?? 0,
-                densidadPollos: galponController.calcularDensidad(
+                densidadPollos: warehouseController.calcularDensidad(
                   largoText: largoController.text,
                   anchoText: anchoController.text,
                   cantidadPollosText: cantidadPollosController.text,
@@ -462,8 +463,8 @@ class CreateGalponState extends State<CreateGalpon>
               );
 
               try {
-                await galponController.agregarGalpon(galpon);
-                await galponController.cargarGalpones();
+                await warehouseController.agregarGalpon(galpon);
+                await warehouseController.cargarGalpones();
 
                 // Cerrar el indicador de carga
                 Navigator.of(context).pop();
