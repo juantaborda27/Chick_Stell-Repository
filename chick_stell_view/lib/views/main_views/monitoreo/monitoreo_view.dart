@@ -26,109 +26,163 @@ class MonitoreoView extends StatelessWidget {
     final isLoading = true.obs;
 
     Future.delayed(const Duration(milliseconds: 1500), () {
-      isLoading.value = false;
-    });
+    isLoading.value = false;
+  });
 
-    return Scaffold(
-      body: SafeArea(
-        child: Obx(() {
-          if (isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
-          }
+  return Scaffold(
+    body: SafeArea(
+      child: Obx(() {
+        if (isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          return Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color.fromARGB(255, 110, 221, 221), Colors.white],
-              ),
+        return Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color.fromARGB(255, 110, 221, 221), Colors.white],
             ),
-            child: Obx(() {
-              if (simulacionController.galpones.isEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: Center(
-                    child: Column(
-                      mainAxisSize:
-                          MainAxisSize.min, // Evita que ocupe toda la altura
-                      children: [
-                        const Text(
-                          "No hay galpones disponibles.",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            // Navegación directa sin usar nombre de ruta
-                            Get.to(() =>
-                                CreateGalpon()); // Reemplaza con tu widget
-                          },
-                          icon: const Icon(Icons.add),
-                          label: const Text("Añadir Galpón"),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF26A69A),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 24, vertical: 12),
-                            textStyle: const TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }
+          ),
+          child: Obx(() {
+            if (simulacionController.galpones.isEmpty) {
+              return _buildEmptyState();
+            }
 
-              final selectedWarehouseIndex = controller.selectedWarehouse.value;
-              final galponSeleccionado =
-                  simulacionController.galpones[selectedWarehouseIndex];
+            // Solución segura para obtener el galpón seleccionado
+            final galponSeleccionado = _getSafeSelectedGalpon();
+            if (galponSeleccionado == null) {
+              return _buildErrorState();
+            }
 
-              return FadeIn(
-                duration: const Duration(milliseconds: 600),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        SearchGalpon(controller: controller),
-                        const SizedBox(height: 6),
-                        WarehouseSelector(controller: controller),
-                        const SizedBox(height: 16),
-                        WarehouseHeader(controller: controller),
-                        const SizedBox(height: 10),
-                        InformationGalpon(controller: controller),
-                        const SizedBox(height: 20),
-                        //Ventilator(controller: controller),
-                        Obx(() {
-                          // Este key único fuerza la reconstrucción cuando cambia el galpón
-                          final uniqueKey = ValueKey(
-                              controller.galponSeleccionado?.id ?? 'none');
-                          return Ventilator(
-                            key: uniqueKey,
-                            controller: controller,
-                          );
-                        }),
-                        const SizedBox(height: 20),
-                        Obx(() {
-                          final alerta = controller.alertaActiva.value;
-                          if (alerta == null) return const SizedBox.shrink();
-                          return WarningAlert(
-                              title: alerta.title, message: alerta.message);
-                        }),
-                        const SizedBox(height: 20),
-                        _buildMetricsGrid(galponSeleccionado),
-                      ],
-                    ),
+            return FadeIn(
+              duration: const Duration(milliseconds: 600),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      SearchGalpon(controller: controller),
+                      const SizedBox(height: 6),
+                      WarehouseSelector(controller: controller),
+                      const SizedBox(height: 16),
+                      WarehouseHeader(controller: controller),
+                      const SizedBox(height: 10),
+                      InformationGalpon(controller: controller),
+                      const SizedBox(height: 20),
+                      Obx(() {
+                        final uniqueKey = ValueKey(
+                            controller.galponSeleccionado?.id ?? 'none');
+                        return Ventilator(
+                          key: uniqueKey,
+                          controller: controller,
+                        );
+                      }),
+                      const SizedBox(height: 20),
+                      Obx(() {
+                        final alerta = controller.alertaActiva.value;
+                        if (alerta == null) return const SizedBox.shrink();
+                        return WarningAlert(
+                            title: alerta.title, message: alerta.message);
+                      }),
+                      const SizedBox(height: 20),
+                      _buildMetricsGrid(galponSeleccionado),
+                    ],
                   ),
                 ),
-              );
-            }),
-          );
-        }),
+              ),
+            );
+          }),
+        );
+      }),
+    ),
+  );
+}
+
+Galpon? _getSafeSelectedGalpon() {
+    try {
+      final selectedIndex = controller.selectedWarehouse.value;
+      if (selectedIndex >= 0 &&
+          selectedIndex < simulacionController.galpones.length) {
+        return simulacionController.galpones[selectedIndex];
+      }
+      // Si el índice no es válido, seleccionar el primero
+      if (simulacionController.galpones.isNotEmpty) {
+        controller.selectedWarehouse.value = 0;
+        return simulacionController.galpones[0];
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error al obtener galpón seleccionado: $e');
+      return null;
+    }
+  }
+
+  Widget _buildErrorState() {
+    return Padding(
+      padding: const EdgeInsets.all(32.0),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Error al cargar el galpón seleccionado",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.red,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () {
+                controller.selectedWarehouse.value = 0;
+                if (simulacionController.galpones.isNotEmpty) {
+                  Get.forceAppUpdate();
+                }
+              },
+              icon: const Icon(Icons.refresh),
+              label: const Text("Reintentar"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Padding(
+      padding: const EdgeInsets.all(32.0),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "No hay galpones disponibles.",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () => Get.to(() => CreateGalpon()),
+              icon: const Icon(Icons.add),
+              label: const Text("Añadir Galpón"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF26A69A),
+                foregroundColor: Colors.white,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                textStyle: const TextStyle(fontSize: 16),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
