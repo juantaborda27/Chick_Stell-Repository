@@ -44,11 +44,12 @@ class WarehouseSelector extends StatelessWidget {
                       
                       if (indexInMainList != -1) {
                         controller.selectWarehouse(indexInMainList);
+                        Get.snackbar('Éxito', 'Galpón seleccionado: ${selectedGalpon.nombre}', duration: Duration(seconds: 1));
                       } else {
-                        Get.snackbar('Error', 'Galpón no encontrado en la lista principal');
+                        Get.snackbar('Error', 'Galpón no encontrado en la lista principal', duration: Duration(seconds: 1));
                       }
                     } catch (e) {
-                      Get.snackbar('Error', 'No se pudo seleccionar el galpón');
+                      Get.snackbar('Error', 'No se pudo seleccionar el galpón', duration: Duration(seconds: 1));
                     }
                   },
                   child: Text(controller.galponesFiltrados[i].nombre),

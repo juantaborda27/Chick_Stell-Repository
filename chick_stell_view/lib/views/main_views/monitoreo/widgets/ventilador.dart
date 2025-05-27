@@ -15,72 +15,126 @@ class Ventilator extends StatefulWidget {
 }
 
 class _VentilatorState extends State<Ventilator> with SingleTickerProviderStateMixin {
+//   late AnimationController _controller;
+//   bool _initialized = false;
+//   Galpon? _lastGalpon;
+//   bool _isHot = false;
+//   bool _isActive = false;
+
+
+//     @override
+//   void initState() {
+//     super.initState();
+//     _controller = AnimationController(
+//       vsync: this,
+//       duration: const Duration(seconds: 15),
+//     );
+
+//     // Inicializar después de que el widget esté montado
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       _initializeAnimation();
+//       _setupListeners();
+//     });
+//   }
+
+//   void _setupListeners() {
+//     // Escuchar cambios en el galpón seleccionado
+//     ever(widget.controller.selectedWarehouse, (_) => _updateAnimationSpeed());
+
+//     // Escuchar cambios en el estado activo del ventilador
+//     ever(widget.controller.ventilationActive, (_) => _updateAnimationSpeed());
+
+//     // Escuchar cambios en la lista de galpones (por si actualizan temperaturas)
+//     ever(widget.controller.galpones, (_) => _updateAnimationSpeed());
+//   }
+
+//   void _initializeAnimation() {
+//     _updateAnimationSpeed();
+//     _controller.repeat();
+//     setState(() => _initialized = true);
+//   }
+
+//   void _updateAnimationSpeed() {
+//     final currentGalpon = widget.controller.galponSeleccionado;
+//     if (currentGalpon == null) return;
+
+//     print(
+//         'Actualizando velocidad - Temp: ${currentGalpon.temperaturaInterna}°C'); // Debug
+
+//     final newIsHot = currentGalpon.temperaturaInterna > 23;
+//     final newIsActive = widget.controller.ventilationActive.value;
+
+//     if (currentGalpon != _lastGalpon ||
+//         newIsHot != _isHot ||
+//         newIsActive != _isActive) {
+//       setState(() {
+//         _lastGalpon = currentGalpon;
+//         _isHot = newIsHot;
+//         _isActive = newIsActive;
+
+//         final shouldSpinFast = _isActive || _isHot;
+//         _controller.duration = Duration(seconds: shouldSpinFast ? 2 : 15);
+// // Debug
+//       });
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     _controller.dispose();
+//     super.dispose();
+//   }
   late AnimationController _controller;
-  bool _initialized = false;
-  Galpon? _lastGalpon;
-  bool _isHot = false;
-  bool _isActive = false;
+  bool _isDisposed = false; // Bandera para controlar el estado
 
-
-    @override
+  @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 15),
-    );
-
-    // Inicializar después de que el widget esté montado
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeAnimation();
-      _setupListeners();
-    });
-  }
-
-  void _setupListeners() {
-    // Escuchar cambios en el galpón seleccionado
-    ever(widget.controller.selectedWarehouse, (_) => _updateAnimationSpeed());
-
-    // Escuchar cambios en el estado activo del ventilador
-    ever(widget.controller.ventilationActive, (_) => _updateAnimationSpeed());
-
-    // Escuchar cambios en la lista de galpones (por si actualizan temperaturas)
-    ever(widget.controller.galpones, (_) => _updateAnimationSpeed());
-  }
-
-  void _initializeAnimation() {
+    )..addStatusListener(_handleAnimationStatus);
+    
     _updateAnimationSpeed();
-    _controller.repeat();
-    setState(() => _initialized = true);
+  }
+
+  void _handleAnimationStatus(AnimationStatus status) {
+    if (_isDisposed) return;
+    if (status == AnimationStatus.completed) {
+      _controller.repeat();
+    }
   }
 
   void _updateAnimationSpeed() {
-    final currentGalpon = widget.controller.galponSeleccionado;
-    if (currentGalpon == null) return;
+    if (_isDisposed || !mounted) return;
+    
+    final galpon = widget.controller.galponSeleccionado;
+    if (galpon == null) return;
 
-    print(
-        'Actualizando velocidad - Temp: ${currentGalpon.temperaturaInterna}°C'); // Debug
+    final isHot = galpon.temperaturaInterna > 31;
+    final isActive = widget.controller.ventilationActive.value;
+    final shouldSpinFast = isActive || isHot;
 
-    final newIsHot = currentGalpon.temperaturaInterna > 23;
-    final newIsActive = widget.controller.ventilationActive.value;
+    _controller.duration = Duration(seconds: shouldSpinFast ? 2 : 15);
+    
+    if (!_controller.isAnimating) {
+      _controller.forward();
+    }
+  }
 
-    if (currentGalpon != _lastGalpon ||
-        newIsHot != _isHot ||
-        newIsActive != _isActive) {
-      setState(() {
-        _lastGalpon = currentGalpon;
-        _isHot = newIsHot;
-        _isActive = newIsActive;
-
-        final shouldSpinFast = _isActive || _isHot;
-        _controller.duration = Duration(seconds: shouldSpinFast ? 2 : 15);
-// Debug
-      });
+  @override
+  void didUpdateWidget(Ventilator oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.controller != oldWidget.controller) {
+      _updateAnimationSpeed();
     }
   }
 
   @override
   void dispose() {
+    _isDisposed = true; // Marcar como disposed primero
+    _controller.removeStatusListener(_handleAnimationStatus);
+    _controller.stop(); // Detener antes de dispose
     _controller.dispose();
     super.dispose();
   }
