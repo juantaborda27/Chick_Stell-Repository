@@ -1,5 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:chick_stell_view/controllers/galpon_controller.dart';
+import 'package:chick_stell_view/controllers/warehouse_controller.dart';
 import 'package:chick_stell_view/models/galpon_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,7 +10,7 @@ class EditGalpon extends StatelessWidget {
 
   EditGalpon({Key? key, required this.galpon}) : super(key: key);
 
-  final GalponController galponController = Get.find<GalponController>();
+  final WarehouseController warehouseController = Get.find<WarehouseController>();
   final _formKey = GlobalKey<FormState>();
 
   // Colores de la aplicación
@@ -57,7 +58,7 @@ class EditGalpon extends StatelessWidget {
         ),
       ),
       body: Obx(() {
-        return galponController.isProcessing.value
+        return WarehouseController().isProcessing.value
             ? Center(
                 child: SpinPerfect(
                   infinite: true,
@@ -211,7 +212,7 @@ class EditGalpon extends StatelessWidget {
     return ElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          galponController.isProcessing.value = true;
+          warehouseController.isProcessing.value = true;
 
           final editedGalpon = galpon.copyWith(
             nombre: nombreController.text,
@@ -222,8 +223,8 @@ class EditGalpon extends StatelessWidget {
             sensores: int.parse(sensoresController.text),
           );
 
-          await galponController.actualizarGalpon(editedGalpon.id, editedGalpon);
-          galponController.isProcessing.value = false;
+          await warehouseController.actualizarGalpon(editedGalpon.id, editedGalpon);
+          warehouseController.isProcessing.value = false;
           Get.back();
           Get.snackbar(
             'Actualizado', 
@@ -303,9 +304,9 @@ class EditGalpon extends StatelessWidget {
                 ),
                 onPressed: () async {
                   Get.back();
-                  galponController.isProcessing.value = true;
-                  await galponController.eliminarGalpon(galpon.id);
-                  galponController.isProcessing.value = false;
+                  warehouseController.isProcessing.value = true;
+                  await warehouseController.eliminarGalpon(galpon.id);
+                  warehouseController.isProcessing.value = false;
                   Get.back();
                   Get.snackbar(
                     'Eliminado', 

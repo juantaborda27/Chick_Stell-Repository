@@ -1,5 +1,6 @@
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 import 'package:chick_stell_view/models/galpon_model.dart';
 import 'package:chick_stell_view/services/galpon_service.dart';
 
@@ -14,7 +15,7 @@ class WarehouseController extends GetxController {
   RxInt co2Level = 850.obs;
   RxString birdActivity = "Normal".obs;
   RxBool hasWarning = true.obs;
-
+  final RxBool isProcessing = false.obs;
 
   @override
   void onInit() {
@@ -23,10 +24,64 @@ class WarehouseController extends GetxController {
   }
 
   Future<void> cargarGalpones() async {
-    galpones.value = (await _galponService.getGalpones()).cast<Galpon>();
-    // galpones.sort();
-    galpones.sort((a, b) => a.id.compareTo(b.id));
-    galpones.refresh(); // Actualizar la lista
+    try {
+      var resultado = await _galponService.getGalpones();
+      galpones.assignAll(resultado);
+      galpones.sort((a, b) => a.id.compareTo(b.id));
+    } catch (e) {
+      Get.snackbar('Error', 'No se pudieron cargar los galpones');
+    }
+    galpones.refresh();
+  }
+
+  double calcularDensidad({
+    required String largoText,
+    required String anchoText,
+    required String cantidadPollosText,
+  }) {
+    final largo = double.tryParse(largoText) ?? 0.0;
+    final ancho = double.tryParse(anchoText) ?? 0.0;
+    final cantidadPollos = double.tryParse(cantidadPollosText) ?? 0.0;
+
+    final area = largo * ancho;
+    if (area == 0) return 0.0;
+    return cantidadPollos / area;
+  }
+
+  Future<void> agregarGalpon(Galpon galpon) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) throw Exception('Usuario no autenticado');
+
+    final docRef = FirebaseFirestore.instance
+        .collection('usuarios')
+        .doc(uid)
+        .collection('galpones')
+        .doc(galpon.id);
+
+    await docRef.set(galpon.toJson());
+  }
+
+  Future<void> actualizarGalpon(String id, Galpon galpon) async {
+    try {
+      await _galponService.updateGalpon(id, galpon.toJson());
+      await cargarGalpones();
+      Get.snackbar('Éxito', 'Galpón actualizado correctamente');
+    } catch (e) {
+      Get.snackbar('Error', 'No se pudo actualizar el galpón');
+    }
+    galpones.refresh();
+  }
+
+  Future<void> eliminarGalpon(String id) async {
+    try {
+      await _galponService.deleteGalpon(id);
+      await cargarGalpones();
+      galpones.refresh();
+
+      Get.snackbar('Éxito', 'Galpón eliminado correctamente');
+    } catch (e) {
+      Get.snackbar('Error', 'No se pudo eliminar el galpón');
+    }
   }
 
   // void selectWarehouse(int index) {
@@ -42,7 +97,7 @@ class WarehouseController extends GetxController {
   // }
 
   // En tu WarehouseController
-void toggleVentilation() {
+  void toggleVentilation() {
     ventilationActive.value = !ventilationActive.value;
     update(); // Asegúrate de notificar a los listeners
     print('Ventilación: ${ventilationActive.value}'); // Para depuración
@@ -55,8 +110,6 @@ void toggleVentilation() {
     selectedWarehouse.value = galpones.length - 1; // Selecciona el nuevo
   }
 
-
-
   //METODOS PARA BUSCAR EL GALPON SELECCIONADO
   var searchQuery = ''.obs;
 
@@ -66,7 +119,8 @@ void toggleVentilation() {
       return galpones;
     } else {
       return galpones
-          .where((g) => g.nombre.toLowerCase().contains(searchQuery.value.toLowerCase()))
+          .where((g) =>
+              g.nombre.toLowerCase().contains(searchQuery.value.toLowerCase()))
           .toList();
     }
   }
@@ -84,11 +138,7 @@ void toggleVentilation() {
     return galpones[selectedWarehouse.value];
   }
 
-
-
   int get warehouseCount => galpones.length;
-
-
 
   final Rx<AlertData?> alertaActiva = Rx<AlertData?>(null);
 
@@ -110,29 +160,17 @@ void toggleVentilation() {
     alertaActiva.value = null;
   }
 
-
-  
-
-
-
-
-
   Rx<Galpon?> get galponSeleccionadoObs => Rx<Galpon?>(galponSeleccionado);
 
 // Y actualizarlo cuando cambie la selección
-void selectWarehouse(int index) {
-  if (index >= 0 && index < galpones.length) {
-    selectedWarehouse.value = index;
-    galpones.refresh();
-    update(); // Asegúrate de notificar a los listeners
-     // Esto activará los listeners
+  void selectWarehouse(int index) {
+    if (index >= 0 && index < galpones.length) {
+      selectedWarehouse.value = index;
+      galpones.refresh();
+      update(); // Asegúrate de notificar a los listeners
+      // Esto activará los listeners
+    }
   }
-}
-
-
-
-
-
 }
 
 class AlertData {
