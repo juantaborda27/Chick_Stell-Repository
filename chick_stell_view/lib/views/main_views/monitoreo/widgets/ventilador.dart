@@ -1,4 +1,3 @@
-import 'package:chick_stell_view/models/galpon_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:math' as math;

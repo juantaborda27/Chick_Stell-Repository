@@ -4,9 +4,7 @@ import 'package:chick_stell_view/controllers/profile_controller.dart';
 import 'package:chick_stell_view/controllers/simulacion_controller.dart';
 import 'package:chick_stell_view/views/main_views/ajustes/editar_profile_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class AjustesView extends StatefulWidget {
   final ProfileController profileController = Get.put(ProfileController());
